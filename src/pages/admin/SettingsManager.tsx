@@ -298,6 +298,42 @@ export function SettingsManager() {
               initialAlt={typeof settings.heroImageMobile === 'object' ? settings.heroImageMobile?.alt || '' : ''}
               initialDescription={typeof settings.heroImageMobile === 'object' ? settings.heroImageMobile?.description || '' : ''}
             />
+
+            {/* Hero Text Image 1 */}
+            <ImageUploader
+              currentImage={typeof settings.heroTextImage1 === 'string' ? settings.heroTextImage1 : settings.heroTextImage1?.url || ''}
+              onImageSelect={(data) => {
+                if (typeof data === 'string') {
+                  updateField('heroTextImage1', { url: data, alt: '', description: '' });
+                } else {
+                  updateField('heroTextImage1', data);
+                }
+              }}
+              label="Imagen de Texto del Hero 1 (recomendado: PNG transparente)"
+              withMetadata={true}
+              initialAlt={typeof settings.heroTextImage1 === 'object' ? settings.heroTextImage1?.alt || '' : ''}
+              initialDescription={typeof settings.heroTextImage1 === 'object' ? settings.heroTextImage1?.description || '' : ''}
+            />
+
+            {/* Hero Text Image 2 */}
+            <ImageUploader
+              currentImage={typeof settings.heroTextImage2 === 'string' ? settings.heroTextImage2 : settings.heroTextImage2?.url || ''}
+              onImageSelect={(data) => {
+                if (typeof data === 'string') {
+                  updateField('heroTextImage2', { url: data, alt: '', description: '' });
+                } else {
+                  updateField('heroTextImage2', data);
+                }
+              }}
+              label="Imagen de Texto del Hero 2 (opcional, para efecto fade)"
+              withMetadata={true}
+              initialAlt={typeof settings.heroTextImage2 === 'object' ? settings.heroTextImage2?.alt || '' : ''}
+              initialDescription={typeof settings.heroTextImage2 === 'object' ? settings.heroTextImage2?.description || '' : ''}
+            />
+
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
+              <strong>💡 Efecto Fade:</strong> Si subes ambas imágenes de texto, se mostrará un efecto de transición automática cada 5 segundos entre ellas. Si solo subes la primera imagen, se mostrará sin animación.
+            </div>
           </div>
         </div>
 

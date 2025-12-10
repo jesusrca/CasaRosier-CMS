@@ -21,7 +21,7 @@ interface ContentItem {
   price?: number;
   duration?: string;
   includes?: string[];
-  images?: string[];
+  images?: Array<string | { url: string; alt?: string; caption?: string }>;
   schedule?: {
     description?: string;
     slots?: Array<{
@@ -37,6 +37,8 @@ interface ContentItem {
     whoCanParticipate?: string;
     paymentMethods?: string;
     additionalInfo?: string;
+    contactPhone?: string;
+    contactEmail?: string;
     modules?: Array<{
       title: string;
       description: string;
@@ -48,8 +50,8 @@ interface ContentItem {
     metaDescription?: string;
     keywords?: string;
   };
-  heroImage?: string;
-  titleImage?: string;
+  heroImage?: string | { url: string; alt?: string; description?: string };
+  titleImage?: string | { url: string; alt?: string; description?: string };
 }
 
 export function DynamicContentPage() {
@@ -94,15 +96,34 @@ export function DynamicContentPage() {
         contactPhone: content.content?.contactPhone,
         contactEmail: content.content?.contactEmail,
         additionalInfo: content.content?.additionalInfo,
-        paymentMethods: content.content?.paymentMethods
+        paymentMethods: content.content?.paymentMethods,
+        includes: content.includes,
+        includesLength: content.includes?.length,
+        includesType: typeof content.includes,
+        includesIsArray: Array.isArray(content.includes),
+        includesRaw: JSON.stringify(content.includes),
+        fullContent: content
       });
+      
+      // Log detallado de cada elemento del array includes
+      if (content.includes) {
+        console.log('🔍 DEBUG - Elementos de includes:');
+        content.includes.forEach((item, index) => {
+          console.log(`  [${index}]:`, {
+            value: item,
+            type: typeof item,
+            length: item?.length,
+            isEmpty: item === '' || item?.trim() === ''
+          });
+        });
+      }
     }
   }, [content]);
 
   // Actualizar imágenes cuando cambie el contenido
   useEffect(() => {
     if (content?.images) {
-      setImages(content.images);
+      setImages(content.images.map(img => typeof img === 'string' ? img : img.url));
     }
   }, [content]);
 
@@ -142,10 +163,10 @@ export function DynamicContentPage() {
       />
 
       <Hero
-        backgroundImage={content.heroImage || images[0] || 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=1920'}
+        backgroundImage={content.heroImage ? (typeof content.heroImage === 'string' ? content.heroImage : content.heroImage.url) : images[0] || 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=1920'}
         title="estudio Cerámica"
         subtitle="creativa en Barcelona"
-        titleImage={content.titleImage}
+        titleImage={content.titleImage ? (typeof content.titleImage === 'string' ? content.titleImage : content.titleImage.url) : undefined}
       />
 
       <section className="py-16 lg:py-24 bg-background">
@@ -261,13 +282,13 @@ export function DynamicContentPage() {
                   <h3 className="text-xl mb-3">Horarios</h3>
                   <div className="space-y-2">
                     {content.schedule.slots.map((slot, index) => (
-                      <div key={index} className="flex items-center">
-                        <p className="text-base text-foreground/80 font-bold">{slot.day}:</p>
-                        <div className="space-x-2">
+                      <div key={index} className="flex flex-col items-start space-y-2">
+                        <p className="text-base text-foreground/80 font-bold">{slot.day}</p>
+                        <div className="space-y-2 pl-4">
                           {slot.times.map((time, timeIndex) => (
-                            <span key={timeIndex} className="text-base text-foreground/80">
+                            <div key={timeIndex} className="text-base text-foreground/80">
                               {time.time} ({time.availablePlaces} plazas)
-                            </span>
+                            </div>
                           ))}
                         </div>
                       </div>

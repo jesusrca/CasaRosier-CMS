@@ -26,8 +26,8 @@ export function InstagramImageManager({
   const imageUrl = typeof image === 'string' ? image : image.url;
   const imageTitle = typeof image === 'string' ? '' : (image.title || '');
   const imageDescription = typeof image === 'string' ? '' : (image.description || '');
-  const imageSource = typeof image === 'string' ? '' : (image.source || '');
   const imageDate = typeof image === 'string' ? '' : (image.date || '');
+  const imageLink = typeof image === 'string' ? '' : (image.link || '');
 
   const loadGallery = async () => {
     setLoadingGallery(true);
@@ -75,22 +75,20 @@ export function InstagramImageManager({
               rows={2}
               className="w-full px-3 py-2 text-sm border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none"
             />
-            <div className="grid grid-cols-2 gap-2">
-              <input
-                type="text"
-                value={imageSource}
-                onChange={(e) => onMetaUpdate('source', e.target.value)}
-                placeholder="Fuente (ej: OKA // INSTAGRAM)"
-                className="w-full px-3 py-2 text-sm border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-              <input
-                type="text"
-                value={imageDate}
-                onChange={(e) => onMetaUpdate('date', e.target.value)}
-                placeholder="Fecha (ej: 12 DE NOVIEMBRE 2025)"
-                className="w-full px-3 py-2 text-sm border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-            </div>
+            <input
+              type="text"
+              value={imageDate}
+              onChange={(e) => onMetaUpdate('date', e.target.value)}
+              placeholder="Fecha (ej: 12 DE NOVIEMBRE 2025)"
+              className="w-full px-3 py-2 text-sm border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+            <input
+              type="url"
+              value={imageLink}
+              onChange={(e) => onMetaUpdate('link', e.target.value)}
+              placeholder="Link externo (opcional)"
+              className="w-full px-3 py-2 text-sm border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            />
           </div>
           <div className="flex flex-col gap-2">
             <button

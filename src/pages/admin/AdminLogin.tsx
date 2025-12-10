@@ -5,8 +5,9 @@ import { useAuth } from '../../contexts/AuthContext';
 import { Lock, Mail, AlertCircle } from 'lucide-react';
 
 export function AdminLogin() {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(localStorage.getItem('rememberAdmin') || '');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(!!localStorage.getItem('rememberAdmin'));
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -22,6 +23,12 @@ export function AdminLogin() {
       if (signInError) {
         setError(signInError);
       } else if (user) {
+        // Guardar email si "Recordar sesión" está activado
+        if (rememberMe) {
+          localStorage.setItem('rememberAdmin', email);
+        } else {
+          localStorage.removeItem('rememberAdmin');
+        }
         navigate('/admin/dashboard');
       }
     } catch (err: any) {
@@ -88,6 +95,19 @@ export function AdminLogin() {
                   required
                 />
               </div>
+            </div>
+
+            <div className="flex items-center">
+              <input
+                id="rememberMe"
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+              />
+              <label htmlFor="rememberMe" className="ml-2 text-sm text-foreground/60">
+                Recordar sesión
+              </label>
             </div>
 
             <motion.button

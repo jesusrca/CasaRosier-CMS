@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Plus, Trash2, Upload, Loader2, Eye, EyeOff, Calendar, Clock, Save, ExternalLink, AlertTriangle } from 'lucide-react';
+import { X, Plus, Trash2, Upload, Loader2, Eye, EyeOff, Calendar, Clock, Save, ExternalLink, AlertTriangle, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { menuAPI } from '../../utils/api';
 import { ImageUploader } from '../../components/ImageUploader';
@@ -24,6 +24,7 @@ export function ContentEditor({ item: initialItem, onSave, onCancel }: ContentEd
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(!!initialItem.slug);
   const [menuStructure, setMenuStructure] = useState<any[]>([]);
   const [loadingMenu, setLoadingMenu] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   // Detectar cambios no guardados
   useEffect(() => {
@@ -113,10 +114,29 @@ export function ContentEditor({ item: initialItem, onSave, onCancel }: ContentEd
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(item);
+    setSaving(true);
+    
+    // Limpiar el array includes de strings vacíos antes de guardar
+    const cleanedItem = {
+      ...item,
+      includes: (item.includes || []).filter((inc: string) => inc.trim() !== '')
+    };
+    
+    console.log('💾 ContentEditor - Guardando item:', {
+      originalIncludes: item.includes,
+      cleanedIncludes: cleanedItem.includes,
+      includesLength: cleanedItem.includes?.length
+    });
+    
+    onSave(cleanedItem);
     // Actualizar el snapshot después de guardar
-    setInitialItemSnapshot(JSON.stringify(item));
+    setInitialItemSnapshot(JSON.stringify(cleanedItem));
     setHasUnsavedChanges(false);
+    
+    // Esperar un poco para que se complete el guardado antes de habilitar el botón
+    setTimeout(() => {
+      setSaving(false);
+    }, 1500);
   };
 
   const handleCancel = () => {
@@ -190,12 +210,13 @@ export function ContentEditor({ item: initialItem, onSave, onCancel }: ContentEd
         <div className="flex justify-end mb-6">
           <motion.button
             type="submit"
-            className="bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            disabled={saving}
+            className="bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            whileHover={saving ? {} : { scale: 1.02 }}
+            whileTap={saving ? {} : { scale: 0.98 }}
           >
-            <Save className="w-5 h-5" />
-            Guardar
+            {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
+            {saving ? 'Guardando...' : 'Guardar'}
           </motion.button>
         </div>
 
@@ -266,6 +287,9 @@ export function ContentEditor({ item: initialItem, onSave, onCancel }: ContentEd
                       />
                       <p className="text-xs text-foreground/60 mt-1">
                         Se usará en la URL: {item.type === 'class' ? '/clases/' : item.type === 'workshop' ? '/workshops/' : item.type === 'giftcard' ? '/tarjeta-regalo/' : '/privada/'}{item.slug || 'slug'}
+                      </p>
+                      <p className="text-xs text-primary/70 mt-1 italic">
+                        💡 Si el slug ya existe, se agregará automáticamente un número al final
                       </p>
                     </div>
 
@@ -416,6 +440,7 @@ export function ContentEditor({ item: initialItem, onSave, onCancel }: ContentEd
                                 onImageSelect={(image: ImageMetadata) => updateArrayItem('images', index, image)}
                                 label=""
                                 showCaptionField={true}
+                                aspectRatio="4:3"
                               />
                             </div>
                           );
@@ -880,12 +905,13 @@ export function ContentEditor({ item: initialItem, onSave, onCancel }: ContentEd
             <div className="flex flex-col gap-3">
               <motion.button
                 type="submit"
-                className="w-full bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                disabled={saving}
+                className="w-full bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                whileHover={saving ? {} : { scale: 1.02 }}
+                whileTap={saving ? {} : { scale: 0.98 }}
               >
-                <Save className="w-5 h-5" />
-                Guardar
+                {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
+                {saving ? 'Guardando...' : 'Guardar'}
               </motion.button>
               
               {item.id && (
@@ -951,8 +977,13 @@ export function ContentEditor({ item: initialItem, onSave, onCancel }: ContentEd
                 <button
                   type="button"
                   onClick={() => {
-                    onSave(item);
-                    setInitialItemSnapshot(JSON.stringify(item));
+                    // Limpiar el array includes antes de guardar
+                    const cleanedItem = {
+                      ...item,
+                      includes: (item.includes || []).filter((inc: string) => inc.trim() !== '')
+                    };
+                    onSave(cleanedItem);
+                    setInitialItemSnapshot(JSON.stringify(cleanedItem));
                     setHasUnsavedChanges(false);
                     setShowUnsavedDialog(false);
                     setPendingAction(null);
@@ -975,8 +1006,13 @@ export function ContentEditor({ item: initialItem, onSave, onCancel }: ContentEd
       <NavigationBlocker
         when={hasUnsavedChanges}
         onSave={async () => {
-          onSave(item);
-          setInitialItemSnapshot(JSON.stringify(item));
+          // Limpiar el array includes antes de guardar
+          const cleanedItem = {
+            ...item,
+            includes: (item.includes || []).filter((inc: string) => inc.trim() !== '')
+          };
+          onSave(cleanedItem);
+          setInitialItemSnapshot(JSON.stringify(cleanedItem));
           setHasUnsavedChanges(false);
         }}
         onDiscard={() => {

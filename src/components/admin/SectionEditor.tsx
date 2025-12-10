@@ -118,6 +118,7 @@ export function SectionEditor({
               currentImage={section.image || ''}
               onImageSelect={(url) => updateField('image', url)}
               label="Imagen de fondo"
+              aspectRatio="16:9"
             />
           </>
         )}
@@ -181,6 +182,7 @@ export function SectionEditor({
                         onImageSelect={(url) => updateArrayItem('images', index, url)}
                         label={`Imagen ${index + 1}${index === 0 ? ' (Principal)' : ''}`}
                         compact={true}
+                        aspectRatio="4:3"
                       />
                     </div>
                     <button
@@ -558,6 +560,7 @@ export function SectionEditor({
                 currentImage={section.mainImage || ''}
                 onImageSelect={(url) => updateField('mainImage', url)}
                 label="Imagen Principal"
+                aspectRatio="3:4"
               />
             </div>
 
@@ -572,6 +575,7 @@ export function SectionEditor({
                         onImageSelect={(url) => updateArrayItem('images', index, url)}
                         label={`Imagen ${index + 1}`}
                         compact={true}
+                        aspectRatio="1:1"
                       />
                     </div>
                     <button
@@ -666,6 +670,7 @@ export function SectionEditor({
                     currentImage={course.image || ''}
                     onImageSelect={(url) => updateArrayItem('courses', index, { ...course, image: url })}
                     label="Imagen del curso"
+                    aspectRatio="1:1"
                   />
                 </div>
               ))}
@@ -752,6 +757,7 @@ export function SectionEditor({
                     currentImage={course.image || ''}
                     onImageSelect={(url) => updateArrayItem('courses', index, { ...course, image: url })}
                     label="Imagen del curso"
+                    aspectRatio="1:1"
                   />
                 </div>
               ))}

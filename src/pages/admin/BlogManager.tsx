@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { blogAPI } from '../../utils/api';
-import { Plus, Edit, Trash2, Eye } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, Loader2, Save } from 'lucide-react';
 import { RichTextEditor } from '../../components/RichTextEditor';
 import { ImageUploader } from '../../components/ImageUploader';
 import { slugify } from '../../utils/slugify';
@@ -14,6 +14,7 @@ export function BlogManager() {
   const [initialPostSnapshot, setInitialPostSnapshot] = useState<string>('');
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   // Detectar cambios no guardados
   useEffect(() => {
@@ -97,12 +98,15 @@ export function BlogManager() {
     if (!editingPost) return;
 
     try {
+      setSaving(true);
       await blogAPI.savePost(editingPost);
       setEditingPost(null);
       loadPosts();
     } catch (error) {
       console.error('Error saving post:', error);
       alert('Error al guardar');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -199,17 +203,20 @@ export function BlogManager() {
           <div className="flex gap-3 justify-end">
             <button
               onClick={() => setEditingPost(null)}
-              className="px-6 py-3 border border-foreground/20 rounded-lg hover:bg-foreground/5 transition-colors"
+              disabled={saving}
+              className="px-6 py-3 border border-foreground/20 rounded-lg hover:bg-foreground/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Cancelar
             </button>
             <motion.button
               onClick={handleSave}
-              className="bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              disabled={saving}
+              className="bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              whileHover={saving ? {} : { scale: 1.02 }}
+              whileTap={saving ? {} : { scale: 0.98 }}
             >
-              Guardar
+              {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
+              {saving ? 'Guardando...' : 'Guardar'}
             </motion.button>
           </div>
         </div>

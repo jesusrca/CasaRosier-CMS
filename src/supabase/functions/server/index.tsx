@@ -452,6 +452,32 @@ app.post("/make-server-0ba58e95/content/items", verifyAuth, async (c) => {
       return c.json({ error: 'Invalid content item: missing required fields' }, 400);
     }
     
+    // Validar y asegurar que el slug sea único
+    if (item.slug) {
+      const allItems = await kv.getByPrefix('content:');
+      const existingSlugs = allItems
+        .filter((existingItem: any) => existingItem.id !== item.id) // Excluir el item actual si está actualizando
+        .map((existingItem: any) => existingItem.slug)
+        .filter(Boolean);
+      
+      // Verificar si el slug ya existe
+      if (existingSlugs.includes(item.slug)) {
+        // Buscar el siguiente número disponible
+        const baseSlug = item.slug.replace(/-\d+$/, ''); // Remover número existente si lo hay
+        let counter = 1;
+        let uniqueSlug = `${baseSlug}-${counter}`;
+        
+        // Encontrar el siguiente número disponible
+        while (existingSlugs.includes(uniqueSlug)) {
+          counter++;
+          uniqueSlug = `${baseSlug}-${counter}`;
+        }
+        
+        item.slug = uniqueSlug;
+        console.log(`Slug duplicado detectado. Nuevo slug único: ${uniqueSlug}`);
+      }
+    }
+    
     const id = item.id || `${item.type}:${Date.now()}`;
     
     const contentItem = {
@@ -517,6 +543,32 @@ app.put("/make-server-0ba58e95/content/items/:id", verifyAuth, async (c) => {
       } catch (versionError) {
         console.error('Warning: Failed to save version history:', versionError);
         // Continuar aunque falle el historial - el contenido principal es más importante
+      }
+    }
+    
+    // Validar y asegurar que el slug sea único (solo si se está cambiando)
+    if (item.slug && item.slug !== oldItem?.slug) {
+      const allItems = await kv.getByPrefix('content:');
+      const existingSlugs = allItems
+        .filter((existingItem: any) => existingItem.id !== id) // Excluir el item actual
+        .map((existingItem: any) => existingItem.slug)
+        .filter(Boolean);
+      
+      // Verificar si el slug ya existe
+      if (existingSlugs.includes(item.slug)) {
+        // Buscar el siguiente número disponible
+        const baseSlug = item.slug.replace(/-\d+$/, ''); // Remover número existente si lo hay
+        let counter = 1;
+        let uniqueSlug = `${baseSlug}-${counter}`;
+        
+        // Encontrar el siguiente número disponible
+        while (existingSlugs.includes(uniqueSlug)) {
+          counter++;
+          uniqueSlug = `${baseSlug}-${counter}`;
+        }
+        
+        item.slug = uniqueSlug;
+        console.log(`Slug duplicado detectado en actualización. Nuevo slug único: ${uniqueSlug}`);
       }
     }
     

@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Upload, X, Image as ImageIcon } from 'lucide-react';
+import { Upload, X, Image as ImageIcon, AlertCircle } from 'lucide-react';
 import { uploadAPI } from '../utils/api';
 import { motion, AnimatePresence } from 'motion/react';
 import imageCompression from 'browser-image-compression';
@@ -15,13 +15,15 @@ interface ImageUploaderWithMetaProps {
   onImageSelect: (image: ImageMetadata) => void;
   label?: string;
   showCaptionField?: boolean;
+  aspectRatio?: string; // Proporción ideal recomendada (ej: "16:9", "1:1", "4:3")
 }
 
 export function ImageUploaderWithMeta({ 
   currentImage, 
   onImageSelect, 
   label = 'Imagen',
-  showCaptionField = true 
+  showCaptionField = true,
+  aspectRatio
 }: ImageUploaderWithMetaProps) {
   // Convert old string format to object format
   const normalizedImage: ImageMetadata = typeof currentImage === 'string' 
@@ -161,7 +163,15 @@ export function ImageUploaderWithMeta({
 
   return (
     <div className="space-y-3">
-      {label && <label className="block text-sm text-foreground/80">{label}</label>}
+      <div>
+        {label && <label className="block text-sm text-foreground/80">{label}</label>}
+        {aspectRatio && (
+          <p className="text-xs text-primary/70 mt-1 flex items-center gap-1">
+            <AlertCircle size={12} />
+            <span>Proporción ideal: {aspectRatio}</span>
+          </p>
+        )}
+      </div>
       
       {imageData.url ? (
         <div className="space-y-3">

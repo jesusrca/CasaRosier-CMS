@@ -14,7 +14,8 @@ import {
   FileImage,
   Users,
   Mail,
-  Image
+  Image,
+  RefreshCw
 } from 'lucide-react';
 import { ContentManager } from './ContentManager';
 import { BlogManager } from './BlogManager';
@@ -27,6 +28,7 @@ import { ImageLibrary } from './ImageLibrary';
 
 export function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [clearingCache, setClearingCache] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { user, loading, signOut } = useAuth();
@@ -41,6 +43,34 @@ export function AdminDashboard() {
   const handleLogout = async () => {
     await signOut();
     navigate('/admin/login');
+  };
+
+  const handleClearCache = () => {
+    setClearingCache(true);
+    
+    // Limpiar localStorage excepto la sesión de autenticación
+    const authKeys = Object.keys(localStorage).filter(key => 
+      key.startsWith('sb-') || key === 'rememberAdmin'
+    );
+    const authData: { [key: string]: string } = {};
+    authKeys.forEach(key => {
+      authData[key] = localStorage.getItem(key) || '';
+    });
+    
+    localStorage.clear();
+    
+    // Restaurar datos de autenticación
+    Object.entries(authData).forEach(([key, value]) => {
+      localStorage.setItem(key, value);
+    });
+    
+    // Limpiar sessionStorage
+    sessionStorage.clear();
+    
+    // Hacer un hard refresh después de 500ms
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
   };
 
   const menuItems = [
@@ -143,13 +173,24 @@ export function AdminDashboard() {
             )}
           </button>
 
-          <Link
-            to="/"
-            className="text-sm text-primary hover:underline"
-            target="_blank"
-          >
-            Ver sitio web →
-          </Link>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleClearCache}
+              disabled={clearingCache}
+              className="flex items-center gap-2 px-3 py-2 text-sm text-foreground/60 hover:text-foreground hover:bg-foreground/5 rounded-lg transition-colors disabled:opacity-50"
+              title="Limpiar caché y refrescar"
+            >
+              <RefreshCw className={`w-4 h-4 ${clearingCache ? 'animate-spin' : ''}`} />
+              <span className="hidden sm:inline">Limpiar caché</span>
+            </button>
+            <Link
+              to="/"
+              className="text-sm text-primary hover:underline"
+              target="_blank"
+            >
+              Ver sitio web →
+            </Link>
+          </div>
         </header>
 
         {/* Content Area */}

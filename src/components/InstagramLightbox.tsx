@@ -9,6 +9,7 @@ interface InstagramImage {
   description?: string;
   source?: string;
   date?: string;
+  link?: string;
 }
 
 interface InstagramLightboxProps {
@@ -130,11 +131,18 @@ export function InstagramLightbox({
           >
             {/* Image Section */}
             <div className="relative w-full lg:w-3/5 bg-foreground/5 flex items-center justify-center overflow-hidden">
-              <img
-                src={currentImage.url}
-                alt={currentImage.title || `Instagram image ${currentIndex + 1}`}
-                className="w-full h-full object-contain max-h-[50vh] lg:max-h-[90vh]"
-              />
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={currentIndex}
+                  src={currentImage.url}
+                  alt={currentImage.title || `Instagram image ${currentIndex + 1}`}
+                  className="w-full h-full object-contain max-h-[50vh] lg:max-h-[90vh]"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                />
+              </AnimatePresence>
             </div>
 
             {/* Content Section */}
@@ -169,31 +177,49 @@ export function InstagramLightbox({
               </div>
 
               {/* Content */}
-              <div className="flex-1 overflow-y-auto p-4 lg:p-6">
-                {currentImage.title && (
-                  <h3 className="text-xl lg:text-2xl mb-4 text-foreground">
-                    {currentImage.title}
-                  </h3>
-                )}
-                
-                {currentImage.description && (
-                  <div className="text-sm lg:text-base text-foreground/70 leading-relaxed whitespace-pre-wrap mb-6">
-                    {currentImage.description}
-                  </div>
-                )}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentIndex}
+                  className="flex-1 overflow-y-auto p-4 lg:p-6"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {currentImage.title && (
+                    <h3 className="text-xl lg:text-2xl mb-4 text-foreground">
+                      {currentImage.title}
+                    </h3>
+                  )}
+                  
+                  {currentImage.description && (
+                    <div className="text-sm lg:text-base text-foreground/70 leading-relaxed whitespace-pre-wrap mb-6">
+                      {currentImage.description}
+                    </div>
+                  )}
 
-                {/* Source and Date */}
-                {(currentImage.source || currentImage.date) && (
-                  <div className="text-xs lg:text-sm text-foreground/50 mb-6 pt-4">
-                    {currentImage.source && (
-                      <div className="mb-1">{currentImage.source}</div>
-                    )}
-                    {currentImage.date && (
-                      <div>{currentImage.date}</div>
-                    )}
-                  </div>
-                )}
-              </div>
+                  {/* External Link */}
+                  {currentImage.link && (
+                    <div className="mb-6">
+                      <a
+                        href={currentImage.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-foreground/70 hover:text-foreground underline decoration-1 underline-offset-4 transition-colors text-sm"
+                      >
+                        Ver en Instagram
+                      </a>
+                    </div>
+                  )}
+
+                  {/* Date */}
+                  {currentImage.date && (
+                    <div className="text-xs lg:text-sm text-foreground/50 mb-6 pt-4">
+                      {currentImage.date}
+                    </div>
+                  )}
+                </motion.div>
+              </AnimatePresence>
 
               {/* Footer with Social Share */}
               <div className="p-4 lg:p-6">

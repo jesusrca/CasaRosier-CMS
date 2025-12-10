@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { contentAPI, initAPI } from '../../utils/api';
-import { Plus, Edit, Trash2, Eye, EyeOff, Search, Copy, Database } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, EyeOff, Search, Copy, Database, ArrowLeft } from 'lucide-react';
 import { ContentEditor } from './ContentEditor';
 import { menuAPI } from '../../utils/api';
+import { ImageWithFallback } from '../../components/figma/ImageWithFallback';
 
 export function ContentManager() {
   const [items, setItems] = useState<any[]>([]);
@@ -179,7 +180,11 @@ export function ContentManager() {
 
   const handleSave = async (item: any) => {
     try {
-      console.log('Saving item with menuLocations:', item.menuLocations);
+      console.log('📥 ContentManager - Recibiendo item para guardar:', {
+        includes: item.includes,
+        includesLength: item.includes?.length,
+        menuLocations: item.menuLocations
+      });
       
       let savedItem;
       if (item.id) {
@@ -188,7 +193,7 @@ export function ContentManager() {
         savedItem = await contentAPI.createItem(item);
       }
 
-      console.log('Saved item received:', savedItem);
+      console.log('✅ ContentManager - Item guardado:', savedItem);
 
       // Extraer el item del objeto de respuesta
       const itemData = savedItem.item || savedItem;
@@ -211,6 +216,9 @@ export function ContentManager() {
       // Recargar la lista en segundo plano pero mantener el editor abierto
       loadItems();
       
+      // Verificar si el slug fue modificado automáticamente
+      const slugWasModified = item.slug && itemData.slug !== item.slug;
+      
       // Mostrar mensaje de éxito
       const successMessage = document.createElement('div');
       successMessage.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center gap-2';
@@ -218,10 +226,10 @@ export function ContentManager() {
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
         </svg>
-        <span>Guardado exitosamente</span>
+        <span>Guardado exitosamente${slugWasModified ? ' (slug ajustado a: ' + itemData.slug + ')' : ''}</span>
       `;
       document.body.appendChild(successMessage);
-      setTimeout(() => successMessage.remove(), 3000);
+      setTimeout(() => successMessage.remove(), 4000);
       
     } catch (error) {
       console.error('Error saving item:', error);
@@ -475,7 +483,7 @@ export function ContentManager() {
             >
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
                 {item.images?.[0] && (
-                  <img
+                  <ImageWithFallback
                     src={item.images[0]}
                     alt={item.title}
                     className="w-full sm:w-24 h-48 sm:h-24 object-cover rounded-lg"

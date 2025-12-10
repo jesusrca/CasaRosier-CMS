@@ -27,12 +27,25 @@ export function HeroHome() {
     desktop: heroBackgroundImage,
     mobile: heroBackgroundImage
   });
+  const [heroTextImages, setHeroTextImages] = useState<string[]>([heroTextImage]);
+  const [currentTextImageIndex, setCurrentTextImageIndex] = useState(0);
 
   // Load menu and settings from API
   useEffect(() => {
     loadMenu();
     loadHeroImages();
   }, []);
+
+  // Auto-rotate text images if there are multiple
+  useEffect(() => {
+    if (heroTextImages.length <= 1) return;
+
+    const interval = setInterval(() => {
+      setCurrentTextImageIndex((prev) => (prev + 1) % heroTextImages.length);
+    }, 5000); // Change every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [heroTextImages.length]);
 
   const loadHeroImages = async () => {
     try {
@@ -42,6 +55,22 @@ export function HeroHome() {
           desktop: response.settings.heroImageDesktop || heroBackgroundImage,
           mobile: response.settings.heroImageMobile || heroBackgroundImage
         });
+
+        // Load hero text images
+        const textImages: string[] = [];
+        const img1 = typeof response.settings.heroTextImage1 === 'string' 
+          ? response.settings.heroTextImage1 
+          : response.settings.heroTextImage1?.url;
+        const img2 = typeof response.settings.heroTextImage2 === 'string' 
+          ? response.settings.heroTextImage2 
+          : response.settings.heroTextImage2?.url;
+        
+        if (img1) textImages.push(img1);
+        if (img2) textImages.push(img2);
+        
+        if (textImages.length > 0) {
+          setHeroTextImages(textImages);
+        }
       }
     } catch (error) {
       console.log('Settings not found, using default images');
@@ -222,13 +251,20 @@ export function HeroHome() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, delay: 0.6 }}
-          className="w-full max-w-3xl"
+          className="w-full max-w-3xl relative"
         >
-          <img 
-            src={heroTextImage} 
-            alt="estudio Cerámica creativa en Barcelona" 
-            className="w-full h-auto"
-          />
+          <AnimatePresence mode="wait">
+            <motion.img 
+              key={currentTextImageIndex}
+              src={heroTextImages[currentTextImageIndex]} 
+              alt="estudio Cerámica creativa en Barcelona" 
+              className="w-full h-auto"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1 }}
+            />
+          </AnimatePresence>
         </motion.div>
       </div>
 

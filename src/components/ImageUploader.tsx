@@ -13,9 +13,10 @@ interface ImageUploaderProps {
   withMetadata?: boolean; // Si true, devuelve objeto con metadata en lugar de solo URL
   initialAlt?: string;
   initialDescription?: string;
+  aspectRatio?: string; // Proporción ideal recomendada (ej: "16:9", "1:1", "4:3")
 }
 
-export function ImageUploader({ currentImage, onImageSelect, label = 'Imagen', compact = false, withMetadata = false, initialAlt = '', initialDescription = '' }: ImageUploaderProps) {
+export function ImageUploader({ currentImage, onImageSelect, label = 'Imagen', compact = false, withMetadata = false, initialAlt = '', initialDescription = '', aspectRatio = '16:9' }: ImageUploaderProps) {
   const [uploading, setUploading] = useState(false);
   const [compressing, setCompressing] = useState(false);
   const [preview, setPreview] = useState<string | null>(currentImage || null);
@@ -155,7 +156,15 @@ export function ImageUploader({ currentImage, onImageSelect, label = 'Imagen', c
 
   return (
     <div className="space-y-3">
-      <label className="block text-sm text-foreground/80">{label}</label>
+      <div>
+        <label className="block text-sm text-foreground/80">{label}</label>
+        {aspectRatio && (
+          <p className="text-xs text-primary/70 mt-1 flex items-center gap-1">
+            <AlertCircle size={12} />
+            <span>Proporción ideal: {aspectRatio}</span>
+          </p>
+        )}
+      </div>
       
       {preview ? (
         <div className="space-y-2">
