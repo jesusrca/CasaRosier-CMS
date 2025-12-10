@@ -250,19 +250,6 @@ export function ContentEditor({ item: initialItem, onSave, onCancel }: ContentEd
                   
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm mb-2">Tipo</label>
-                      <select
-                        value={item.type}
-                        onChange={(e) => updateField('type', e.target.value)}
-                        className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                      >
-                        <option value="class">Clase</option>
-                        <option value="workshop">Workshop</option>
-                        <option value="private">Privada</option>
-                      </select>
-                    </div>
-
-                    <div>
                       <label className="block text-sm mb-2">Título *</label>
                       <input
                         type="text"
@@ -837,8 +824,25 @@ export function ContentEditor({ item: initialItem, onSave, onCancel }: ContentEd
 
           {/* Columna Menú (1/3 del ancho) */}
           <div className="lg:col-span-1 space-y-6">
-            {/* Ubicación en el Menú */}
+            {/* Tipo de Contenido */}
             <div className="bg-white rounded-lg shadow-md p-6 sticky top-6">
+              <h3 className="text-xl mb-2">Tipo de Contenido</h3>
+              <p className="text-sm text-foreground/60 mb-4">
+                Selecciona el tipo de contenido para esta página
+              </p>
+              <select
+                value={item.type}
+                onChange={(e) => updateField('type', e.target.value)}
+                className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                <option value="class">Clase</option>
+                <option value="workshop">Workshop</option>
+                <option value="private">Privada</option>
+              </select>
+            </div>
+
+            {/* Ubicación en el Menú */}
+            <div className="bg-white rounded-lg shadow-md p-6">
               <h3 className="text-xl mb-2">Ubicación en el Menú</h3>
               <p className="text-sm text-foreground/60 mb-4">
                 Selecciona bajo qué categoría(s) principal(es) debe aparecer esta {item.type === 'class' ? 'clase' : item.type === 'workshop' ? 'workshop' : 'privada'}

@@ -172,9 +172,14 @@ export function Footer() {
             
             <div>
               <h4 className="mb-4">Visítanos:</h4>
-              <p className="text-muted-foreground">
+              <a 
+                href="https://www.google.com/maps/search/?api=1&query=C%2F+Villarroel+206+El+Exemple+Barcelona+08036+España"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-primary transition-colors cursor-pointer inline-block"
+              >
                 C/ Villarroel 206 - El Exemple - Barcelona 08036, España
-              </p>
+              </a>
             </div>
 
             <div>
