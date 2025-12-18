@@ -370,56 +370,69 @@ export function PageSection({ section, siteSettings }: PageSectionProps) {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className="bg-white rounded-2xl p-6 lg:p-8 shadow-lg hover:shadow-xl transition-shadow duration-300"
+                  className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
                 >
-                  {/* Título */}
-                  {card.title && (
-                    <h3 className="mb-4 text-primary">{card.title}</h3>
-                  )}
-                  
-                  {/* Descripción */}
-                  {card.description && (
-                    <p className="text-sm text-foreground/70 mb-6 leading-relaxed">
-                      {card.description}
-                    </p>
-                  )}
-                  
-                  {/* Información de clases y personas */}
-                  <div className="space-y-2 mb-6 pb-6 border-b border-foreground/10">
-                    {card.classes && (
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-foreground/60">Clases:</span>
-                        <span className="font-medium text-foreground/80">{card.classes}</span>
-                      </div>
-                    )}
-                    {card.people && (
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-foreground/60">Personas:</span>
-                        <span className="font-medium text-foreground/80">{card.people}</span>
-                      </div>
-                    )}
-                  </div>
-                  
-                  {/* Precio */}
-                  {card.price && (
-                    <div className="text-center">
-                      <div className="text-3xl lg:text-4xl text-primary">
-                        {card.price}€
-                      </div>
+                  {/* Imagen */}
+                  {card.image && (
+                    <div className="w-full h-48 overflow-hidden">
+                      <img 
+                        src={card.image} 
+                        alt={card.title || 'Tarjeta de regalo'} 
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                   )}
                   
-                  {/* CTA opcional */}
-                  {card.ctaText && card.ctaLink && (
-                    <a
-                      href={card.ctaLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block w-full bg-primary text-white text-center py-3 rounded-xl hover:bg-primary/90 transition-colors mt-6"
-                    >
-                      {card.ctaText}
-                    </a>
-                  )}
+                  <div className="p-6 lg:p-8">
+                    {/* Título */}
+                    {card.title && (
+                      <h3 className="mb-4 text-primary">{card.title}</h3>
+                    )}
+                    
+                    {/* Descripción */}
+                    {card.description && (
+                      <p className="text-sm text-foreground/70 mb-6 leading-relaxed">
+                        {card.description}
+                      </p>
+                    )}
+                    
+                    {/* Información de clases y personas */}
+                    <div className="space-y-2 mb-6 pb-6 border-b border-foreground/10">
+                      {card.classes && (
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-foreground/60">Clases:</span>
+                          <span className="font-medium text-foreground/80">{card.classes}</span>
+                        </div>
+                      )}
+                      {card.people && (
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-foreground/60">Personas:</span>
+                          <span className="font-medium text-foreground/80">{card.people}</span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Precio */}
+                    {card.price && (
+                      <div className="text-center">
+                        <div className="text-3xl lg:text-4xl text-primary">
+                          {card.price}€
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* CTA opcional */}
+                    {card.ctaText && card.ctaLink && (
+                      <a
+                        href={card.ctaLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block w-full bg-primary text-white text-center py-3 rounded-xl hover:bg-primary/90 transition-colors mt-6"
+                      >
+                        {card.ctaText}
+                      </a>
+                    )}
+                  </div>
                 </motion.div>
               ))}
             </div>

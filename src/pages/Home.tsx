@@ -155,7 +155,7 @@ export function Home() {
 
       {/* About Section */}
       <section id="about-section" className="py-16 lg:py-24 bg-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Single Large Image */}
             <motion.div
@@ -197,7 +197,7 @@ export function Home() {
       {/* Courses Section - Cursos y workshops */}
       {featuredCourses.length > 0 && (
         <section className="py-16 lg:py-24 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -218,9 +218,9 @@ export function Home() {
               </div>
             </motion.div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
               {featuredCourses.map((course: any, index: number) => (
-                <CourseCard key={index} {...course} index={index} />
+                <CourseCard key={index} {...course} index={index} hideSubtitle={true} />
               ))}
             </div>
           </div>
@@ -230,7 +230,7 @@ export function Home() {
       {/* Courses Section 2 - Workshops */}
       {featuredWorkshops.length > 0 && (
         <section className="py-16 lg:py-24 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -251,9 +251,9 @@ export function Home() {
               </div>
             </motion.div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
               {featuredWorkshops.map((course: any, index: number) => (
-                <CourseCard key={index} {...course} index={index} />
+                <CourseCard key={index} {...course} index={index} hideSubtitle={true} />
               ))}
             </div>
           </div>

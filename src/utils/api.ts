@@ -33,33 +33,39 @@ async function getAuthToken(): Promise<string | null> {
 
 // Generic API call helper
 async function apiCall(endpoint: string, options: RequestInit = {}) {
-  const url = `${API_BASE_URL}${endpoint}`;
-  
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    ...options.headers as Record<string, string>,
-  };
+  try {
+    const url = `${API_BASE_URL}${endpoint}`;
+    
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      ...options.headers as Record<string, string>,
+    };
 
-  // Add auth token if available (only add header if token exists)
-  const token = await getAuthToken();
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  } else {
-    // For public endpoints, use the public anon key
-    headers['Authorization'] = `Bearer ${publicAnonKey}`;
+    // Add auth token if available (only add header if token exists)
+    const token = await getAuthToken();
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    } else {
+      // For public endpoints, use the public anon key
+      headers['Authorization'] = `Bearer ${publicAnonKey}`;
+    }
+
+    const response = await fetch(url, {
+      ...options,
+      headers,
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+      throw new Error(error.error || `API error: ${response.status}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    // Log the error but don't throw - let components handle gracefully
+    console.warn(`API call failed for ${endpoint}:`, error);
+    throw error;
   }
-
-  const response = await fetch(url, {
-    ...options,
-    headers,
-  });
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ error: 'Unknown error' }));
-    throw new Error(error.error || `API error: ${response.status}`);
-  }
-
-  return response.json();
 }
 
 // ==================== CONTENT API ====================

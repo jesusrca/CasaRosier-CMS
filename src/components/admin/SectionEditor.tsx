@@ -670,6 +670,16 @@ export function SectionEditor({
                     />
                   </div>
 
+                  {/* Imagen */}
+                  <div className="mb-3">
+                    <ImageUploader
+                      currentImage={card.image || ''}
+                      onImageSelect={(url) => updateArrayItem('giftCards', index, { ...card, image: url })}
+                      label="Imagen de la tarjeta"
+                      aspectRatio="16:9"
+                    />
+                  </div>
+
                   {/* Descripción */}
                   <div className="mb-3">
                     <label className="block text-xs mb-1">Descripción</label>

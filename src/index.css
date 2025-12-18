@@ -4008,12 +4008,6 @@
   }
 
   @media (width >= 48rem) {
-    .md\:block {
-      display: block;
-    }
-  }
-
-  @media (width >= 48rem) {
     .md\:flex {
       display: flex;
     }
@@ -4229,12 +4223,6 @@
   @media (width >= 64rem) {
     .lg\:justify-start {
       justify-content: flex-start;
-    }
-  }
-
-  @media (width >= 64rem) {
-    .lg\:gap-8 {
-      gap: calc(var(--spacing) * 8);
     }
   }
 

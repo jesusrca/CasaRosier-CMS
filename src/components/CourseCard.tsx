@@ -7,9 +7,10 @@ interface CourseCardProps {
   image: string;
   link?: string;
   index: number;
+  hideSubtitle?: boolean;
 }
 
-export function CourseCard({ title, subtitle, image, link = '#', index }: CourseCardProps) {
+export function CourseCard({ title, subtitle, image, link = '#', index, hideSubtitle = false }: CourseCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -33,7 +34,7 @@ export function CourseCard({ title, subtitle, image, link = '#', index }: Course
         {/* Text Content Below Image */}
         <div className="mt-4 text-center">
           <h3 className="mb-1">{title}</h3>
-          <p className="text-foreground/60 text-sm mb-2">{subtitle}</p>
+          {!hideSubtitle && <p className="text-foreground/60 text-sm mb-2">{subtitle}</p>}
           <span className="text-sm text-primary group-hover:underline">Ver más</span>
         </div>
       </Link>

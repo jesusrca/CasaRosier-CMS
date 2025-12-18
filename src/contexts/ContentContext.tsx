@@ -205,8 +205,18 @@ export function ContentProvider({ children }: { children: ReactNode }) {
     await loadAllContent();
   };
 
-  // NO bloquear la UI - renderizar inmediatamente
-  // El loading solo indica si los datos están listos
+  // Mostrar loading mientras se carga el contenido inicial
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <p className="mt-4 text-foreground/60">Cargando...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <ContentContext.Provider
       value={{

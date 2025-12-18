@@ -29,6 +29,19 @@ export function HeroHome() {
   });
   const [heroTextImages, setHeroTextImages] = useState<string[]>([heroTextImage]);
   const [currentTextImageIndex, setCurrentTextImageIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
+  const [imagesLoaded, setImagesLoaded] = useState(false);
+
+  // Detect screen size on mount and resize
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    // Listen for resize
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Load menu and settings from API
   useEffect(() => {
@@ -61,6 +74,13 @@ export function HeroHome() {
           ? response.settings.heroImageMobile 
           : response.settings.heroImageMobile?.url || heroBackgroundImage;
         
+        console.log('🖼️ Hero Images loaded:', { 
+          desktop: desktopImage, 
+          mobile: mobileImage,
+          isMobile: window.innerWidth < 768,
+          windowWidth: window.innerWidth
+        });
+        
         setHeroImages({
           desktop: desktopImage,
           mobile: mobileImage
@@ -83,7 +103,10 @@ export function HeroHome() {
         }
       }
     } catch (error) {
-      console.log('Settings not found, using default images');
+      console.log('Settings not found, using default images:', error);
+    } finally {
+      // Always mark as loaded, even if API fails
+      setImagesLoaded(true);
     }
   };
 
@@ -147,27 +170,19 @@ export function HeroHome() {
 
   return (
     <section className="relative h-screen w-full overflow-hidden">
-      {/* Background Image - Desktop */}
-      <div 
-        className="hidden md:block absolute inset-0 bg-cover bg-center"
-        style={{
-          backgroundImage: `url(${heroImages.desktop})`,
+      {/* Background Image - Renderiza solo la imagen correspondiente */}
+      <img
+        src={isMobile ? heroImages.mobile : heroImages.desktop}
+        alt=""
+        className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
+        style={{ opacity: imagesLoaded ? 1 : 0 }}
+        key={isMobile ? 'mobile' : 'desktop'} // Force re-render when switching
+        onLoad={() => {
+          console.log('📸 Image loaded:', isMobile ? 'MOBILE' : 'DESKTOP', isMobile ? heroImages.mobile : heroImages.desktop);
         }}
-      >
-        {/* Overlay for better text readability */}
-        <div className="absolute inset-0 bg-black/10"></div>
-      </div>
-
-      {/* Background Image - Mobile */}
-      <div 
-        className="md:hidden absolute inset-0 bg-cover bg-center"
-        style={{
-          backgroundImage: `url(${heroImages.mobile})`,
-        }}
-      >
-        {/* Overlay for better text readability */}
-        <div className="absolute inset-0 bg-black/10"></div>
-      </div>
+      />
+      {/* Overlay for better text readability */}
+      <div className="absolute inset-0 bg-black/10"></div>
 
       {/* Header with Logo and Menu */}
       <div className="relative z-20 pt-8 pb-4">
@@ -272,7 +287,7 @@ export function HeroHome() {
               className={`w-full h-auto ${index === 0 ? 'relative' : 'absolute top-0 left-0'}`}
               initial={{ opacity: 0 }}
               animate={{ opacity: currentTextImageIndex >= index ? 1 : 0 }}
-              transition={{ duration: 1.5 }}
+              transition={{ duration: 0.4 }}
             />
           ))}
         </motion.div>

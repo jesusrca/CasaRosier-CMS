@@ -6,7 +6,6 @@ import { Hero } from '../components/Hero';
 import { SEO } from '../components/SEO';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Slider from 'react-slick';
-import { settingsAPI } from '../utils/api';
 
 // Custom Arrow Components
 function NextArrow({ onClick }: { onClick?: () => void }) {
@@ -32,28 +31,14 @@ function PrevArrow({ onClick }: { onClick?: () => void }) {
 }
 
 export function Blog() {
-  const { blogPosts, loading } = useContent();
-  const [blogHeroImage, setBlogHeroImage] = useState('https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=1920');
+  const { blogPosts, loading, settings } = useContent();
 
-  // Load blog hero image from settings
-  useEffect(() => {
-    const loadBlogHeroImage = async () => {
-      try {
-        const response = await settingsAPI.getSettings();
-        if (response.settings?.blogHeroImage) {
-          const image = typeof response.settings.blogHeroImage === 'string' 
-            ? response.settings.blogHeroImage 
-            : response.settings.blogHeroImage?.url;
-          if (image) {
-            setBlogHeroImage(image);
-          }
-        }
-      } catch (error) {
-        console.log('Blog hero image not found, using default');
-      }
-    };
-    loadBlogHeroImage();
-  }, []);
+  // Obtener la imagen del hero desde settings (ya cargado en ContentContext)
+  const blogHeroImage = settings?.blogHeroImage 
+    ? (typeof settings.blogHeroImage === 'string' 
+        ? settings.blogHeroImage 
+        : settings.blogHeroImage?.url)
+    : 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=1920';
 
   // Separar posts destacados y normales
   const featuredPosts = blogPosts.filter(post => post.featured);
@@ -98,12 +83,15 @@ export function Blog() {
         keywords="blog cerámica, tutoriales torno, técnicas cerámica, esmaltes, Barcelona"
       />
 
-      <Hero
-        backgroundImage={blogHeroImage}
-        title="Blog"
-        subtitle="Técnicas, historias y creaciones"
-        useTextTitle={true}
-      />
+      {/* No mostrar el Hero hasta que la imagen esté cargada */}
+      {!loading && blogHeroImage && (
+        <Hero
+          backgroundImage={blogHeroImage}
+          title="Blog"
+          subtitle="Técnicas, historias y creaciones"
+          useTextTitle={true}
+        />
+      )}
 
       {/* Blog Posts Section */}
       <section className="py-16 lg:py-24 bg-background">

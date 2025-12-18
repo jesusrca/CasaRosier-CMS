@@ -14,17 +14,28 @@ export const supabase = createClient(
       // Detectar cuando la sesión cambia
       detectSessionInUrl: true,
     },
+    global: {
+      // Agregar timeout para evitar cuelgues
+      fetch: (url, options = {}) => {
+        return fetch(url, {
+          ...options,
+          signal: AbortSignal.timeout(10000), // 10 second timeout
+        });
+      },
+    },
   }
 );
 
 // Listener para manejar errores de autenticación
-supabase.auth.onAuthStateChange((event, session) => {
+supabase.auth.onAuthStateChange(async (event, session) => {
   if (event === 'TOKEN_REFRESHED') {
     console.log('✅ Token refreshed successfully');
   } else if (event === 'SIGNED_OUT') {
     console.log('👋 User signed out');
   } else if (event === 'SIGNED_IN') {
     console.log('👤 User signed in');
+  } else if (event === 'USER_UPDATED') {
+    console.log('👤 User updated');
   }
 });
 
@@ -35,5 +46,11 @@ export async function clearInvalidSession() {
     console.log('🧹 Cleared invalid session');
   } catch (error) {
     console.warn('Error clearing session:', error);
+    // Clear localStorage manually if signOut fails
+    try {
+      localStorage.removeItem('supabase.auth.token');
+    } catch (e) {
+      // Ignore
+    }
   }
 }
