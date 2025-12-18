@@ -37,7 +37,7 @@ export function ClickableBanner({
         >
           {/* Image Section */}
           <div className="relative w-full h-64 md:h-auto">
-            <ImageWithFallback
+            <img
               src={image}
               alt={title}
               className="absolute inset-0 w-full h-full object-cover"

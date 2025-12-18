@@ -1,5 +1,6 @@
+import { Check, MessageCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { useContent } from '../contexts/ContentContext';
 import { SEO } from '../components/SEO';
@@ -7,7 +8,6 @@ import { NotFound } from './NotFound';
 import { AccordionSection } from '../components/AccordionSection';
 import { Hero } from '../components/Hero';
 import { PageSkeleton } from '../components/PageSkeleton';
-import { Check } from 'lucide-react';
 import { settingsAPI } from '../utils/api';
 
 interface ContentItem {
@@ -24,6 +24,7 @@ interface ContentItem {
   images?: Array<string | { url: string; alt?: string; caption?: string }>;
   schedule?: {
     description?: string;
+    enabled?: boolean;
     slots?: Array<{
       day: string;
       times: Array<{
@@ -34,7 +35,9 @@ interface ContentItem {
   };
   content?: {
     whatYouWillLearn?: string;
+    whatYouWillLearnTitle?: string;
     whoCanParticipate?: string;
+    whoCanParticipateTitle?: string;
     paymentMethods?: string;
     additionalInfo?: string;
     contactPhone?: string;
@@ -44,6 +47,14 @@ interface ContentItem {
       description: string;
     }>;
     modulesAccordionTitle?: string;
+    modulesSectionTitle?: string;
+    showActivities?: boolean;
+    activities?: Array<{
+      title: string;
+      description: string;
+      link: string;
+    }>;
+    ctaButtonText?: string;
   };
   visible: boolean;
   seo?: {
@@ -230,6 +241,12 @@ export function DynamicContentPage() {
                     {content.subtitle}
                   </p>
                 )}
+                {content.shortDescription && (
+                  <div 
+                    className="text-lg leading-relaxed mb-6 text-[#FF5100] text-center font-light italic"
+                    dangerouslySetInnerHTML={{ __html: content.shortDescription.replace(/\n/g, '<br/>') }}
+                  />
+                )}
                 {content.description && (
                   <div 
                     className="text-base leading-relaxed text-foreground/80 space-y-4"
@@ -242,24 +259,39 @@ export function DynamicContentPage() {
               {(content.price || content.includes || content.schedule) && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Left Column: Price and Includes */}
-                  {(content.price || content.includes) && (
+                  {type !== 'private' && (content.price || content.includes) && (
                     <div className="space-y-6">
-                      {content.price && (
-                        <>
-                          <p className="text-lg text-primary">
-                            {content.duration}
+                      {content.price && content.price !== '0' && content.price !== 0 && (
+                        <div>
+                          <p className="text-sm uppercase tracking-wider text-foreground/60 mb-2">
+                            PRECIO
                           </p>
                           <p className="text-2xl">
                             {content.price}€
                           </p>
-                        </>
+                        </div>
                       )}
 
-                      {content.includes && content.includes.length > 0 && (
+                      {/* Opciones de precio adicionales */}
+                      {content.priceOptions && content.priceOptions.filter((opt: any) => opt.price && opt.price !== '0' && opt.price !== 0 && opt.label && opt.label.trim() !== '').length > 0 && (
+                        <div className="space-y-3">
+                          {content.priceOptions.filter((opt: any) => opt.price && opt.price !== '0' && opt.price !== 0 && opt.label && opt.label.trim() !== '').map((option: any, index: number) => (
+                            <div
+                              key={index}
+                              className="flex items-center justify-between gap-4 p-3 bg-foreground/5 rounded-lg border border-foreground/10"
+                            >
+                              <span className="text-sm text-foreground/80 flex-1">{option.label}</span>
+                              <span className="text-lg text-primary font-medium whitespace-nowrap">{option.price}€</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {content.includes && content.includes.filter((item: string) => item && item.trim() !== '' && item !== '0').length > 0 && (
                         <div className="space-y-3">
                           <h3 className="text-lg">Incluye</h3>
                           <ul className="space-y-2 text-base text-foreground/80">
-                            {content.includes.map((item, index) => (
+                            {content.includes.filter((item: string) => item && item.trim() !== '' && item !== '0').map((item: string, index: number) => (
                               <li key={index} className="flex items-start">
                                 <span className="mr-2">•</span>
                                 <span>{item}</span>
@@ -286,25 +318,65 @@ export function DynamicContentPage() {
                   )}
 
                   {/* Right Column: Schedule */}
-                  {content.schedule && content.schedule.slots && content.schedule.slots.length > 0 && (
-                    <div className="space-y-4">
-                      <h3 className="text-lg">Horarios</h3>
-                      <div className="space-y-3">
-                        {content.schedule.slots.map((slot, index) => (
-                          <div key={index} className="space-y-1.5">
-                            <p className="text-sm text-foreground/80 uppercase tracking-wide">{slot.day}</p>
-                            <div className="space-y-1">
-                              {slot.times.map((time, timeIndex) => (
-                                <div key={timeIndex} className="text-sm text-foreground/60">
-                                  Horario {time.time} ({time.availablePlaces} plazas)
+                  {(content.duration || (content.schedule && (content.schedule.description || (content.schedule.enabled !== false && content.schedule.slots && content.schedule.slots.length > 0)))) && (
+                    <div className="space-y-6">
+                      {content.duration && (
+                        <div>
+                          <p className="text-sm uppercase tracking-wider text-foreground/60 mb-2">
+                            DURACIÓN
+                          </p>
+                          <p className="text-lg text-primary">
+                            {content.duration}
+                          </p>
+                        </div>
+                      )}
+                      
+                      {content.schedule && (content.schedule.description || (content.schedule.enabled !== false && content.schedule.slots && content.schedule.slots.length > 0)) && (
+                        <div className="space-y-3">
+                          <h3 className="text-lg">Horarios</h3>
+                          {content.schedule.description && (
+                            <p className="text-sm text-foreground/70 leading-relaxed">
+                              {content.schedule.description}
+                            </p>
+                          )}
+                          {content.schedule.enabled !== false && content.schedule.slots && content.schedule.slots.length > 0 && (
+                            <div className="space-y-3">
+                              {content.schedule.slots.map((slot, index) => (
+                                <div key={index} className="space-y-1.5">
+                                  <p className="text-sm text-foreground/80 uppercase tracking-wide">{slot.day}</p>
+                                  <div className="space-y-1">
+                                    {slot.times.map((time, timeIndex) => (
+                                      <div key={timeIndex} className="text-sm text-foreground/60">
+                                        {time.time}{time.availablePlaces >= 0 ? ` (${time.availablePlaces} plazas)` : ''}
+                                      </div>
+                                    ))}
+                                  </div>
                                 </div>
                               ))}
                             </div>
-                          </div>
-                        ))}
-                      </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   )}
+                </div>
+              )}
+
+              {/* CTA Button for Private Classes */}
+              {type === 'private' && (
+                <div className="pt-4">
+                  <motion.button
+                    onClick={() => window.open('https://wa.me/34633788860', '_blank')}
+                    className="border-2 border-primary text-primary px-6 py-3 rounded-lg text-sm transition-colors"
+                    whileHover={{ 
+                      backgroundColor: '#FF5100',
+                      color: '#FFFFFF',
+                      transition: { duration: 0.3 }
+                    }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    {content.content?.ctaButtonText || 'Escríbenos'}
+                  </motion.button>
                 </div>
               )}
             </motion.div>
@@ -439,7 +511,7 @@ export function DynamicContentPage() {
                 {/* What You Will Learn */}
                 {content.content?.whatYouWillLearn && (
                   <div className="space-y-4">
-                    <h3 className="text-xl mb-3">¿QUÉ APRENDERÁS?</h3>
+                    <h3 className="text-xl mb-3">{content.content.whatYouWillLearnTitle || '¿QUÉ APRENDERÁS?'}</h3>
                     <div 
                       className="text-base leading-relaxed text-foreground/80 prose prose-sm max-w-none"
                       dangerouslySetInnerHTML={{ __html: content.content.whatYouWillLearn }}
@@ -450,7 +522,7 @@ export function DynamicContentPage() {
                 {/* Who Can Participate */}
                 {content.content?.whoCanParticipate && (
                   <div className="space-y-4">
-                    <h3 className="text-xl mb-3">¿QUIÉN PUEDE PARTICIPAR?</h3>
+                    <h3 className="text-xl mb-3">{content.content.whoCanParticipateTitle || '¿QUIÉN PUEDE PARTICIPAR?'}</h3>
                     <div 
                       className="text-base leading-relaxed text-foreground/80 prose prose-sm max-w-none"
                       dangerouslySetInnerHTML={{ __html: content.content.whoCanParticipate }}
@@ -458,9 +530,34 @@ export function DynamicContentPage() {
                   </div>
                 )}
 
+                {/* Activities Section */}
+                {content.content?.showActivities && content.content?.activities && content.content.activities.length > 0 && (
+                  <div className="space-y-4">
+                    <h3 className="text-xl mb-3">¿QUÉ TIPO DE ACTIVIDADES PUEDEN HACER?</h3>
+                    <div className="space-y-6">
+                      {content.content.activities.map((activity, index) => (
+                        <div key={index} className="space-y-2">
+                          <h4 className="text-base text-primary font-medium">{activity.title}</h4>
+                          <p className="text-base leading-relaxed text-foreground/70">
+                            {activity.description}{' '}
+                            {activity.link && (
+                              <Link 
+                                to={activity.link} 
+                                className="text-primary hover:underline inline-flex items-center"
+                              >
+                                Ver más
+                              </Link>
+                            )}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {content.content && content.content.modules && content.content.modules.length > 0 && (
                   <>
-                    <h3 className="text-xl mb-3">CONTENIDO DEL CURSO</h3>
+                    <h3 className="text-xl mb-3">{content.content.modulesSectionTitle || 'CONTENIDO DEL CURSO'}</h3>
                     <AccordionSection title={content.content.modulesAccordionTitle || "Ver programa completo"} defaultOpen={true}>
                       <div className="space-y-4">
                         {content.content.modules.map((item, index) => (
@@ -475,10 +572,10 @@ export function DynamicContentPage() {
                   </>
                 )}
 
-                <div className="pt-6">
+                <div className="pt-6 flex justify-start">
                   <motion.button
-                    onClick={handleInscribirse}
-                    className="w-full border-2 border-primary text-primary px-8 py-4 rounded-lg text-base transition-colors"
+                    onClick={() => window.open('https://wa.me/34633788860', '_blank')}
+                    className="border-2 border-primary text-primary px-6 py-3 rounded-lg text-sm transition-colors"
                     whileHover={{ 
                       backgroundColor: '#FF5100',
                       color: '#FFFFFF',
@@ -494,6 +591,23 @@ export function DynamicContentPage() {
           </div>
         </section>
       )}
+
+      {/* Floating WhatsApp Button */}
+      <motion.a
+        href="https://wa.me/34633788860"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white rounded-full p-4 shadow-lg hover:shadow-xl transition-shadow"
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 1, duration: 0.4, ease: "easeOut" }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+        </svg>
+      </motion.a>
     </div>
   );
 }

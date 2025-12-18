@@ -109,14 +109,14 @@ export function ScrollHeader() {
                     className="text-white hover:text-white/80 px-3 transition-colors duration-200 relative group flex items-center gap-1 text-sm whitespace-nowrap"
                   >
                     {item.name}
-                    {item.submenu && <span className="ml-1">+</span>}
+                    {item.submenu && item.submenu.length > 0 && <span className="ml-1">+</span>}
                   </Link>
                 ) : (
                   <button
                     className="text-white hover:text-white/80 px-3 transition-colors duration-200 relative group flex items-center gap-1 text-sm whitespace-nowrap"
                   >
                     {item.name}
-                    {item.submenu && <span className="ml-1">+</span>}
+                    {item.submenu && item.submenu.length > 0 && <span className="ml-1">+</span>}
                   </button>
                 )}
 

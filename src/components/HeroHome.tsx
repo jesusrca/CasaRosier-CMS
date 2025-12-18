@@ -40,20 +40,30 @@ export function HeroHome() {
   useEffect(() => {
     if (heroTextImages.length <= 1) return;
 
-    const interval = setInterval(() => {
-      setCurrentTextImageIndex((prev) => (prev + 1) % heroTextImages.length);
-    }, 5000); // Change every 5 seconds
+    // Show second image after 5 seconds, then stop
+    const timeout = setTimeout(() => {
+      setCurrentTextImageIndex(1);
+    }, 5000);
 
-    return () => clearInterval(interval);
+    return () => clearTimeout(timeout);
   }, [heroTextImages.length]);
 
   const loadHeroImages = async () => {
     try {
       const response = await settingsAPI.getSettings();
       if (response.settings) {
+        // Handle both string and object formats for hero images
+        const desktopImage = typeof response.settings.heroImageDesktop === 'string' 
+          ? response.settings.heroImageDesktop 
+          : response.settings.heroImageDesktop?.url || heroBackgroundImage;
+        
+        const mobileImage = typeof response.settings.heroImageMobile === 'string' 
+          ? response.settings.heroImageMobile 
+          : response.settings.heroImageMobile?.url || heroBackgroundImage;
+        
         setHeroImages({
-          desktop: response.settings.heroImageDesktop || heroBackgroundImage,
-          mobile: response.settings.heroImageMobile || heroBackgroundImage
+          desktop: desktopImage,
+          mobile: mobileImage
         });
 
         // Load hero text images
@@ -253,18 +263,18 @@ export function HeroHome() {
           transition={{ duration: 1, delay: 0.6 }}
           className="w-full max-w-3xl relative"
         >
-          <AnimatePresence mode="wait">
+          {/* Render all images */}
+          {heroTextImages.map((image, index) => (
             <motion.img 
-              key={currentTextImageIndex}
-              src={heroTextImages[currentTextImageIndex]} 
+              key={index}
+              src={image} 
               alt="estudio Cerámica creativa en Barcelona" 
-              className="w-full h-auto"
+              className={`w-full h-auto ${index === 0 ? 'relative' : 'absolute top-0 left-0'}`}
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 1 }}
+              animate={{ opacity: currentTextImageIndex >= index ? 1 : 0 }}
+              transition={{ duration: 1.5 }}
             />
-          </AnimatePresence>
+          ))}
         </motion.div>
       </div>
 

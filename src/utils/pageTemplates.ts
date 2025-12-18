@@ -264,6 +264,12 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
         ],
       },
       {
+        id: 'payment-methods',
+        type: 'text',
+        title: 'MÉTODOS DE PAGO',
+        content: 'Una vez recibido el pago, te enviaremos la tarjeta digital en un máximo de 24 horas.',
+      },
+      {
         id: 'how-it-works',
         type: 'text',
         title: '¿Cómo Funciona?',
@@ -272,8 +278,8 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
       {
         id: 'additional-info',
         type: 'text',
-        title: 'Información Adicional',
-        content: '**Validez:** 12 meses desde la fecha de compra\n\n**Uso:** Válida para cualquier clase, workshop o compra en el estudio\n\n**Transferible:** Puede regalarse o transferirse a otra persona\n\n**Tarjeta física:** Disponible por 5€ adicionales con entrega en Barcelona\n\n**Reembolsos:** Las tarjetas regalo no son reembolsables pero sí transferibles',
+        title: 'INFORMACIÓN ADICIONAL',
+        content: '**Validez:** 12 meses desde la fecha de compra\n\n**Uso:** Válida para cualquier clase, workshop o compra en el estudio\n\n**Transferible:** Puede regalarse o transferirse a otra persona\n\n**Tarjeta física:** Disponible por 5€ adicionales con entrega en Barcelona\n\n**Reembolsos:** Las tarjetas regalo no son reembolsables pero sí transferibles\n\n**Contacto:** Para cualquier consulta, escríbenos al WhatsApp 633788860 o al email info@casarosierceramica.com',
       },
     ],
   },

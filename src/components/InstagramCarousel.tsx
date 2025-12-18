@@ -1,7 +1,9 @@
-import { motion } from 'motion/react';
-import Slider from 'react-slick';
 import { useState } from 'react';
+import { motion } from 'motion/react';
+import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { ImageWithFallback } from './figma/ImageWithFallback';
 import { InstagramLightbox } from './InstagramLightbox';
+import Slider from 'react-slick';
 
 export interface InstagramImageData {
   url: string;
@@ -128,7 +130,7 @@ export function InstagramCarousel({
                   whileHover={{ scale: 1.05 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <img
+                  <ImageWithFallback
                     src={image.url}
                     alt={image.title || `Instagram post ${index + 1}`}
                     className="w-full h-full object-cover"

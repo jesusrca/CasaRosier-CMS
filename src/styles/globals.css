@@ -223,8 +223,6 @@ body {
   height: 0;
   overflow: hidden;
   max-width: 100%;
-  margin: 2rem 0;
-  border-radius: 0.5rem;
 }
 
 .video-container iframe {
@@ -350,4 +348,15 @@ body {
   border: 0;
   outline: none;
   background: transparent;
+}
+
+/* Blog Carousel Dots - Dark style for light backgrounds */
+.blog-carousel-dots {
+  bottom: 1.5rem !important;
+  position: absolute;
+  width: 100%;
+}
+
+.blog-carousel-dots li.slick-active button > div {
+  background-color: rgba(45, 37, 32, 0.6) !important;
 }

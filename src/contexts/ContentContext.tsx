@@ -28,8 +28,10 @@ interface BlogPost {
   excerpt?: string;
   featuredImage?: string;
   author?: string;
+  category?: string;
   publishedAt?: string;
   published: boolean;
+  featured?: boolean;
   seo?: any;
 }
 

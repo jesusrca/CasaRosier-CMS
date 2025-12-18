@@ -20,7 +20,7 @@ export function CourseCard({ title, subtitle, image, link = '#', index }: Course
     >
       <Link to={link} className="block">
         {/* Image Container */}
-        <div className="relative h-64 overflow-hidden rounded-lg">
+        <div className="relative h-80 md:h-64 overflow-hidden rounded-lg">
           <motion.img
             src={image}
             alt={title}

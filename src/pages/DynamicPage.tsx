@@ -26,7 +26,7 @@ interface Page {
 
 export function DynamicPage() {
   const { slug } = useParams<{ slug: string }>();
-  const { getPageBySlug, loading } = useContent();
+  const { getPageBySlug, loading, settings } = useContent();
   
   const page = getPageBySlug(slug || '');
 
@@ -74,7 +74,7 @@ export function DynamicPage() {
 
         {/* Renderizar el resto de secciones */}
         {remainingSections.map((section: any, index: number) => (
-          <PageSection key={index} section={section} />
+          <PageSection key={index} section={section} siteSettings={settings} />
         ))}
       </div>
     );

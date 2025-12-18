@@ -4,10 +4,13 @@ import { useState, useEffect } from 'react';
 import { HeroHome } from '../components/HeroHome';
 import { CourseCard } from '../components/CourseCard';
 import { ClickableBanner } from '../components/ClickableBanner';
-import { pagesAPI, contentAPI } from '../utils/api';
+import { pagesAPI } from '../utils/api';
+import { useContent } from '../contexts/ContentContext';
 import logoImage from "figma:asset/28612bd890b3dcd85d8f93665d63bdc17b7bfea3.png";
+import { ImageWithFallback } from '../components/figma/ImageWithFallback';
 
 export function Home() {
+  const { classes, workshops } = useContent(); // Usar el contexto de contenido
   const [pageData, setPageData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [featuredCourses, setFeaturedCourses] = useState<any[]>([]);
@@ -15,9 +18,13 @@ export function Home() {
 
   useEffect(() => {
     loadPageData();
+  }, []);
+
+  // Recargar cursos destacados cuando cambien las clases/workshops del contexto
+  useEffect(() => {
     loadFeaturedCourses();
     loadFeaturedWorkshops();
-  }, []);
+  }, [classes, workshops]);
 
   const loadPageData = async () => {
     try {
@@ -35,11 +42,8 @@ export function Home() {
 
   const loadFeaturedCourses = async () => {
     try {
-      // Cargar todas las clases y workshops
-      const response = await contentAPI.getItems();
-      const allItems = response.items || [];
-      
-      // Filtrar solo los que tienen showInHome: true y están visibles
+      // Combinar clases y workshops, filtrar por showInHome
+      const allItems = [...classes, ...workshops];
       const featured = allItems.filter((item: any) => item.showInHome === true && item.visible === true);
       
       // Convertir a formato de CourseCard
@@ -73,11 +77,8 @@ export function Home() {
 
   const loadFeaturedWorkshops = async () => {
     try {
-      // Cargar todas las clases y workshops
-      const response = await contentAPI.getItems();
-      const allItems = response.items || [];
-      
-      // Filtrar solo los que tienen showInHomeWorkshops: true y están visibles
+      // Combinar clases y workshops, filtrar por showInHomeWorkshops
+      const allItems = [...classes, ...workshops];
       const featured = allItems.filter((item: any) => item.showInHomeWorkshops === true && item.visible === true);
       
       // Convertir a formato de CourseCard
@@ -123,44 +124,16 @@ export function Home() {
     courses2: courses2Section?.courses
   });
 
-  // Default images if not loaded
-  const defaultImages = [
-    'https://images.unsplash.com/photo-1737564483280-15481c31608a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjZXJhbWljJTIwcG90dGVyeSUyMGhhbmRzJTIwd29ya3Nob3B8ZW58MXx8fHwxNzY1MTUwMjg4fDA&ixlib=rb-4.1.0&q=80&w=1080',
-    'https://images.unsplash.com/photo-1668840306122-526500331070?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwb3R0ZXJ5JTIwY2VyYW1pYyUyMGJvd2wlMjBjbGF5fGVufDF8fHx8MTc2NTE1MDI4OHww&ixlib=rb-4.1.0&q=80&w=1080',
-    'https://images.unsplash.com/photo-1595351298005-4d29bb980ce3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwb3R0ZXJ5JTIwd2hlZWwlMjBjZXJhbWljc3xlbnwxfHx8fDE3NjUwODY1NTh8MA&ixlib=rb-4.1.0&q=80&w=1080',
-    'https://images.unsplash.com/photo-1673436765901-6327d8030e38?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjZXJhbWljJTIwc3R1ZGlvJTIwd29ya3NwYWNlfGVufDF8fHx8MTc2NTE1MDI4OHww&ixlib=rb-4.1.0&q=80&w=1080',
-  ];
-
-  const aboutImages = aboutSection?.images || defaultImages;
+  const aboutImages = aboutSection?.images || [];
   const aboutContent = aboutSection?.content || 'Ya sea en clases mensuales o en talleres intensivos de fin de semana, te acompañaremos para que descubras todas las posibilidades del barro.\\n\\nTambién puedes crear un evento privado totalmente personalizado.';
-  const aboutMainImage = aboutSection?.mainImage || defaultImages[0];
+  // Eliminar fallback - solo usar imagen del administrador o placeholder
+  const aboutMainImage = aboutSection?.mainImage || '';
   
-  const defaultCourses = [
-    {
-      title: 'Clases Regulares',
-      subtitle: 'Modelado',
-      image: 'https://images.unsplash.com/photo-1737564483280-15481c31608a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjZXJhbWljJTIwcG90dGVyeSUyMGhhbmRzJTIwd29ya3Nob3B8ZW58MXx8fHwxNzY1MTUwMjg4fDA&ixlib=rb-4.1.0&q=80&w=1080',
-      link: '/clases'
-    },
-    {
-      title: 'Formación de Esmaltes',
-      subtitle: 'Octave via zoom',
-      image: 'https://images.unsplash.com/photo-1668840306122-526500331070?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwb3R0ZXJ5JTIwY2VyYW1pYyUyMGJvd2wlMjBjbGF5fGVufDF8fHx8MTc2NTE1MDI4OHww&ixlib=rb-4.1.0&q=80&w=1080',
-      link: '/workshops'
-    },
-    {
-      title: 'Laboratorio Cerámico',
-      subtitle: 'Workshop Esmaltes',
-      image: 'https://images.unsplash.com/photo-1673436765901-6327d8030e38?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjZXJhbWljJTIwc3R1ZGlvJTIwd29ya3NwYWNlfGVufDF8fHx8MTc2NTE1MDI4OHww&ixlib=rb-4.1.0&q=80&w=1080',
-      link: '/workshops'
-    },
-    {
-      title: 'Iniciación al Torno',
-      subtitle: 'Química cerámica',
-      image: 'https://images.unsplash.com/photo-1595351298005-4d29bb980ce3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwb3R0ZXJ5JTIwd2hlZWwlMjBjZXJhbWljc3xlbnwxfHx8fDE3NjUwODY1NTh8MA&ixlib=rb-4.1.0&q=80&w=1080',
-      link: '/clases'
-    }
-  ];
+  // Debug: ver qué imagen tenemos
+  console.log('🖼️ About Main Image:', aboutMainImage);
+  console.log('📦 About Section:', aboutSection);
+  
+  const defaultCourses = [];
 
   const courses = coursesSection?.courses || defaultCourses;
   const coursesTitle = coursesSection?.title || 'Cursos y workshops';
@@ -194,7 +167,7 @@ export function Home() {
               <img
                 src={aboutMainImage}
                 alt="Casa Rosier Cerámica"
-                className="w-full h-[500px] lg:h-[600px] object-cover rounded-lg shadow-lg"
+                className="w-full h-[500px] lg:h-[600px] object-cover"
               />
             </motion.div>
 

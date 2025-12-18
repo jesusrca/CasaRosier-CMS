@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X, Plus, Trash2, Upload, Loader2, Eye, EyeOff, Calendar, Clock, Save, ExternalLink, AlertTriangle, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { menuAPI } from '../../utils/api';
+import { menuAPI, contentAPI } from '../../utils/api';
 import { ImageUploader } from '../../components/ImageUploader';
 import { ImageUploaderWithMeta, ImageMetadata } from '../../components/ImageUploaderWithMeta';
 import { slugify } from '../../utils/slugify';
@@ -17,8 +17,13 @@ interface ContentEditorProps {
 }
 
 export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }: ContentEditorProps) {
-  const [item, setItem] = useState(initialItem);
-  const [initialItemSnapshot, setInitialItemSnapshot] = useState(JSON.stringify(initialItem));
+  // Asegurar que priceOptions exista
+  const normalizedItem = {
+    ...initialItem,
+    priceOptions: initialItem.priceOptions || []
+  };
+  const [item, setItem] = useState(normalizedItem);
+  const [initialItemSnapshot, setInitialItemSnapshot] = useState(JSON.stringify(normalizedItem));
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
   const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
@@ -27,6 +32,7 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
   const [menuStructure, setMenuStructure] = useState<any[]>([]);
   const [loadingMenu, setLoadingMenu] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [availableContents, setAvailableContents] = useState<any[]>([]);
 
   // Detectar cambios no guardados
   useEffect(() => {
@@ -62,6 +68,7 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
   // Cargar estructura del menú
   useEffect(() => {
     loadMenuStructure();
+    loadAvailableContents();
   }, []);
 
   const loadMenuStructure = async () => {
@@ -72,6 +79,20 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
       console.error('Error loading menu:', error);
     } finally {
       setLoadingMenu(false);
+    }
+  };
+
+  const loadAvailableContents = async () => {
+    try {
+      const response = await contentAPI.getAllItems();
+      // Filtrar solo contenidos activos y visibles (clases, workshops, privadas)
+      const filtered = (response.items || []).filter((content: any) => 
+        content.visible && 
+        ['class', 'workshop', 'private'].includes(content.type)
+      );
+      setAvailableContents(filtered);
+    } catch (error) {
+      console.error('Error loading available contents:', error);
     }
   };
 
@@ -118,17 +139,63 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
     e.preventDefault();
     setSaving(true);
     
-    // Limpiar el array includes de strings vacíos antes de guardar
+    // Limpiar el array includes de strings vacíos y activities duplicadas
     const cleanedItem = {
       ...item,
-      includes: (item.includes || []).filter((inc: string) => inc.trim() !== '')
+      includes: (item.includes || []).filter((inc: string) => inc.trim() !== ''),
+      content: {
+        ...item.content,
+        activities: item.content?.activities 
+          ? Array.from(new Set(item.content.activities.map((a: any) => JSON.stringify(a))))
+              .map((s: string) => JSON.parse(s))
+          : []
+      }
     };
     
     console.log('💾 ContentEditor - Guardando item:', {
       originalIncludes: item.includes,
       cleanedIncludes: cleanedItem.includes,
-      includesLength: cleanedItem.includes?.length
+      includesLength: cleanedItem.includes?.length,
+      originalActivities: item.content?.activities?.length,
+      cleanedActivities: cleanedItem.content?.activities?.length
     });
+    
+    onSave(cleanedItem);
+    // Actualizar el snapshot después de guardar
+    setInitialItemSnapshot(JSON.stringify(cleanedItem));
+    setHasUnsavedChanges(false);
+    
+    // Esperar un poco para que se complete el guardado antes de habilitar el botón
+    setTimeout(() => {
+      setSaving(false);
+    }, 1500);
+  };
+
+  const handlePublish = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    
+    // Limpiar el array includes de strings vacíos y activities duplicadas
+    const cleanedItem = {
+      ...item,
+      includes: (item.includes || []).filter((inc: string) => inc.trim() !== ''),
+      visible: true, // Hacer visible al publicar
+      content: {
+        ...item.content,
+        activities: item.content?.activities 
+          ? Array.from(new Set(item.content.activities.map((a: any) => JSON.stringify(a))))
+              .map((s: string) => JSON.parse(s))
+          : []
+      }
+    };
+    
+    console.log('🚀 ContentEditor - Publicando item:', {
+      title: cleanedItem.title,
+      visible: cleanedItem.visible
+    });
+    
+    // Actualizar el item localmente para que el UI refleje el cambio
+    setItem(cleanedItem);
     
     onSave(cleanedItem);
     // Actualizar el snapshot después de guardar
@@ -222,18 +289,32 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
       </div>
 
       <form onSubmit={handleSubmit}>
-        {/* Botón Guardar Superior */}
-        <div className="flex justify-end mb-6">
+        {/* Botones Guardar y Publicar Superior */}
+        <div className="flex justify-end gap-3 mb-6">
           <motion.button
             type="submit"
             disabled={saving}
-            className="bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             whileHover={saving ? {} : { scale: 1.02 }}
             whileTap={saving ? {} : { scale: 0.98 }}
           >
             {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
             {saving ? 'Guardando...' : 'Guardar'}
           </motion.button>
+          
+          {!item.visible && (
+            <motion.button
+              type="button"
+              onClick={handlePublish}
+              disabled={saving}
+              className="bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              whileHover={saving ? {} : { scale: 1.02 }}
+              whileTap={saving ? {} : { scale: 0.98 }}
+            >
+              {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Eye className="w-5 h-5" />}
+              {saving ? 'Publicando...' : 'Publicar'}
+            </motion.button>
+          )}
         </div>
 
         {/* Layout con columnas: Principal (izquierda) + Menú (derecha) */}
@@ -282,7 +363,8 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
                         type="text"
                         value={item.slug || ''}
                         onChange={(e) => {
-                          updateField('slug', e.target.value);
+                          const slugifiedValue = slugify(e.target.value);
+                          updateField('slug', slugifiedValue);
                           setSlugManuallyEdited(true);
                         }}
                         placeholder="ej: iniciacion-ceramica"
@@ -293,6 +375,20 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
                       </p>
                       <p className="text-xs text-primary/70 mt-1 italic">
                         💡 Si el slug ya existe, se agregará automáticamente un número al final
+                      </p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm mb-2">Subtítulo</label>
+                      <input
+                        type="text"
+                        value={item.subtitle || ''}
+                        onChange={(e) => updateField('subtitle', e.target.value)}
+                        placeholder="Texto en mayúsculas que aparece debajo del título"
+                        className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                      />
+                      <p className="text-xs text-foreground/60 mt-1">
+                        Aparecerá debajo del título en estilo mayúsculas con espaciado amplio
                       </p>
                     </div>
 
@@ -322,13 +418,14 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm mb-2">Precio (€)</label>
+                        <label className="block text-sm mb-2">Precio principal (€)</label>
                         <input
                           type="number"
                           value={item.price || ''}
                           onChange={(e) => updateField('price', e.target.value ? parseFloat(e.target.value) : 0)}
                           className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                         />
+                        <p className="text-xs text-foreground/60 mt-1">Precio base que se mostrará destacado</p>
                       </div>
 
                       <div>
@@ -341,6 +438,89 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
                           className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                         />
                       </div>
+                    </div>
+
+                    {/* Opciones de precio adicionales */}
+                    <div className="border border-foreground/20 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <div>
+                          <h4 className="font-medium">Opciones de precio adicionales</h4>
+                          <p className="text-xs text-foreground/60 mt-1">
+                            Agrega diferentes paquetes o modalidades de pago
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newPriceOption = { label: '', price: 0 };
+                            addToArray('priceOptions', newPriceOption);
+                          }}
+                          className="bg-primary text-white px-3 py-1.5 rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-1 text-sm"
+                        >
+                          <Plus className="w-4 h-4" />
+                          Agregar opción
+                        </button>
+                      </div>
+
+                      {item.priceOptions && item.priceOptions.length > 0 && (
+                        <div className="space-y-3">
+                          {item.priceOptions.map((option: any, index: number) => (
+                            <div key={index} className="flex gap-3 items-start bg-foreground/5 p-3 rounded-lg">
+                              <div className="flex-1 grid grid-cols-2 gap-3">
+                                <div>
+                                  <label className="block text-xs mb-1.5 text-foreground/70">
+                                    Descripción
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={option.label || ''}
+                                    onChange={(e) => {
+                                      const updated = [...(item.priceOptions || [])];
+                                      updated[index] = { ...updated[index], label: e.target.value };
+                                      updateField('priceOptions', updated);
+                                    }}
+                                    placeholder="ej: Bono 4 clases"
+                                    className="w-full px-3 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-xs mb-1.5 text-foreground/70">
+                                    Precio (€)
+                                  </label>
+                                  <input
+                                    type="number"
+                                    value={option.price || ''}
+                                    onChange={(e) => {
+                                      const updated = [...(item.priceOptions || [])];
+                                      updated[index] = { 
+                                        ...updated[index], 
+                                        price: e.target.value ? parseFloat(e.target.value) : 0 
+                                      };
+                                      updateField('priceOptions', updated);
+                                    }}
+                                    placeholder="0"
+                                    className="w-full px-3 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                                  />
+                                </div>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => removeFromArray('priceOptions', index)}
+                                className="p-2 hover:bg-red-50 rounded-lg transition-colors mt-6"
+                                title="Eliminar opción"
+                              >
+                                <Trash2 className="w-4 h-4 text-red-600" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {(!item.priceOptions || item.priceOptions.length === 0) && (
+                        <p className="text-sm text-foreground/40 text-center py-4">
+                          No hay opciones adicionales. Haz clic en "Agregar opción" para crear una.
+                        </p>
+                      )}
                     </div>
 
                     <div className="flex items-center gap-2">
@@ -450,7 +630,21 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
             {activeTab === 'schedule' && (
               <div className="space-y-6">
                 <div className="bg-white rounded-lg shadow-md p-6">
-                  <h3 className="text-xl mb-4">Descripción del Horario</h3>
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-xl">Descripción del Horario</h3>
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <span className="text-sm text-foreground/70">Mostrar horarios en el front</span>
+                      <div className="relative">
+                        <input
+                          type="checkbox"
+                          checked={item.schedule?.enabled !== false}
+                          onChange={(e) => updateNestedField('schedule', 'enabled', e.target.checked)}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                      </div>
+                    </label>
+                  </div>
                   
                   <div className="space-y-4">
                     <div>
@@ -587,12 +781,34 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
                   
                   <div className="space-y-4">
                     <div>
+                      <label className="block text-sm mb-2">Título de la sección "¿Qué aprenderás?"</label>
+                      <input
+                        type="text"
+                        value={item.content?.whatYouWillLearnTitle || ''}
+                        onChange={(e) => updateNestedField('content', 'whatYouWillLearnTitle', e.target.value)}
+                        placeholder="¿QUÉ APRENDERÁS?"
+                        className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                      />
+                    </div>
+
+                    <div>
                       <label className="block text-sm mb-2">¿Qué aprenderás?</label>
                       <RichTextEditor
                         value={item.content?.whatYouWillLearn || ''}
                         onChange={(value) => updateNestedField('content', 'whatYouWillLearn', value)}
                         placeholder="Describe qué aprenderán los estudiantes..."
                         height="250px"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm mb-2">Título de la sección "¿Quién puede participar?"</label>
+                      <input
+                        type="text"
+                        value={item.content?.whoCanParticipateTitle || ''}
+                        onChange={(e) => updateNestedField('content', 'whoCanParticipateTitle', e.target.value)}
+                        placeholder="¿QUIÉN PUEDE PARTICIPAR?"
+                        className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                       />
                     </div>
 
@@ -666,8 +882,153 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
                         placeholder="Añade información adicional si es necesaria..."
                         className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                       />
+                      
+                      {/* CTA Button Text (solo para privadas) */}
+                      {item.type === 'private' && (
+                        <div className="mt-4">
+                          <label className="block text-xs mb-2 text-foreground/60">Texto del botón de llamada a la acción</label>
+                          <input
+                            type="text"
+                            value={item.content?.ctaButtonText || 'Escríbenos'}
+                            onChange={(e) => updateNestedField('content', 'ctaButtonText', e.target.value)}
+                            placeholder="Escríbenos"
+                            className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                          />
+                          <p className="text-xs text-foreground/50 mt-1 italic">
+                            Este botón aparece al final de la sección de descripción
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </div>
+                </div>
+
+                {/* Activities Section (for private classes) */}
+                <div className="bg-white rounded-lg shadow-md p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xl">¿Qué tipo de actividades pueden hacer?</h3>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <span className="text-sm text-foreground/60">Mostrar sección</span>
+                      <input
+                        type="checkbox"
+                        checked={item.content?.showActivities || false}
+                        onChange={(e) => updateNestedField('content', 'showActivities', e.target.checked)}
+                        className="w-5 h-5 rounded border-foreground/20 text-primary focus:ring-primary"
+                      />
+                    </label>
+                  </div>
+                  
+                  {item.content?.showActivities && (
+                    <div className="space-y-4">
+                      {(item.content?.activities || []).map((activity: any, index: number) => (
+                        <div key={index} className="border border-gray-200 rounded-lg p-4">
+                          <div className="flex items-center justify-between mb-3">
+                            <span className="text-sm">Actividad {index + 1}</span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newActivities = [...(item.content?.activities || [])];
+                                newActivities.splice(index, 1);
+                                updateNestedField('content', 'activities', newActivities);
+                              }}
+                              className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                            >
+                              <Trash2 className="size-4 text-red-600" />
+                            </button>
+                          </div>
+                          
+                          <div className="space-y-3">
+                            <div>
+                              <label className="block text-sm mb-2">Título de la actividad</label>
+                              <input
+                                type="text"
+                                value={activity.title || ''}
+                                onChange={(e) => {
+                                  const newActivities = [...(item.content?.activities || [])];
+                                  newActivities[index] = { ...newActivities[index], title: e.target.value };
+                                  updateNestedField('content', 'activities', newActivities);
+                                }}
+                                placeholder="ej: Taller de modelado libre"
+                                className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                              />
+                            </div>
+                            
+                            <div>
+                              <label className="block text-sm mb-2">Descripción</label>
+                              <textarea
+                                value={activity.description || ''}
+                                onChange={(e) => {
+                                  const newActivities = [...(item.content?.activities || [])];
+                                  newActivities[index] = { ...newActivities[index], description: e.target.value };
+                                  updateNestedField('content', 'activities', newActivities);
+                                }}
+                                rows={3}
+                                placeholder="Describe la actividad..."
+                                className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                              />
+                            </div>
+                            
+                            <div>
+                              <label className="block text-sm mb-2">Link "Ver más"</label>
+                              <div className="flex gap-2">
+                                <select
+                                  value={activity.link || ''}
+                                  onChange={(e) => {
+                                    const newActivities = [...(item.content?.activities || [])];
+                                    newActivities[index] = { ...newActivities[index], link: e.target.value };
+                                    updateNestedField('content', 'activities', newActivities);
+                                  }}
+                                  className="flex-1 min-w-0 px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-white truncate"
+                                >
+                                  <option value="">-- Selecciona una clase/workshop --</option>
+                                  {availableContents.map((content) => {
+                                    const typeLabel = content.type === 'class' ? '📚 Clase' : content.type === 'workshop' ? '🎨 Workshop' : '🔒 Privada';
+                                    let url = `/clases/${content.slug}`;
+                                    if (content.type === 'workshop') {
+                                      url = `/workshop/${content.slug}`;
+                                    } else if (content.type === 'private') {
+                                      url = `/privada/${content.slug}`;
+                                    }
+                                    return (
+                                      <option key={content.id} value={url}>
+                                        {typeLabel}: {content.title}
+                                      </option>
+                                    );
+                                  })}
+                                </select>
+                                {activity.link && (
+                                  <a
+                                    href={activity.link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="px-3 py-2 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors flex items-center justify-center"
+                                    title="Ver contenido"
+                                  >
+                                    <ExternalLink className="size-5" />
+                                  </a>
+                                )}
+                              </div>
+                              <p className="text-xs text-foreground/60 mt-1">
+                                Selecciona el contenido al que quieres vincular esta actividad
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newActivities = [...(item.content?.activities || []), { title: '', description: '', link: '' }];
+                          updateNestedField('content', 'activities', newActivities);
+                        }}
+                        className="w-full py-3 border-2 border-dashed border-foreground/20 rounded-lg hover:border-primary hover:bg-primary/5 transition-colors flex items-center justify-center gap-2 text-foreground/60 hover:text-primary"
+                      >
+                        <Plus className="size-5" />
+                        Agregar Actividad
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 {/* Course Modules/Lessons */}
@@ -675,6 +1036,18 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
                   <h3 className="text-xl mb-4">Módulos del Curso</h3>
                   
                   <div className="space-y-4">
+                    {/* Título de la sección */}
+                    <div>
+                      <label className="block text-sm mb-2">Título de la sección "Contenido del curso"</label>
+                      <input
+                        type="text"
+                        value={item.content?.modulesSectionTitle || ''}
+                        onChange={(e) => updateNestedField('content', 'modulesSectionTitle', e.target.value)}
+                        placeholder="CONTENIDO DEL CURSO"
+                        className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                      />
+                    </div>
+
                     {/* Título del acordeón principal */}
                     <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
                       <label className="block text-sm mb-2 font-medium">
@@ -1001,13 +1374,27 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
               <motion.button
                 type="submit"
                 disabled={saving}
-                className="w-full bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 whileHover={saving ? {} : { scale: 1.02 }}
                 whileTap={saving ? {} : { scale: 0.98 }}
               >
                 {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
                 {saving ? 'Guardando...' : 'Guardar'}
               </motion.button>
+              
+              {!item.visible && (
+                <motion.button
+                  type="button"
+                  onClick={handlePublish}
+                  disabled={saving}
+                  className="w-full bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  whileHover={saving ? {} : { scale: 1.02 }}
+                  whileTap={saving ? {} : { scale: 0.98 }}
+                >
+                  {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Eye className="w-5 h-5" />}
+                  {saving ? 'Publicando...' : 'Publicar'}
+                </motion.button>
+              )}
               
               {item.id && (
                 <VersionHistory 
@@ -1089,10 +1476,21 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
                 <button
                   type="button"
                   onClick={() => {
-                    // Limpiar el array includes antes de guardar
+                    // Prevenir guardados múltiples
+                    if (saving) return;
+                    
+                    setSaving(true);
+                    // Limpiar el array includes y activities duplicadas antes de guardar
                     const cleanedItem = {
                       ...item,
-                      includes: (item.includes || []).filter((inc: string) => inc.trim() !== '')
+                      includes: (item.includes || []).filter((inc: string) => inc.trim() !== ''),
+                      content: {
+                        ...item.content,
+                        activities: item.content?.activities 
+                          ? Array.from(new Set(item.content.activities.map((a: any) => JSON.stringify(a))))
+                              .map((s: string) => JSON.parse(s))
+                          : []
+                      }
                     };
                     onSave(cleanedItem);
                     setInitialItemSnapshot(JSON.stringify(cleanedItem));
@@ -1103,10 +1501,16 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
                       // Ejecutar la acción después de guardar
                       setTimeout(() => pendingAction(), 100);
                     }
+                    
+                    // Esperar un poco para que se complete el guardado antes de habilitar el botón
+                    setTimeout(() => {
+                      setSaving(false);
+                    }, 1500);
                   }}
-                  className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+                  disabled={saving}
+                  className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Guardar y salir
+                  {saving ? 'Guardando...' : 'Guardar y salir'}
                 </button>
               </div>
             </motion.div>
@@ -1118,10 +1522,17 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
       <NavigationBlocker
         when={hasUnsavedChanges}
         onSave={async () => {
-          // Limpiar el array includes antes de guardar
+          // Limpiar el array includes y activities duplicadas antes de guardar
           const cleanedItem = {
             ...item,
-            includes: (item.includes || []).filter((inc: string) => inc.trim() !== '')
+            includes: (item.includes || []).filter((inc: string) => inc.trim() !== ''),
+            content: {
+              ...item.content,
+              activities: item.content?.activities 
+                ? Array.from(new Set(item.content.activities.map((a: any) => JSON.stringify(a))))
+                    .map((s: string) => JSON.parse(s))
+                : []
+            }
           };
           onSave(cleanedItem);
           setInitialItemSnapshot(JSON.stringify(cleanedItem));

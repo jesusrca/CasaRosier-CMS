@@ -62,6 +62,7 @@ export function BlogManager() {
       excerpt: '',
       author: 'Casa Rosier',
       published: false,
+      featured: false,
       featuredImage: '',
       seo: {
         metaTitle: '',
@@ -90,7 +91,8 @@ export function BlogManager() {
   };
 
   const handleSlugChange = (slug: string) => {
-    setEditingPost({ ...editingPost, slug });
+    const slugifiedValue = slugify(slug);
+    setEditingPost({ ...editingPost, slug: slugifiedValue });
     setSlugManuallyEdited(true);
   };
 
@@ -140,13 +142,20 @@ export function BlogManager() {
               </div>
 
               <div>
-                <label className="block text-sm mb-2">Slug</label>
+                <label className="block text-sm mb-2">Slug (URL)</label>
                 <input
                   type="text"
                   value={editingPost.slug}
                   onChange={(e) => handleSlugChange(e.target.value)}
+                  placeholder="ej: mi-articulo-de-ceramica"
                   className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                 />
+                <p className="text-xs text-foreground/60 mt-1">
+                  Se usará en la URL: /blog/{editingPost.slug || 'slug'}
+                </p>
+                <p className="text-xs text-primary/70 mt-1 italic">
+                  💡 El slug se genera automáticamente del título. Si lo editas manualmente, asegúrate de usar solo letras minúsculas, números y guiones.
+                </p>
               </div>
 
               <div>
@@ -185,6 +194,17 @@ export function BlogManager() {
                 />
               </div>
 
+              <div>
+                <label className="block text-sm mb-2">Categoría</label>
+                <input
+                  type="text"
+                  value={editingPost.category || ''}
+                  onChange={(e) => setEditingPost({ ...editingPost, category: e.target.value })}
+                  placeholder="Ej: Técnicas, Tutoriales, Noticias..."
+                  className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+              </div>
+
               <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
@@ -195,6 +215,19 @@ export function BlogManager() {
                 />
                 <label htmlFor="published" className="text-sm">
                   Publicar en el sitio web
+                </label>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="featured"
+                  checked={editingPost.featured || false}
+                  onChange={(e) => setEditingPost({ ...editingPost, featured: e.target.checked })}
+                  className="w-4 h-4"
+                />
+                <label htmlFor="featured" className="text-sm">
+                  Marcar como destacado (aparecerá primero en el blog)
                 </label>
               </div>
             </div>
@@ -279,6 +312,11 @@ export function BlogManager() {
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
                   <h3 className="text-xl">{post.title}</h3>
+                  {post.featured && (
+                    <span className="px-2 py-1 rounded text-xs bg-amber-100 text-amber-700 flex items-center gap-1">
+                      ⭐ Destacado
+                    </span>
+                  )}
                   {post.published ? (
                     <span className="px-2 py-1 rounded text-xs bg-green-100 text-green-700 flex items-center gap-1">
                       <Eye className="w-3 h-3" />

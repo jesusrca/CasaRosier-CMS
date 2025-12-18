@@ -3,10 +3,17 @@ import { useParams, Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { useContent } from '../contexts/ContentContext';
 import { SEO, generateBlogPostStructuredData } from '../components/SEO';
-import { Hero } from '../components/Hero';
-import { Calendar, User, ArrowLeft, ChevronUp } from 'lucide-react';
+import { Navigation } from '../components/Navigation';
+import { Calendar, User, ArrowLeft, ChevronUp, Clock } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
+
+// Función para calcular tiempo estimado de lectura
+function calculateReadingTime(content: string): number {
+  const wordsPerMinute = 200;
+  const words = content.trim().split(/\s+/).length;
+  return Math.ceil(words / wordsPerMinute);
+}
 
 export function BlogPost() {
   const { slug } = useParams<{ slug: string }>();
@@ -49,6 +56,8 @@ export function BlogPost() {
     url: window.location.href,
   });
 
+  const readingTime = calculateReadingTime(post.content);
+
   return (
     <div className="min-h-screen bg-background">
       <SEO
@@ -63,59 +72,96 @@ export function BlogPost() {
         structuredData={structuredData}
       />
 
-      {/* Hero similar al resto de la web */}
-      <Hero
-        backgroundImage={post.featuredImage || "https://images.unsplash.com/photo-1638341840302-a2d9579b821e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwb3R0ZXJ5JTIwc3R1ZGlvJTIwd29ya3NwYWNlfGVufDF8fHx8MTc2NTEwOTMwOHww&ixlib=rb-4.1.0&q=80&w=1080"}
-        title={post.title}
-        subtitle={post.excerpt}
-        useTextTitle={true}
-        showScrollIndicator={false}
-      />
+      {/* Hero con menú pero contenido personalizado */}
+      <div className="relative min-h-[60vh] bg-background flex flex-col">
+        {/* Menú de navegación importado desde Hero */}
+        <Navigation />
 
-      {/* Contenido del artículo - Minimalista, sobre el fondo */}
-      <article className="py-16 lg:py-24">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Volver al blog */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            <Link
-              to="/blog"
-              className="inline-flex items-center gap-2 text-primary hover:gap-3 transition-all mb-12 text-sm"
+        {/* Contenido del hero - minimalista estilo blog */}
+        <div className="flex-1 flex items-center justify-center py-20 lg:py-24">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="text-center space-y-6"
             >
-              <ArrowLeft className="w-4 h-4" />
-              Volver al blog
-            </Link>
-          </motion.div>
+              {/* Categoría */}
+              {post.category && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.1 }}
+                >
+                  <span className="text-sm uppercase tracking-wider text-foreground/60">
+                    {post.category}
+                  </span>
+                </motion.div>
+              )}
 
+              {/* Título */}
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="text-foreground text-5xl sm:text-6xl lg:text-7xl font-bold leading-tight"
+              >
+                {post.title}
+              </motion.h1>
+
+              {/* Metadata: Tiempo de lectura y fecha */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className="flex items-center justify-center gap-6 text-sm text-foreground/60"
+              >
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  <span>{readingTime} min de lectura</span>
+                </div>
+                <span>•</span>
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4" />
+                  <span>
+                    {new Date(post.publishedDate || post.createdAt).toLocaleDateString('es-ES', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </span>
+                </div>
+              </motion.div>
+
+              {/* Imagen destacada */}
+              {post.featuredImage && (
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.7, delay: 0.4 }}
+                  className="mt-12 w-full"
+                >
+                  <img 
+                    src={post.featuredImage} 
+                    alt={post.title}
+                    className="w-full h-auto rounded-lg shadow-lg object-cover"
+                  />
+                </motion.div>
+              )}
+            </motion.div>
+          </div>
+        </div>
+      </div>
+
+      {/* Contenido del artículo */}
+      <article className="pb-16 lg:pb-24">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             className="space-y-12"
           >
-            {/* Metadata del artículo */}
-            <div className="flex flex-wrap items-center gap-6 text-foreground/60 pb-8 border-b border-border">
-              <div className="flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-primary" />
-                <span className="text-sm">
-                  {new Date(post.publishedDate || post.createdAt).toLocaleDateString('es-ES', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
-                </span>
-              </div>
-              {post.author && (
-                <div className="flex items-center gap-2">
-                  <User className="w-5 h-5 text-primary" />
-                  <span className="text-sm">Por {post.author}</span>
-                </div>
-              )}
-            </div>
-
             {/* Contenido del artículo */}
             <div className="prose prose-lg max-w-none">
               <ReactMarkdown

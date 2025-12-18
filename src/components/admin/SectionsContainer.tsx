@@ -9,6 +9,7 @@ interface SectionsContainerProps {
 const SECTION_TYPES = [
   { id: 'hero', name: 'Hero / Banner', description: 'Imagen de fondo con título' },
   { id: 'class-layout', name: 'Layout de Clase/Taller', description: 'Diseño con galería + info + precios' },
+  { id: 'gift-cards', name: 'Tarjetas Regalo', description: 'Grid de tarjetas regalo con precios' },
   { id: 'text', name: 'Texto', description: 'Contenido de texto simple' },
   { id: 'pricing', name: 'Precios', description: 'Tabla de precios con includes' },
   { id: 'list', name: 'Lista', description: 'Grid de items' },
@@ -16,6 +17,7 @@ const SECTION_TYPES = [
   { id: 'courses', name: 'Cursos/Servicios', description: 'Grid de cursos con enlaces' },
   { id: 'courses2', name: 'Cursos/Servicios 2', description: 'Segundo bloque de cursos' },
   { id: 'banner', name: 'Banner Clickeable', description: 'Imagen + título + texto con enlace' },
+  { id: 'team', name: 'Equipo/Profesores', description: 'Miembros del equipo con foto y biografía' },
 ];
 
 export function SectionsContainer({ sections, onChange }: SectionsContainerProps) {

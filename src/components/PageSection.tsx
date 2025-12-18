@@ -1,65 +1,32 @@
 import { motion } from 'motion/react';
-import { Check } from 'lucide-react';
 import { useState } from 'react';
+import { Check } from 'lucide-react';
 import { ScheduleDisplay } from './ScheduleDisplay';
 
 interface PageSectionProps {
   section: any;
+  siteSettings?: any;
 }
 
 // Componente para el layout de clase/workshop con galería
 function ClassLayoutSection({ section }: { section: any }) {
-  const [selectedImage, setSelectedImage] = useState(0);
-  const images = section.images || [];
-
   return (
-    <section className="py-12 sm:py-16 lg:py-24 bg-background">
+    <section className="bg-background px-[0px] py-[70px]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-8 lg:gap-12">
-          {/* Columna Izquierda - Galería de Imágenes */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.5fr] gap-8 lg:gap-12">
+          {/* Columna Izquierda - Imagen */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
-            className="space-y-4"
           >
-            {images.length > 0 ? (
-              <>
-                {/* Imagen Principal */}
-                <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-lg">
-                  <img
-                    src={images[selectedImage]}
-                    alt={section.title || 'Imagen principal'}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-
-                {/* Miniaturas */}
-                {images.length > 1 && (
-                  <div className="grid grid-cols-3 gap-3">
-                    {images.slice(0, 3).map((img: string, index: number) => (
-                      <button
-                        key={index}
-                        onClick={() => setSelectedImage(index)}
-                        className={`relative aspect-[4/3] rounded-lg overflow-hidden transition-all ${
-                          selectedImage === index
-                            ? 'ring-4 ring-primary shadow-lg scale-105'
-                            : 'hover:scale-105 opacity-70 hover:opacity-100'
-                        }`}
-                      >
-                        <img
-                          src={img}
-                          alt={`Imagen ${index + 1}`}
-                          className="w-full h-full object-cover"
-                        />
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </>
-            ) : (
-              <div className="aspect-[4/3] rounded-2xl bg-foreground/5 flex items-center justify-center">
-                <p className="text-foreground/40">Sin imágenes</p>
+            {section.image && (
+              <div className="relative aspect-square rounded-2xl overflow-hidden shadow-lg">
+                <img
+                  src={section.image}
+                  alt={section.title || 'Imagen'}
+                  className="w-full h-full object-cover"
+                />
               </div>
             )}
           </motion.div>
@@ -69,16 +36,16 @@ function ClassLayoutSection({ section }: { section: any }) {
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="space-y-8"
+            className="space-y-6 flex flex-col justify-center"
           >
             {/* Título */}
             {section.title && (
-              <div>
-                <h1 className="text-3xl sm:text-4xl mb-4 break-words">{section.title}</h1>
-                {section.subtitle && (
-                  <p className="text-lg text-foreground/70">{section.subtitle}</p>
-                )}
-              </div>
+              <h2>{section.title}</h2>
+            )}
+
+            {/* Subtítulo */}
+            {section.subtitle && (
+              <p className="text-lg text-foreground/70">{section.subtitle}</p>
             )}
 
             {/* Descripción */}
@@ -87,73 +54,6 @@ function ClassLayoutSection({ section }: { section: any }) {
                 <p className="whitespace-pre-wrap break-words">{section.description}</p>
               </div>
             )}
-
-            {/* Tarjeta de Precio */}
-            {section.price && (
-              <div className="bg-white rounded-2xl p-6 lg:p-8 shadow-lg space-y-6">
-                <div className="text-center pb-6 border-b border-foreground/10">
-                  <div className="text-4xl lg:text-5xl text-primary mb-2">
-                    {section.price}
-                  </div>
-                  {section.priceSubtitle && (
-                    <p className="text-foreground/60">{section.priceSubtitle}</p>
-                  )}
-                </div>
-
-                {/* Incluye */}
-                {section.includes && section.includes.length > 0 && (
-                  <div>
-                    <h3 className="text-lg mb-3">Incluye:</h3>
-                    <ul className="space-y-2">
-                      {section.includes.map((item: string, index: number) => (
-                        <li key={index} className="flex items-start gap-3">
-                          <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                          <span className="text-sm text-foreground/80 break-words">{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {/* Extras/Opcionales */}
-                {section.extras && section.extras.length > 0 && (
-                  <div className="pt-6 border-t border-foreground/10">
-                    <h3 className="text-lg mb-3">Opcionales:</h3>
-                    <ul className="space-y-3">
-                      {section.extras.map((extra: any, index: number) => (
-                        <li
-                          key={index}
-                          className="flex items-center justify-between gap-4 text-sm"
-                        >
-                          <span className="text-foreground/70 break-words flex-1">{extra.name}</span>
-                          <span className="text-primary font-medium whitespace-nowrap">{extra.price}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {/* Botón CTA */}
-                {section.ctaText && section.ctaLink && (
-                  <a
-                    href={section.ctaLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block w-full bg-primary text-white text-center py-4 rounded-xl hover:bg-primary/90 transition-colors text-lg"
-                  >
-                    {section.ctaText}
-                  </a>
-                )}
-              </div>
-            )}
-
-            {/* Horarios */}
-            {section.schedule && (
-              <ScheduleDisplay
-                schedules={section.schedule}
-                showPlaces={section.showPlaces !== false}
-              />
-            )}
           </motion.div>
         </div>
       </div>
@@ -161,7 +61,7 @@ function ClassLayoutSection({ section }: { section: any }) {
   );
 }
 
-export function PageSection({ section }: PageSectionProps) {
+export function PageSection({ section, siteSettings }: PageSectionProps) {
   switch (section.type) {
     case 'hero':
       return (
@@ -202,6 +102,10 @@ export function PageSection({ section }: PageSectionProps) {
       );
 
     case 'text':
+      // Detectar si es la sección de métodos de pago
+      const isPaymentMethods = section.title?.toUpperCase().includes('MÉTODOS DE PAGO') || 
+                               section.title?.toUpperCase().includes('METODOS DE PAGO');
+      
       return (
         <section className="py-12 lg:py-16 bg-background">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -210,14 +114,75 @@ export function PageSection({ section }: PageSectionProps) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
+              className="space-y-6"
             >
               {section.title && (
                 <h2 className="text-3xl lg:text-4xl mb-6">{section.title}</h2>
               )}
-              {section.content && (
-                <div className="prose prose-lg max-w-none text-foreground/80 whitespace-pre-wrap">
-                  {section.content}
+              
+              {isPaymentMethods && siteSettings?.paymentMethods ? (
+                <div className="space-y-6">
+                  {section.content && (
+                    <p className="text-base text-foreground/80">
+                      {section.content}
+                    </p>
+                  )}
+                  {Object.values(siteSettings.paymentMethods).some((enabled: any) => enabled) && (
+                    <div className="flex flex-wrap gap-3 items-center">
+                      {siteSettings.paymentMethods.transferencia && (
+                        <>
+                          <span className="text-sm text-foreground/60 border-b border-foreground/20 pb-1">
+                            Transferencia bancaria
+                          </span>
+                          {(siteSettings.paymentMethods.paypal || siteSettings.paymentMethods.tarjeta || siteSettings.paymentMethods.efectivo || siteSettings.paymentMethods.bizum) && (
+                            <span className="text-foreground/20">·</span>
+                          )}
+                        </>
+                      )}
+                      {siteSettings.paymentMethods.paypal && (
+                        <>
+                          <span className="text-sm text-foreground/60 border-b border-foreground/20 pb-1">
+                            PayPal
+                          </span>
+                          {(siteSettings.paymentMethods.tarjeta || siteSettings.paymentMethods.efectivo || siteSettings.paymentMethods.bizum) && (
+                            <span className="text-foreground/20">·</span>
+                          )}
+                        </>
+                      )}
+                      {siteSettings.paymentMethods.tarjeta && (
+                        <>
+                          <span className="text-sm text-foreground/60 border-b border-foreground/20 pb-1">
+                            Tarjeta de crédito
+                          </span>
+                          {(siteSettings.paymentMethods.efectivo || siteSettings.paymentMethods.bizum) && (
+                            <span className="text-foreground/20">·</span>
+                          )}
+                        </>
+                      )}
+                      {siteSettings.paymentMethods.efectivo && (
+                        <>
+                          <span className="text-sm text-foreground/60 border-b border-foreground/20 pb-1">
+                            Efectivo
+                          </span>
+                          {siteSettings.paymentMethods.bizum && (
+                            <span className="text-foreground/20">·</span>
+                          )}
+                        </>
+                      )}
+                      {siteSettings.paymentMethods.bizum && (
+                        <span className="text-sm text-foreground/60 border-b border-foreground/20 pb-1">
+                          Bizum
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
+              ) : (
+                section.content && (
+                  <div className="prose prose-lg max-w-none text-foreground/80 whitespace-pre-wrap">
+                    {section.content}
+                  </div>
+                )
               )}
             </motion.div>
           </div>
@@ -311,54 +276,40 @@ export function PageSection({ section }: PageSectionProps) {
       return (
         <section className="py-12 lg:py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.5fr] gap-8 lg:gap-12">
+              {/* Columna Izquierda - Imagen */}
+              <div>
+                {section.mainImage && (
+                  <div className="relative w-full">
+                    <img
+                      src={section.mainImage}
+                      alt={section.title || 'Imagen'}
+                      className="w-full h-auto object-contain"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Columna Derecha - Contenido */}
               <motion.div
-                initial={{ opacity: 0, x: -30 }}
+                initial={{ opacity: 0, x: 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="space-y-6 flex flex-col justify-center"
               >
+                {/* Título */}
                 {section.title && (
-                  <h2 className="text-3xl lg:text-4xl mb-6">{section.title}</h2>
+                  <h2>{section.title}</h2>
                 )}
+
+                {/* Contenido */}
                 {section.content && (
-                  <div className="prose prose-lg max-w-none text-foreground/80 whitespace-pre-wrap">
-                    {section.content}
+                  <div className="prose prose-lg max-w-none text-foreground/80">
+                    <p className="whitespace-pre-wrap break-words">{section.content}</p>
                   </div>
                 )}
               </motion.div>
-              
-              {section.images && section.images.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, x: 30 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: 0.2 }}
-                  className={`grid gap-4 ${
-                    section.images.length === 1 
-                      ? 'grid-cols-1' 
-                      : section.images.length === 2
-                      ? 'grid-cols-2'
-                      : 'grid-cols-2'
-                  }`}
-                >
-                  {section.images.slice(0, 4).map((image: string, index: number) => (
-                    <div
-                      key={index}
-                      className={`relative overflow-hidden rounded-lg ${
-                        section.images.length === 3 && index === 0 ? 'col-span-2' : ''
-                      }`}
-                      style={{ paddingBottom: '100%' }}
-                    >
-                      <img
-                        src={image}
-                        alt=""
-                        className="absolute inset-0 w-full h-full object-cover"
-                      />
-                    </div>
-                  ))}
-                </motion.div>
-              )}
             </div>
           </div>
         </section>
@@ -403,6 +354,131 @@ export function PageSection({ section }: PageSectionProps) {
 
     case 'class-layout':
       return <ClassLayoutSection section={section} />;
+
+    case 'gift-cards':
+      return (
+        <section className="bg-background pt-[20px] pb-[20px]">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            {section.title && (
+              <h2 className="mb-8 text-center">{section.title}</h2>
+            )}
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {section.giftCards && section.giftCards.map((card: any, index: number) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  className="bg-white rounded-2xl p-6 lg:p-8 shadow-lg hover:shadow-xl transition-shadow duration-300"
+                >
+                  {/* Título */}
+                  {card.title && (
+                    <h3 className="mb-4 text-primary">{card.title}</h3>
+                  )}
+                  
+                  {/* Descripción */}
+                  {card.description && (
+                    <p className="text-sm text-foreground/70 mb-6 leading-relaxed">
+                      {card.description}
+                    </p>
+                  )}
+                  
+                  {/* Información de clases y personas */}
+                  <div className="space-y-2 mb-6 pb-6 border-b border-foreground/10">
+                    {card.classes && (
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-foreground/60">Clases:</span>
+                        <span className="font-medium text-foreground/80">{card.classes}</span>
+                      </div>
+                    )}
+                    {card.people && (
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-foreground/60">Personas:</span>
+                        <span className="font-medium text-foreground/80">{card.people}</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Precio */}
+                  {card.price && (
+                    <div className="text-center">
+                      <div className="text-3xl lg:text-4xl text-primary">
+                        {card.price}€
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* CTA opcional */}
+                  {card.ctaText && card.ctaLink && (
+                    <a
+                      href={card.ctaLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block w-full bg-primary text-white text-center py-3 rounded-xl hover:bg-primary/90 transition-colors mt-6"
+                    >
+                      {card.ctaText}
+                    </a>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+
+    case 'team':
+      return (
+        <section className="py-12 lg:py-20 bg-background">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            {section.title && (
+              <h2 className="text-3xl lg:text-4xl mb-12 text-center">{section.title}</h2>
+            )}
+            <div className="space-y-12 lg:space-y-16">
+              {section.members && section.members.map((member: any, index: number) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-6 lg:gap-12 bg-white rounded-2xl overflow-hidden shadow-lg"
+                >
+                  {/* Photo Left */}
+                  <div className="relative aspect-square md:aspect-auto">
+                    {member.photo ? (
+                      <img
+                        src={member.photo}
+                        alt={member.name || 'Profesor'}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                        <span className="text-6xl text-primary/30">👤</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Text Right */}
+                  <div className="p-6 lg:p-8 flex flex-col justify-center">
+                    {member.name && (
+                      <h3 className="text-2xl lg:text-3xl mb-2">{member.name}</h3>
+                    )}
+                    {member.role && (
+                      <p className="text-lg text-primary mb-4">{member.role}</p>
+                    )}
+                    {member.bio && (
+                      <div className="prose prose-lg max-w-none text-foreground/80 whitespace-pre-wrap">
+                        {member.bio}
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
 
     default:
       return null;

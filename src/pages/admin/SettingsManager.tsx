@@ -338,6 +338,30 @@ export function SettingsManager() {
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-6">
+          <h3 className="text-xl mb-4">Imagen Hero del Blog</h3>
+          <p className="text-sm text-foreground/60 mb-4">
+            Imagen de portada que se mostrará en la cabecera de la página del Blog
+          </p>
+          
+          <div className="space-y-6">
+            <ImageUploader
+              currentImage={typeof settings.blogHeroImage === 'string' ? settings.blogHeroImage : settings.blogHeroImage?.url || ''}
+              onImageSelect={(data) => {
+                if (typeof data === 'string') {
+                  updateField('blogHeroImage', { url: data, alt: '', description: '' });
+                } else {
+                  updateField('blogHeroImage', data);
+                }
+              }}
+              label="Imagen Hero del Blog (recomendado: 1920x600px o superior)"
+              withMetadata={true}
+              initialAlt={typeof settings.blogHeroImage === 'object' ? settings.blogHeroImage?.alt || '' : ''}
+              initialDescription={typeof settings.blogHeroImage === 'object' ? settings.blogHeroImage?.description || '' : ''}
+            />
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-md p-6">
           <h3 className="text-xl mb-4">SEO Global</h3>
           
           <div className="space-y-4">

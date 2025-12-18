@@ -165,7 +165,7 @@ export function Dashboard() {
       subtitle: `${stats.visibleClasses} visibles`,
       icon: FileText,
       color: 'bg-blue-500',
-      link: '/admin/dashboard/content',
+      link: '/admin/dashboard/content?filter=class',
     },
     {
       title: 'Workshops',
@@ -173,7 +173,7 @@ export function Dashboard() {
       subtitle: 'Total publicados',
       icon: BookOpen,
       color: 'bg-purple-500',
-      link: '/admin/dashboard/content',
+      link: '/admin/dashboard/content?filter=workshop',
     },
     {
       title: 'Blog Posts',

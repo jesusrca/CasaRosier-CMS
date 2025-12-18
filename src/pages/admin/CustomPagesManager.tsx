@@ -125,9 +125,13 @@ export function CustomPagesManager() {
         // Si no tiene slug, es una creación
         await pagesAPI.createPage(editingPage);
       }
-      setEditingPage(null);
+      // No cerrar el editor - mantener la página actual
       setHasUnsavedChanges(false);
+      // Actualizar el snapshot inicial con los datos guardados
+      setInitialPageSnapshot(JSON.stringify(editingPage));
       loadPages();
+      // Mostrar feedback visual de guardado exitoso
+      alert('Página guardada correctamente');
     } catch (error) {
       console.error('Error saving page:', error);
       alert('Error al guardar');

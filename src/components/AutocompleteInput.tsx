@@ -133,7 +133,7 @@ export function AutocompleteInput({
   };
 
   return (
-    <div ref={containerRef} className="relative flex-1">
+    <div ref={containerRef} className="relative flex-[2] min-w-0">
       <input
         ref={inputRef}
         type="text"

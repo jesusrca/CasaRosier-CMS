@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronDown, Menu, X, Plus } from 'lucide-react';
 import { useContent } from '../contexts/ContentContext';
-import logoImage from "figma:asset/2dacc970a5a37325400c034e8aab058b32fcf649.png";
+import { Logo } from './Logo';
 import heroTextImage from "figma:asset/00083d30bea445cb191f41f57aa132965c193e0d.png";
 
 interface HeroProps {
@@ -134,11 +134,9 @@ export function Hero({ backgroundImage, title, subtitle, showScrollIndicator = t
           <div className="flex justify-between items-center">
             {/* Logo a la izquierda */}
             <Link to="/" className="flex-shrink-0">
-              <img 
-                src={logoImage} 
-                alt="Casa Rosier" 
-                loading="eager"
+              <Logo 
                 className="h-10 sm:h-12 lg:h-14 w-auto"
+                isDark={isDarkBackground}
               />
             </Link>
 
@@ -157,14 +155,14 @@ export function Hero({ backgroundImage, title, subtitle, showScrollIndicator = t
                       className={`${textColor} px-3 lg:px-4 transition-colors duration-200 text-sm whitespace-nowrap`}
                     >
                       {item.name}
-                      {item.submenu && <span className="ml-1">+</span>}
+                      {item.submenu && item.submenu.length > 0 && <span className="ml-1">+</span>}
                     </Link>
                   ) : (
                     <button
                       className={`${textColor} px-3 lg:px-4 transition-colors duration-200 text-sm whitespace-nowrap`}
                     >
                       {item.name}
-                      {item.submenu && <span className="ml-1">+</span>}
+                      {item.submenu && item.submenu.length > 0 && <span className="ml-1">+</span>}
                     </button>
                   )}
                   

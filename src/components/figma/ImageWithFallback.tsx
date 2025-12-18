@@ -5,23 +5,65 @@ const ERROR_IMG_SRC =
 
 export function ImageWithFallback(props: React.ImgHTMLAttributes<HTMLImageElement>) {
   const [didError, setDidError] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   const handleError = () => {
     setDidError(true)
+    setIsLoading(false)
+  }
+
+  const handleLoad = () => {
+    setIsLoading(false)
   }
 
   const { src, alt, style, className, ...rest } = props
 
-  return didError ? (
-    <div
-      className={`inline-block bg-gray-100 text-center align-middle ${className ?? ''}`}
-      style={style}
-    >
-      <div className="flex items-center justify-center w-full h-full">
-        <img src={ERROR_IMG_SRC} alt="Error loading image" {...rest} data-original-url={src} />
+  // Si no hay src o está vacío, mostrar solo el placeholder
+  if (!src || src.trim() === '') {
+    return (
+      <div
+        className={`bg-[#F3F2EF] animate-pulse ${className ?? ''}`}
+        style={style}
+      >
+        <div className="flex items-center justify-center w-full h-full">
+          <img src={ERROR_IMG_SRC} alt={alt || 'No image'} className="opacity-30" {...rest} />
+        </div>
       </div>
+    )
+  }
+
+  return (
+    <div className="relative inline-block" style={style}>
+      {/* Placeholder mientras carga */}
+      {isLoading && !didError && (
+        <div
+          className={`absolute inset-0 bg-[#F3F2EF] animate-pulse ${className ?? ''}`}
+          style={style}
+        />
+      )}
+      
+      {/* Imagen con error */}
+      {didError ? (
+        <div
+          className={`inline-block bg-gray-100 text-center align-middle ${className ?? ''}`}
+          style={style}
+        >
+          <div className="flex items-center justify-center w-full h-full">
+            <img src={ERROR_IMG_SRC} alt="Error loading image" {...rest} data-original-url={src} />
+          </div>
+        </div>
+      ) : (
+        /* Imagen real */
+        <img 
+          src={src} 
+          alt={alt} 
+          className={`${className ?? ''} ${isLoading ? 'opacity-0' : 'opacity-100 transition-opacity duration-300'}`}
+          style={style} 
+          {...rest} 
+          onError={handleError}
+          onLoad={handleLoad}
+        />
+      )}
     </div>
-  ) : (
-    <img src={src} alt={alt} className={className} style={style} {...rest} onError={handleError} />
   )
 }

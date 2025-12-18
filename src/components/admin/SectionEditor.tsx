@@ -46,6 +46,7 @@ export function SectionEditor({
     const types: Record<string, string> = {
       hero: 'Hero / Banner',
       'class-layout': 'Layout de Clase/Taller',
+      'gift-cards': 'Tarjetas Regalo',
       text: 'Texto',
       pricing: 'Tabla de Precios',
       list: 'Lista de Items',
@@ -53,6 +54,7 @@ export function SectionEditor({
       courses: 'Cursos / Servicios',
       courses2: 'Cursos / Servicios 2',
       banner: 'Banner Clickeable',
+      team: 'Equipo / Profesores',
     };
     return types[type] || type;
   };
@@ -129,11 +131,11 @@ export function SectionEditor({
             <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 mb-4">
               <h4 className="font-medium mb-2 text-primary">Layout de Clase/Taller</h4>
               <p className="text-sm text-foreground/60">
-                Diseño de 2 columnas con galería de imágenes (izquierda) y contenido + precios (derecha)
+                Sección con título, subtítulo, descripción e imagen
               </p>
             </div>
 
-            {/* Título y Subtítulo */}
+            {/* Título */}
             <div>
               <label className="block text-sm mb-2">Título</label>
               <input
@@ -146,11 +148,12 @@ export function SectionEditor({
             </div>
 
             <div>
-              <label className="block text-sm mb-2">Subtítulo (opcional)</label>
+              <label className="block text-sm mb-2">Subtítulo</label>
               <input
                 type="text"
                 value={section.subtitle || ''}
                 onChange={(e) => updateField('subtitle', e.target.value)}
+                placeholder="Subtítulo del taller"
                 className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
@@ -167,190 +170,15 @@ export function SectionEditor({
               />
             </div>
 
-            {/* Imágenes de la Galería */}
+            {/* Imagen */}
             <div>
-              <label className="block text-sm mb-2">Galería de Imágenes</label>
-              <p className="text-xs text-foreground/60 mb-3">
-                La primera imagen será la principal. Se mostrarán hasta 3 miniaturas clickeables.
-              </p>
-              {(section.images || []).map((image: string, index: number) => (
-                <div key={index} className="mb-2">
-                  <div className="flex gap-2 items-start">
-                    <div className="flex-1">
-                      <ImageUploader
-                        currentImage={image}
-                        onImageSelect={(url) => updateArrayItem('images', index, url)}
-                        label={`Imagen ${index + 1}${index === 0 ? ' (Principal)' : ''}`}
-                        compact={true}
-                        aspectRatio="4:3"
-                      />
-                    </div>
-                    <button
-                      onClick={() => removeArrayItem('images', index)}
-                      className="p-2 hover:bg-red-50 text-red-600 rounded mt-6"
-                    >
-                      <Minus className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-              <button
-                onClick={() => addArrayItem('images', '')}
-                className="text-sm text-primary hover:underline flex items-center gap-1 mt-2"
-              >
-                <Plus className="w-4 h-4" />
-                Agregar imagen
-              </button>
-            </div>
-
-            <div className="border-t border-foreground/10 pt-4"></div>
-
-            {/* Precio */}
-            <div>
-              <label className="block text-sm mb-2">Precio</label>
-              <input
-                type="text"
-                value={section.price || ''}
-                onChange={(e) => updateField('price', e.target.value)}
-                placeholder="Desde 350€"
-                className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+              <label className="block text-sm mb-2">Imagen</label>
+              <ImageUploader
+                currentImage={section.image || ''}
+                onImageSelect={(url) => updateField('image', url)}
+                label="Imagen principal"
+                aspectRatio="16:9"
               />
-            </div>
-
-            <div>
-              <label className="block text-sm mb-2">Subtítulo del Precio</label>
-              <input
-                type="text"
-                value={section.priceSubtitle || ''}
-                onChange={(e) => updateField('priceSubtitle', e.target.value)}
-                placeholder="Grupo de 6-8 personas · 2,5 horas"
-                className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-            </div>
-
-            {/* Incluye */}
-            <div>
-              <label className="block text-sm mb-2">Incluye</label>
-              {(section.includes || []).map((item: string, index: number) => (
-                <div key={index} className="flex gap-2 mb-2">
-                  <input
-                    type="text"
-                    value={item}
-                    onChange={(e) => updateArrayItem('includes', index, e.target.value)}
-                    placeholder="Ej: Alquiler privado del estudio"
-                    className="flex-1 px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                  <button
-                    onClick={() => removeArrayItem('includes', index)}
-                    className="p-2 hover:bg-red-50 text-red-600 rounded"
-                  >
-                    <Minus className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
-              <button
-                onClick={() => addArrayItem('includes', '')}
-                className="text-sm text-primary hover:underline flex items-center gap-1"
-              >
-                <Plus className="w-4 h-4" />
-                Agregar item
-              </button>
-            </div>
-
-            {/* Extras/Opcionales */}
-            <div>
-              <label className="block text-sm mb-2">Extras / Opcionales</label>
-              {(section.extras || []).map((extra: any, index: number) => (
-                <div key={index} className="flex gap-2 mb-2">
-                  <input
-                    type="text"
-                    value={extra.name || ''}
-                    onChange={(e) => updateArrayItem('extras', index, { ...extra, name: e.target.value })}
-                    placeholder="Nombre del extra"
-                    className="flex-1 px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                  <input
-                    type="text"
-                    value={extra.price || ''}
-                    onChange={(e) => updateArrayItem('extras', index, { ...extra, price: e.target.value })}
-                    placeholder="+150€"
-                    className="w-32 px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                  <button
-                    onClick={() => removeArrayItem('extras', index)}
-                    className="p-2 hover:bg-red-50 text-red-600 rounded"
-                  >
-                    <Minus className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
-              <button
-                onClick={() => addArrayItem('extras', { name: '', price: '' })}
-                className="text-sm text-primary hover:underline flex items-center gap-1"
-              >
-                <Plus className="w-4 h-4" />
-                Agregar extra
-              </button>
-            </div>
-
-            <div className="border-t border-foreground/10 pt-4"></div>
-
-            {/* Botón CTA */}
-            <div>
-              <label className="block text-sm mb-2">Texto del Botón</label>
-              <input
-                type="text"
-                value={section.ctaText || ''}
-                onChange={(e) => updateField('ctaText', e.target.value)}
-                placeholder="Solicitar presupuesto"
-                className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm mb-2">Enlace del Botón</label>
-              <input
-                type="text"
-                value={section.ctaLink || ''}
-                onChange={(e) => updateField('ctaLink', e.target.value)}
-                placeholder="https://wa.me/..."
-                className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-            </div>
-
-            {/* Horarios */}
-            <div>
-              <label className="block text-sm mb-2">Horarios (JSON)</label>
-              <p className="text-xs text-foreground/60 mb-2">
-                Formato: array de objetos con "day" y "slots" (cada slot tiene "time" y opcionalmente "availablePlaces")
-              </p>
-              <textarea
-                value={JSON.stringify(section.schedule || [], null, 2)}
-                onChange={(e) => {
-                  try {
-                    const parsed = JSON.parse(e.target.value);
-                    updateField('schedule', parsed);
-                  } catch (err) {
-                    // Mantener el valor mientras se está editando
-                  }
-                }}
-                rows={10}
-                placeholder={`[\n  {\n    "day": "Entre semana",\n    "slots": [\n      { "time": "10:00-13:00", "availablePlaces": null }\n    ]\n  }\n]`}
-                className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary font-mono text-sm"
-              />
-            </div>
-
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="showPlaces"
-                checked={section.showPlaces !== false}
-                onChange={(e) => updateField('showPlaces', e.target.checked)}
-                className="w-4 h-4"
-              />
-              <label htmlFor="showPlaces" className="text-sm">
-                Mostrar plazas disponibles
-              </label>
             </div>
           </>
         )}
@@ -535,6 +363,17 @@ export function SectionEditor({
         {section.type === 'about' && (
           <>
             <div>
+              <label className="block text-sm mb-2">Título (opcional)</label>
+              <input
+                type="text"
+                value={section.title || ''}
+                onChange={(e) => updateField('title', e.target.value)}
+                placeholder="Título de la sección"
+                className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+            </div>
+
+            <div>
               <label className="block text-sm mb-2">Contenido (usa \\n para separar párrafos)</label>
               <textarea
                 value={section.content || ''}
@@ -694,6 +533,230 @@ export function SectionEditor({
               <p className="text-xs text-foreground/60 mt-2">
                 Deja vacío para que el banner no sea clickeable
               </p>
+            </div>
+          </>
+        )}
+
+        {/* Team Section */}
+        {section.type === 'team' && (
+          <>
+            <div>
+              <label className="block text-sm mb-2">Título de la sección (opcional)</label>
+              <input
+                type="text"
+                value={section.title || ''}
+                onChange={(e) => updateField('title', e.target.value)}
+                placeholder="NUESTRO EQUIPO"
+                className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm mb-3">Miembros del Equipo / Profesores</label>
+              {(section.members || []).map((member: any, index: number) => (
+                <div key={index} className="mb-6 p-4 border-2 border-foreground/20 rounded-lg bg-foreground/5">
+                  <div className="flex justify-between items-start mb-3">
+                    <span className="text-sm font-medium">Profesor {index + 1}</span>
+                    <button
+                      onClick={() => removeArrayItem('members', index)}
+                      className="text-red-600 hover:bg-red-50 p-1 rounded"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  {/* Photo */}
+                  <div className="mb-3">
+                    <ImageUploader
+                      currentImage={member.photo || ''}
+                      onImageSelect={(url) => updateArrayItem('members', index, { ...member, photo: url })}
+                      label="Foto del profesor"
+                      aspectRatio="1:1"
+                    />
+                  </div>
+
+                  {/* Name */}
+                  <div className="mb-3">
+                    <label className="block text-xs mb-1">Nombre</label>
+                    <input
+                      type="text"
+                      value={member.name || ''}
+                      onChange={(e) => updateArrayItem('members', index, { ...member, name: e.target.value })}
+                      placeholder="Nombre del profesor"
+                      className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  </div>
+
+                  {/* Role */}
+                  <div className="mb-3">
+                    <label className="block text-xs mb-1">Cargo / Especialidad</label>
+                    <input
+                      type="text"
+                      value={member.role || ''}
+                      onChange={(e) => updateArrayItem('members', index, { ...member, role: e.target.value })}
+                      placeholder="ej: Ceramista especializada en torno"
+                      className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  </div>
+
+                  {/* Bio */}
+                  <div>
+                    <label className="block text-xs mb-1">Biografía</label>
+                    <textarea
+                      value={member.bio || ''}
+                      onChange={(e) => updateArrayItem('members', index, { ...member, bio: e.target.value })}
+                      placeholder="Escribe la biografía del profesor..."
+                      rows={4}
+                      className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  </div>
+                </div>
+              ))}
+              <button
+                onClick={() => addArrayItem('members', { name: '', role: '', bio: '', photo: '' })}
+                className="text-sm text-primary hover:underline flex items-center gap-1"
+              >
+                <Plus className="w-4 h-4" />
+                Agregar profesor
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* Gift Cards Section */}
+        {section.type === 'gift-cards' && (
+          <>
+            <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 mb-4">
+              <h4 className="font-medium mb-2 text-primary">Tarjetas Regalo</h4>
+              <p className="text-sm text-foreground/60">
+                Crea y gestiona las tarjetas regalo disponibles. Cada tarjeta muestra título, descripción, número de clases, personas y precio.
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm mb-2">Título de la sección (opcional)</label>
+              <input
+                type="text"
+                value={section.title || ''}
+                onChange={(e) => updateField('title', e.target.value)}
+                placeholder="TARJETAS REGALO"
+                className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm mb-3">Tarjetas Regalo</label>
+              {(section.giftCards || []).map((card: any, index: number) => (
+                <div key={index} className="mb-6 p-4 border-2 border-foreground/20 rounded-lg bg-foreground/5">
+                  <div className="flex justify-between items-start mb-3">
+                    <span className="text-sm font-medium">Tarjeta {index + 1}</span>
+                    <button
+                      onClick={() => removeArrayItem('giftCards', index)}
+                      className="text-red-600 hover:bg-red-50 p-1 rounded"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  {/* Título */}
+                  <div className="mb-3">
+                    <label className="block text-xs mb-1">Título de la tarjeta</label>
+                    <input
+                      type="text"
+                      value={card.title || ''}
+                      onChange={(e) => updateArrayItem('giftCards', index, { ...card, title: e.target.value })}
+                      placeholder="TARJETA REGALO"
+                      className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  </div>
+
+                  {/* Descripción */}
+                  <div className="mb-3">
+                    <label className="block text-xs mb-1">Descripción</label>
+                    <textarea
+                      value={card.description || ''}
+                      onChange={(e) => updateArrayItem('giftCards', index, { ...card, description: e.target.value })}
+                      placeholder="una tarjeta en elegante sobre rustico con un vale personalizado con el monto que elijas."
+                      rows={3}
+                      className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  </div>
+
+                  {/* Número de Clases */}
+                  <div className="mb-3">
+                    <label className="block text-xs mb-1">Número de clases</label>
+                    <input
+                      type="text"
+                      value={card.classes || ''}
+                      onChange={(e) => updateArrayItem('giftCards', index, { ...card, classes: e.target.value })}
+                      placeholder="1 clase"
+                      className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  </div>
+
+                  {/* Personas */}
+                  <div className="mb-3">
+                    <label className="block text-xs mb-1">Personas</label>
+                    <input
+                      type="text"
+                      value={card.people || ''}
+                      onChange={(e) => updateArrayItem('giftCards', index, { ...card, people: e.target.value })}
+                      placeholder="1 persona"
+                      className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  </div>
+
+                  {/* Precio */}
+                  <div className="mb-3">
+                    <label className="block text-xs mb-1">Precio (solo número, sin €)</label>
+                    <input
+                      type="number"
+                      value={card.price || ''}
+                      onChange={(e) => updateArrayItem('giftCards', index, { ...card, price: e.target.value })}
+                      placeholder="45"
+                      className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  </div>
+
+                  {/* CTA Opcional */}
+                  <div className="border-t border-foreground/20 pt-3 mt-3">
+                    <label className="block text-xs mb-1 text-foreground/60">Botón de Acción (opcional)</label>
+                    <div className="mb-2">
+                      <input
+                        type="text"
+                        value={card.ctaText || ''}
+                        onChange={(e) => updateArrayItem('giftCards', index, { ...card, ctaText: e.target.value })}
+                        placeholder="Comprar ahora"
+                        className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                      />
+                    </div>
+                    <div>
+                      <input
+                        type="text"
+                        value={card.ctaLink || ''}
+                        onChange={(e) => updateArrayItem('giftCards', index, { ...card, ctaLink: e.target.value })}
+                        placeholder="https://..."
+                        className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              <button
+                onClick={() => addArrayItem('giftCards', { 
+                  title: 'TARJETA REGALO', 
+                  description: '', 
+                  classes: '', 
+                  people: '', 
+                  price: '',
+                  ctaText: '',
+                  ctaLink: ''
+                })}
+                className="text-sm text-primary hover:underline flex items-center gap-1"
+              >
+                <Plus className="w-4 h-4" />
+                Agregar tarjeta regalo
+              </button>
             </div>
           </>
         )}

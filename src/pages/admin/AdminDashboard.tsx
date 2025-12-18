@@ -30,6 +30,8 @@ import { Dashboard } from './Dashboard';
 export function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [clearingCache, setClearingCache] = useState(false);
+  const [showCacheModal, setShowCacheModal] = useState(false);
+  const [cacheOption, setCacheOption] = useState<'all' | 'content' | 'images'>('all');
   const navigate = useNavigate();
   const location = useLocation();
   const { user, loading, signOut } = useAuth();
@@ -49,7 +51,7 @@ export function AdminDashboard() {
   const handleClearCache = () => {
     setClearingCache(true);
     
-    // Limpiar localStorage excepto la sesión de autenticación
+    // Guardar datos de autenticación
     const authKeys = Object.keys(localStorage).filter(key => 
       key.startsWith('sb-') || key === 'rememberAdmin'
     );
@@ -57,21 +59,62 @@ export function AdminDashboard() {
     authKeys.forEach(key => {
       authData[key] = localStorage.getItem(key) || '';
     });
-    
-    localStorage.clear();
-    
-    // Restaurar datos de autenticación
-    Object.entries(authData).forEach(([key, value]) => {
-      localStorage.setItem(key, value);
-    });
-    
-    // Limpiar sessionStorage
-    sessionStorage.clear();
-    
-    // Hacer un hard refresh después de 500ms
-    setTimeout(() => {
-      window.location.reload();
-    }, 500);
+
+    switch (cacheOption) {
+      case 'all':
+        // Limpiar todo
+        localStorage.clear();
+        sessionStorage.clear();
+        
+        // Restaurar autenticación
+        Object.entries(authData).forEach(([key, value]) => {
+          localStorage.setItem(key, value);
+        });
+        
+        // Hard refresh
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
+        break;
+
+      case 'content':
+        // Limpiar solo contenido (páginas, clases, blog)
+        const contentKeys = Object.keys(localStorage).filter(key =>
+          key.includes('page_') || 
+          key.includes('class_') || 
+          key.includes('blog_') ||
+          key.includes('content_') ||
+          key.includes('menu_')
+        );
+        contentKeys.forEach(key => localStorage.removeItem(key));
+        
+        // Limpiar sessionStorage
+        sessionStorage.clear();
+        
+        // Soft refresh
+        setTimeout(() => {
+          window.location.reload();
+        }, 300);
+        break;
+
+      case 'images':
+        // Limpiar solo imágenes
+        const imageKeys = Object.keys(localStorage).filter(key =>
+          key.includes('image_') || key.includes('img_')
+        );
+        imageKeys.forEach(key => localStorage.removeItem(key));
+        
+        // Forzar recarga de imágenes con cache busting
+        setTimeout(() => {
+          // Hard reload para forzar descarga de imágenes
+          window.location.reload();
+        }, 300);
+        break;
+
+      default:
+        setClearingCache(false);
+        setShowCacheModal(false);
+    }
   };
 
   const menuItems = [
@@ -181,7 +224,7 @@ export function AdminDashboard() {
 
           <div className="flex items-center gap-3">
             <button
-              onClick={handleClearCache}
+              onClick={() => setShowCacheModal(true)}
               disabled={clearingCache}
               className="flex items-center gap-2 px-3 py-2 text-sm text-foreground/60 hover:text-foreground hover:bg-foreground/5 rounded-lg transition-colors disabled:opacity-50"
               title="Limpiar caché y refrescar"
@@ -214,6 +257,150 @@ export function AdminDashboard() {
           </Routes>
         </main>
       </div>
+
+      {/* Cache Modal */}
+      {showCacheModal && (
+        <div
+          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+          onClick={() => setShowCacheModal(false)}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-2xl shadow-xl max-w-md w-full overflow-hidden"
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="bg-gradient-to-r from-primary to-primary/80 p-6 text-white">
+              <div className="flex items-center gap-3 mb-2">
+                <RefreshCw className="w-6 h-6" />
+                <h3 className="text-xl">Limpiar Caché</h3>
+              </div>
+              <p className="text-sm text-white/90">
+                Optimiza el rendimiento del panel de administración
+              </p>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 space-y-4">
+              <p className="text-sm text-foreground/70">
+                Selecciona qué tipo de datos deseas limpiar:
+              </p>
+
+              {/* Options */}
+              <div className="space-y-3">
+                <label
+                  className={`flex items-start gap-3 p-4 border-2 rounded-xl cursor-pointer transition-all ${
+                    cacheOption === 'all'
+                      ? 'border-primary bg-primary/5'
+                      : 'border-foreground/10 hover:border-primary/30 hover:bg-foreground/5'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="cacheOption"
+                    value="all"
+                    checked={cacheOption === 'all'}
+                    onChange={(e) => setCacheOption(e.target.value as any)}
+                    className="mt-1 w-4 h-4 text-primary"
+                  />
+                  <div className="flex-1">
+                    <div className="font-medium mb-1">Limpiar Todo</div>
+                    <div className="text-sm text-foreground/60">
+                      Elimina todos los datos almacenados y recarga la página completamente.
+                      Recomendado si experimentas problemas de visualización.
+                    </div>
+                  </div>
+                </label>
+
+                <label
+                  className={`flex items-start gap-3 p-4 border-2 rounded-xl cursor-pointer transition-all ${
+                    cacheOption === 'content'
+                      ? 'border-primary bg-primary/5'
+                      : 'border-foreground/10 hover:border-primary/30 hover:bg-foreground/5'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="cacheOption"
+                    value="content"
+                    checked={cacheOption === 'content'}
+                    onChange={(e) => setCacheOption(e.target.value as any)}
+                    className="mt-1 w-4 h-4 text-primary"
+                  />
+                  <div className="flex-1">
+                    <div className="font-medium mb-1">Limpiar Contenido</div>
+                    <div className="text-sm text-foreground/60">
+                      Elimina solo la caché de páginas, clases y blog. Útil después de hacer cambios importantes.
+                    </div>
+                  </div>
+                </label>
+
+                <label
+                  className={`flex items-start gap-3 p-4 border-2 rounded-xl cursor-pointer transition-all ${
+                    cacheOption === 'images'
+                      ? 'border-primary bg-primary/5'
+                      : 'border-foreground/10 hover:border-primary/30 hover:bg-foreground/5'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="cacheOption"
+                    value="images"
+                    checked={cacheOption === 'images'}
+                    onChange={(e) => setCacheOption(e.target.value as any)}
+                    className="mt-1 w-4 h-4 text-primary"
+                  />
+                  <div className="flex-1">
+                    <div className="font-medium mb-1">Limpiar Imágenes</div>
+                    <div className="text-sm text-foreground/60">
+                      Recarga las imágenes del navegador. Usa esto si las imágenes no se actualizan correctamente.
+                    </div>
+                  </div>
+                </label>
+              </div>
+
+              {/* Info Box */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <div className="text-blue-600 mt-0.5">ℹ️</div>
+                  <div className="text-sm text-blue-900">
+                    <strong>Nota:</strong> Tu sesión de autenticación se mantendrá activa después de limpiar la caché.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="bg-foreground/5 px-6 py-4 flex items-center justify-between gap-3">
+              <button
+                onClick={() => setShowCacheModal(false)}
+                disabled={clearingCache}
+                className="px-5 py-2.5 text-sm text-foreground/60 hover:text-foreground hover:bg-white rounded-lg transition-colors disabled:opacity-50"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleClearCache}
+                disabled={clearingCache}
+                className="px-6 py-2.5 text-sm bg-primary text-white rounded-lg hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {clearingCache ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    Limpiando...
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="w-4 h-4" />
+                    Limpiar Caché
+                  </>
+                )}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }

@@ -7,10 +7,14 @@ import { menuAPI } from '../../utils/api';
 import { ImageWithFallback } from '../../components/figma/ImageWithFallback';
 import { TrashModal } from '../../components/TrashModal';
 import { useAuth } from '../../contexts/AuthContext';
+import { useContent } from '../../contexts/ContentContext';
+import { useSearchParams } from 'react-router-dom';
 
 export function ContentManager() {
   const { user } = useAuth();
   const isEditor = user?.role === 'editor';
+  const { refreshContent } = useContent(); // Obtener la función para refrescar el contexto
+  const [searchParams, setSearchParams] = useSearchParams();
   
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -26,6 +30,14 @@ export function ContentManager() {
   const [showTrash, setShowTrash] = useState(false);
   const [trashedItems, setTrashedItems] = useState<any[]>([]);
 
+  // Leer el filtro de la URL al cargar el componente
+  useEffect(() => {
+    const filterParam = searchParams.get('filter');
+    if (filterParam && ['all', 'class', 'workshop', 'private'].includes(filterParam)) {
+      setFilter(filterParam as 'all' | 'class' | 'workshop' | 'private');
+    }
+  }, [searchParams]);
+
   useEffect(() => {
     loadItems();
     loadTrash();
@@ -38,10 +50,8 @@ export function ContentManager() {
       const response = await contentAPI.getItems(type);
       let sortedItems = response.items || [];
       
-      // Filtrar items según el rol: editores solo ven clases
-      if (isEditor) {
-        sortedItems = sortedItems.filter(item => item.type === 'class');
-      }
+      // NO filtrar items por rol - editores pueden ver todo
+      // Los permisos de edición se controlan en el ContentEditor
       
       // Log para debugging
       console.log('Items antes de ordenar:', sortedItems.map(item => ({
@@ -92,6 +102,7 @@ export function ContentManager() {
       shortDescription: '',
       description: '',
       price: 0,
+      priceOptions: [], // Opciones de precio adicionales
       duration: '',
       includes: [],
       images: [],
@@ -173,12 +184,58 @@ export function ContentManager() {
       // Obtener el item antes de eliminarlo
       const itemToDelete = items.find(item => item.id === id);
       if (itemToDelete) {
-        // Guardar el item eliminado en el localStorage
+        // Guardar el item eliminado en el localStorage (papelera)
         const currentTrash = JSON.parse(localStorage.getItem('content-trash') || '[]');
         currentTrash.push(itemToDelete);
         localStorage.setItem('content-trash', JSON.stringify(currentTrash));
 
-        // Eliminar el item de la lista
+        // **ELIMINAR DEL MENÚ SI EXISTE**
+        const itemPath = `/${itemToDelete.type === 'class' ? 'clases' : itemToDelete.type === 'private' ? 'privada' : 'workshops'}/${itemToDelete.slug}`;
+        try {
+          const menuResponse = await menuAPI.getMenu();
+          const currentMenu = menuResponse.menu?.items || [];
+          let menuUpdated = false;
+          
+          console.log('🔍 Buscando en menú para eliminar:', {
+            itemPath,
+            menuItems: currentMenu.length
+          });
+          
+          // Buscar y eliminar en todos los items del menú
+          const updatedMenu = currentMenu.map((menuItem: any) => {
+            if (menuItem.submenu && menuItem.submenu.length > 0) {
+              const originalLength = menuItem.submenu.length;
+              const updatedSubmenu = menuItem.submenu.filter((subItem: any) => subItem.path !== itemPath);
+              
+              if (updatedSubmenu.length < originalLength) {
+                menuUpdated = true;
+                console.log(`✅ Eliminado "${itemToDelete.title}" del menú "${menuItem.name}"`);
+              }
+              
+              return { ...menuItem, submenu: updatedSubmenu };
+            }
+            return menuItem;
+          });
+
+          // Guardar el menú actualizado si hubo cambios
+          if (menuUpdated) {
+            await menuAPI.saveMenu({ items: updatedMenu });
+            console.log('✅ Menú actualizado después de eliminar la clase');
+          } else {
+            console.log('ℹ️ No se encontró el item en el menú');
+          }
+        } catch (menuError) {
+          console.error('Error al actualizar el menú:', menuError);
+          // No bloqueamos la eliminación si falla el menú
+        }
+
+        // **IMPORTANTE: Eliminar del backend/base de datos**
+        await contentAPI.deleteItem(id);
+
+        // **CRÍTICO: Refrescar el ContentContext para que el Home se actualice**
+        await refreshContent();
+
+        // Eliminar el item de la lista local
         setItems(prevItems => prevItems.filter(item => item.id !== id));
 
         // Mostrar el toast de restauración
@@ -420,6 +477,15 @@ export function ContentManager() {
   };
 
   const handleSave = async (item: any) => {
+    // Prevenir guardados múltiples simultáneos
+    const actionId = item.id ? `save-${item.id}` : `create-${item.title}`;
+    if (processingActions.has(actionId)) {
+      console.log('⚠️ Ya hay un guardado en progreso, ignorando...');
+      return;
+    }
+
+    setProcessingActions(prev => new Set(prev).add(actionId));
+
     try {
       console.log('📥 ContentManager - Recibiendo item para guardar:', {
         includes: item.includes,
@@ -475,6 +541,15 @@ export function ContentManager() {
     } catch (error) {
       console.error('Error saving item:', error);
       alert('Error al guardar');
+    } finally {
+      // Remover el bloqueo después de un breve delay
+      setTimeout(() => {
+        setProcessingActions(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(actionId);
+          return newSet;
+        });
+      }, 1000); // 1 segundo de delay para evitar doble guardado
     }
   };
 
@@ -676,30 +751,26 @@ export function ContentManager() {
               >
                 Clases
               </button>
-              {!isEditor && (
-                <>
-                  <button
-                    onClick={() => setFilter('workshop')}
-                    className={`px-4 py-2 rounded-lg transition-colors ${
-                      filter === 'workshop'
-                        ? 'bg-primary text-white'
-                        : 'bg-foreground/5 text-foreground/70 hover:bg-foreground/10'
-                    }`}
-                  >
-                    Workshops
-                  </button>
-                  <button
-                    onClick={() => setFilter('private')}
-                    className={`px-4 py-2 rounded-lg transition-colors ${
-                      filter === 'private'
-                        ? 'bg-primary text-white'
-                        : 'bg-foreground/5 text-foreground/70 hover:bg-foreground/10'
-                    }`}
-                  >
-                    Privadas
-                  </button>
-                </>
-              )}
+              <button
+                onClick={() => setFilter('workshop')}
+                className={`px-4 py-2 rounded-lg transition-colors ${
+                  filter === 'workshop'
+                    ? 'bg-primary text-white'
+                    : 'bg-foreground/5 text-foreground/70 hover:bg-foreground/10'
+                }`}
+              >
+                Workshops
+              </button>
+              <button
+                onClick={() => setFilter('private')}
+                className={`px-4 py-2 rounded-lg transition-colors ${
+                  filter === 'private'
+                    ? 'bg-primary text-white'
+                    : 'bg-foreground/5 text-foreground/70 hover:bg-foreground/10'
+                }`}
+              >
+                Privadas
+              </button>
             </div>
           </div>
           
@@ -762,13 +833,19 @@ export function ContentManager() {
               className="bg-white rounded-lg shadow-md p-4 sm:p-6"
             >
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
-                {item.images?.[0] && (
-                  <ImageWithFallback
-                    src={item.images[0]}
-                    alt={item.title}
-                    className="w-full sm:w-24 h-48 sm:h-24 object-cover rounded-lg"
-                  />
-                )}
+                {item.images?.[0] && (() => {
+                  // Extraer la URL correctamente según el formato
+                  const firstImage = item.images[0];
+                  const imageUrl = typeof firstImage === 'string' ? firstImage : firstImage?.url || '';
+                  
+                  return imageUrl ? (
+                    <ImageWithFallback
+                      src={imageUrl}
+                      alt={item.title}
+                      className="w-full sm:w-24 h-48 sm:h-24 object-cover rounded-lg"
+                    />
+                  ) : null;
+                })()}
                 
                 <div className="flex-1 w-full">
                   <div className="flex flex-wrap items-center gap-2 mb-2">

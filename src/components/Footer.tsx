@@ -4,7 +4,7 @@ import { motion } from 'motion/react';
 import { Instagram, Mail, Phone, Facebook, Youtube } from 'lucide-react';
 import { settingsAPI, messagesAPI } from '../utils/api';
 import { InstagramCarousel } from './InstagramCarousel';
-import image_22346adf60f3b116e6667b47c39143747df28d93 from "figma:asset/22346adf60f3b116e6667b47c39143747df28d93.png";
+import { Logo } from './Logo';
 
 export function Footer() {
   const location = useLocation();
@@ -169,7 +169,7 @@ export function Footer() {
           {/* Info and Social */}
           <div className="space-y-8">
             <div className="flex justify-center lg:justify-start">
-              <img src={image_22346adf60f3b116e6667b47c39143747df28d93} alt="Casa Rosier" className="h-20 w-auto" />
+              <Logo className="h-20 w-auto" asLink={true} />
             </div>
             
             <div>

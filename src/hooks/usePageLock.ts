@@ -30,6 +30,7 @@ export function usePageLock(resourceId: string): UseLockReturn {
   
   const heartbeatIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const isMountedRef = useRef(true);
+  const currentResourceIdRef = useRef<string>(''); // Track current resourceId for cleanup
 
   // Check lock status
   const checkLockStatus = useCallback(async () => {
@@ -78,6 +79,9 @@ export function usePageLock(resourceId: string): UseLockReturn {
         setIsLocked(true);
         setLockOwner(response.lock);
         setHasLock(true);
+        
+        // Store current resourceId for cleanup
+        currentResourceIdRef.current = resourceId;
         
         // Start heartbeat
         startHeartbeat();
@@ -139,6 +143,9 @@ export function usePageLock(resourceId: string): UseLockReturn {
         setLockOwner(response.lock);
         setHasLock(true);
         
+        // Store current resourceId for cleanup
+        currentResourceIdRef.current = resourceId;
+        
         // Start heartbeat
         startHeartbeat();
         
@@ -194,13 +201,17 @@ export function usePageLock(resourceId: string): UseLockReturn {
       stopHeartbeat();
       
       // Release lock when component unmounts (if we own it)
-      if (hasLock) {
-        locksAPI.releaseLock(resourceId).catch(err => {
-          console.error('Failed to release lock on unmount:', err);
+      // Use the stored resourceId to avoid issues with empty resourceId on unmount
+      const lockResourceId = currentResourceIdRef.current;
+      if (hasLock && lockResourceId) {
+        // Silent cleanup - don't throw errors
+        locksAPI.releaseLock(lockResourceId).catch(() => {
+          // Silently fail - component is unmounting anyway
+          // The server will clean up expired locks automatically
         });
       }
     };
-  }, [hasLock, resourceId, stopHeartbeat]);
+  }, [hasLock, stopHeartbeat]);
 
   return {
     isLocked,

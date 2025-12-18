@@ -1,23 +1,94 @@
-import { useState, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { useContent } from '../contexts/ContentContext';
 import { Hero } from '../components/Hero';
 import { SEO } from '../components/SEO';
-import { Calendar, User, ArrowRight, SortAsc, SortDesc } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import Slider from 'react-slick';
+import { settingsAPI } from '../utils/api';
 
-type SortOrder = 'newest' | 'oldest';
+// Custom Arrow Components
+function NextArrow({ onClick }: { onClick?: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-foreground rounded-full p-3 shadow-lg transition-all hover:scale-110"
+    >
+      <ChevronRight className="w-6 h-6" />
+    </button>
+  );
+}
+
+function PrevArrow({ onClick }: { onClick?: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-foreground rounded-full p-3 shadow-lg transition-all hover:scale-110"
+    >
+      <ChevronLeft className="w-6 h-6" />
+    </button>
+  );
+}
 
 export function Blog() {
   const { blogPosts, loading } = useContent();
-  const [sortOrder, setSortOrder] = useState<SortOrder>('newest');
+  const [blogHeroImage, setBlogHeroImage] = useState('https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=1920');
 
-  // Ordenar posts según el criterio seleccionado
-  const sortedPosts = [...blogPosts].sort((a, b) => {
+  // Load blog hero image from settings
+  useEffect(() => {
+    const loadBlogHeroImage = async () => {
+      try {
+        const response = await settingsAPI.getSettings();
+        if (response.settings?.blogHeroImage) {
+          const image = typeof response.settings.blogHeroImage === 'string' 
+            ? response.settings.blogHeroImage 
+            : response.settings.blogHeroImage?.url;
+          if (image) {
+            setBlogHeroImage(image);
+          }
+        }
+      } catch (error) {
+        console.log('Blog hero image not found, using default');
+      }
+    };
+    loadBlogHeroImage();
+  }, []);
+
+  // Separar posts destacados y normales
+  const featuredPosts = blogPosts.filter(post => post.featured);
+  const regularPosts = blogPosts.filter(post => !post.featured);
+
+  // Ordenar cada grupo por fecha más reciente
+  const sortedFeaturedPosts = [...featuredPosts].sort((a, b) => {
     const dateA = new Date(a.publishedDate || a.createdAt).getTime();
     const dateB = new Date(b.publishedDate || b.createdAt).getTime();
-    return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
+    return dateB - dateA;
   });
+
+  const sortedRegularPosts = [...regularPosts].sort((a, b) => {
+    const dateA = new Date(a.publishedDate || a.createdAt).getTime();
+    const dateB = new Date(b.publishedDate || b.createdAt).getTime();
+    return dateB - dateA;
+  });
+
+  // Configuración del carrusel
+  const sliderSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 5000,
+    pauseOnHover: true,
+    nextArrow: <NextArrow />,
+    prevArrow: <PrevArrow />,
+    dotsClass: "slick-dots blog-carousel-dots",
+    customPaging: () => (
+      <div className="w-3 h-3 rounded-full bg-foreground/20 hover:bg-foreground/40 transition-all" />
+    ),
+  };
 
   return (
     <div className="min-h-screen">
@@ -28,126 +99,195 @@ export function Blog() {
       />
 
       <Hero
-        backgroundImage="https://images.unsplash.com/photo-1638341840302-a2d9579b821e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwb3R0ZXJ5JTIwc3R1ZGlvJTIwd29ya3NwYWNlfGVufDF8fHx8MTc2NTEwOTMwOHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+        backgroundImage={blogHeroImage}
         title="Blog"
         subtitle="Técnicas, historias y creaciones"
         useTextTitle={true}
       />
 
+      {/* Blog Posts Section */}
       <section className="py-16 lg:py-24 bg-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Controles de ordenamiento */}
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-left">Artículos</h2>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-foreground/60">Ordenar:</span>
-              <button
-                onClick={() => setSortOrder(sortOrder === 'newest' ? 'oldest' : 'newest')}
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-border rounded-lg hover:bg-muted transition-colors text-sm"
-              >
-                {sortOrder === 'newest' ? (
-                  <>
-                    <SortDesc className="w-4 h-4" />
-                    Más recientes
-                  </>
-                ) : (
-                  <>
-                    <SortAsc className="w-4 h-4" />
-                    Más antiguos
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {loading ? (
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="space-y-16">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="bg-white rounded-lg shadow-md overflow-hidden animate-pulse">
-                  <div className="w-full h-64 bg-gray-200"></div>
-                  <div className="p-6 space-y-3">
-                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                <div key={i} className="bg-white rounded-2xl shadow-lg overflow-hidden animate-pulse">
+                  <div className="grid grid-cols-1 lg:grid-cols-2">
+                    <div className="aspect-[4/3] lg:aspect-square bg-gray-200"></div>
+                    <div className="p-8 lg:p-12 space-y-4">
+                      <div className="h-4 bg-gray-200 rounded w-20"></div>
+                      <div className="h-8 bg-gray-200 rounded w-3/4"></div>
+                      <div className="h-4 bg-gray-200 rounded w-full"></div>
+                      <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
-          ) : blogPosts.length === 0 ? (
+          </div>
+        ) : blogPosts.length === 0 ? (
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center py-12">
               <p className="text-foreground/60">No hay artículos publicados todavía</p>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {sortedPosts.map((post, index) => (
-                <motion.article
-                  key={post.slug}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="bg-white rounded-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-border group"
-                >
-                  <Link to={`/blog/${post.slug}`} className="block">
-                    {post.featuredImage ? (
-                      <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                        <img
-                          src={post.featuredImage}
-                          alt={post.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      </div>
-                    ) : (
-                      <div className="aspect-[4/3] bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
-                        <span className="text-4xl text-primary/20">📝</span>
-                      </div>
-                    )}
-                  </Link>
-                  
-                  <div className="p-6 space-y-4">
-                    <div className="flex items-center gap-4 text-xs text-foreground/60">
-                      <div className="flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5" />
-                        <span>
-                          {new Date(post.publishedDate || post.createdAt).toLocaleDateString('es-ES', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric'
-                          })}
-                        </span>
-                      </div>
-                      {post.author && (
-                        <div className="flex items-center gap-1.5">
-                          <User className="w-3.5 h-3.5" />
-                          <span>{post.author}</span>
+          </div>
+        ) : (
+          <>
+            {/* Featured Posts Carousel - Full Width */}
+            {sortedFeaturedPosts.length > 0 && (
+              <div className="mb-16 lg:mb-24">
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+                  <h2 className="text-center">DESTACADOS</h2>
+                </div>
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                  <div className="relative">
+                    <Slider {...sliderSettings}>
+                      {sortedFeaturedPosts.map((post) => (
+                        <div key={post.slug}>
+                          <Link to={`/blog/${post.slug}`} className="block group">
+                            <div className="bg-white rounded-2xl overflow-hidden transition-all duration-300">
+                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
+                                {/* Image Left */}
+                                <div className="relative aspect-[4/3] lg:aspect-square overflow-hidden">
+                                  {post.featuredImage ? (
+                                    <img
+                                      src={post.featuredImage}
+                                      alt={post.title}
+                                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                    />
+                                  ) : (
+                                    <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                                      <span className="text-9xl text-primary/30">📝</span>
+                                    </div>
+                                  )}
+                                </div>
+
+                                {/* Content Right */}
+                                <div className="p-8 lg:p-12 flex flex-col justify-center">
+                                  {post.category && (
+                                    <span className="inline-block text-xs uppercase tracking-wider text-[#4A90E2] font-medium mb-4 w-fit bg-[#4A90E2]/10 px-3 py-1 rounded">
+                                      {post.category}
+                                    </span>
+                                  )}
+                                  <h2 className="text-2xl lg:text-4xl mb-4 group-hover:text-primary transition-colors duration-300 text-[30px]">
+                                    {post.title}
+                                  </h2>
+                                  {post.excerpt && (
+                                    <p className="text-foreground/70 lg:text-lg leading-relaxed mb-6 line-clamp-3 text-[16px]">
+                                      {post.excerpt}
+                                    </p>
+                                  )}
+                                  <div className="flex items-center gap-4 text-sm text-foreground/60">
+                                    {post.author && (
+                                      <>
+                                        <div className="flex items-center gap-2">
+                                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-medium text-xs">
+                                            {post.author.charAt(0).toUpperCase()}
+                                          </div>
+                                          <span className="font-medium">{post.author}</span>
+                                        </div>
+                                        <span className="text-foreground/30">•</span>
+                                      </>
+                                    )}
+                                    <span>
+                                      {new Date(post.publishedDate || post.createdAt).toLocaleDateString('es-ES', {
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric'
+                                      })}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </Link>
                         </div>
-                      )}
-                    </div>
-
-                    <Link to={`/blog/${post.slug}`}>
-                      <h3 className="text-xl leading-tight group-hover:text-primary transition-colors line-clamp-2">
-                        {post.title}
-                      </h3>
-                    </Link>
-
-                    {post.excerpt && (
-                      <p className="text-foreground/70 text-sm leading-relaxed line-clamp-3">
-                        {post.excerpt}
-                      </p>
-                    )}
-
-                    <Link
-                      to={`/blog/${post.slug}`}
-                      className="inline-flex items-center gap-2 text-primary text-sm hover:gap-3 transition-all pt-2"
-                    >
-                      Leer artículo
-                      <ArrowRight className="w-4 h-4" />
-                    </Link>
+                      ))}
+                    </Slider>
                   </div>
-                </motion.article>
-              ))}
-            </div>
-          )}
-        </div>
+                </div>
+              </div>
+            )}
+
+            {/* Regular Posts - Narrower Width */}
+            {sortedRegularPosts.length > 0 && (
+              <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h3 className="text-center mb-12">MÁS ARTÍCULOS</h3>
+                <div className="space-y-8">
+                  {sortedRegularPosts.map((post, index) => (
+                    <motion.article
+                      key={post.slug}
+                      initial={{ opacity: 0, y: 30 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      className="bg-white rounded-xl shadow-[0_2px_15px_rgba(0,0,0,0.06)] overflow-hidden hover:shadow-[0_4px_25px_rgba(0,0,0,0.1)] transition-all duration-300"
+                    >
+                      <Link to={`/blog/${post.slug}`} className="block">
+                        <div className="grid grid-cols-1 sm:grid-cols-[200px_1fr] gap-6">
+                          {/* Image */}
+                          <div className="relative aspect-[16/10] sm:aspect-square overflow-hidden group">
+                            {post.featuredImage ? (
+                              <img
+                                src={post.featuredImage}
+                                alt={post.title}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                                <span className="text-4xl text-primary/30">📝</span>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Content */}
+                          <div className="p-6 sm:py-4 sm:pr-6 sm:pl-0 flex flex-col justify-center">
+                            {post.category && (
+                              <span className="inline-block text-xs uppercase tracking-wider text-[#4A90E2] font-medium mb-2 w-fit">
+                                {post.category}
+                              </span>
+                            )}
+                            
+                            <h3 className="text-xl lg:text-2xl mb-3 group-hover:text-primary transition-colors">
+                              {post.title}
+                            </h3>
+
+                            {post.excerpt && (
+                              <p className="text-foreground/70 text-sm leading-relaxed mb-4 line-clamp-2">
+                                {post.excerpt}
+                              </p>
+                            )}
+
+                            <div className="flex items-center gap-3 text-xs text-foreground/60">
+                              {post.author && (
+                                <>
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-primary font-medium text-xs">
+                                      {post.author.charAt(0).toUpperCase()}
+                                    </div>
+                                    <span className="font-medium">{post.author}</span>
+                                  </div>
+                                  <span className="text-foreground/30">•</span>
+                                </>
+                              )}
+                              <span>
+                                {new Date(post.publishedDate || post.createdAt).toLocaleDateString('es-ES', {
+                                  month: 'short',
+                                  day: 'numeric',
+                                  year: 'numeric'
+                                })}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                    </motion.article>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
+        )}
       </section>
     </div>
   );
