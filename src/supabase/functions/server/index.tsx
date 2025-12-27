@@ -858,9 +858,37 @@ app.post('/make-server-0ba58e95/messages', async (c) => {
     try {
       const settings = await kv.get('settings');
       const contactEmail = settings?.contactEmail || 'info@casarosierceramica.com';
+      const contactEmail2 = settings?.contactEmail2; // Segundo email opcional
       const resendApiKey = Deno.env.get('RESEND_API_KEY');
 
+      // Debug: mostrar configuración de emails
+      console.log('📋 Settings obtenidos:', {
+        contactEmail,
+        contactEmail2,
+        contactEmail2Type: typeof contactEmail2,
+        contactEmail2Length: contactEmail2?.length,
+        hasResendKey: !!resendApiKey
+      });
+
       if (resendApiKey) {
+        // Preparar lista de destinatarios con los emails configurados en settings
+        const recipients = [contactEmail];
+        
+        // Si hay un segundo email configurado, añadirlo también
+        if (contactEmail2 && contactEmail2.trim() !== '') {
+          recipients.push(contactEmail2);
+          console.log('✅ Segundo email añadido:', contactEmail2);
+        } else {
+          console.log('⚠️ Segundo email NO añadido:', { 
+            contactEmail2, 
+            isEmpty: !contactEmail2,
+            isEmptyString: contactEmail2 === '',
+            trimmedIsEmpty: contactEmail2?.trim() === ''
+          });
+        }
+
+        console.log(`📧 Enviando email a: ${recipients.join(', ')} (total: ${recipients.length} destinatarios)`);
+
         const emailResponse = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {
@@ -868,30 +896,43 @@ app.post('/make-server-0ba58e95/messages', async (c) => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            from: 'Casa Rosier <onboarding@resend.dev>',
-            to: ['jrcaguilar@gmail.com'], // Email verificado en Resend (modo prueba)
+            from: 'Casa Rosier <noreply@casarosierceramica.com>',
+            to: recipients, // Array con uno o dos emails
+            reply_to: email, // Permite responder directamente al remitente
             subject: `Nuevo mensaje de contacto: ${subject || 'Sin asunto'}`,
             html: `
-              <h2>Nuevo mensaje de contacto</h2>
-              <p><strong>De:</strong> ${name || 'Sin nombre'}</p>
-              <p><strong>Email:</strong> ${email}</p>
-              <p><strong>Teléfono:</strong> ${phone || 'No proporcionado'}</p>
-              <p><strong>Asunto:</strong> ${subject || 'Sin asunto'}</p>
-              <p><strong>Mensaje:</strong></p>
-              <p>${message.replace(/\n/g, '<br>')}</p>
-              <hr>
-              <p style="color: #666; font-size: 12px;">Recibido el ${new Date().toLocaleString('es-ES')}</p>
-              <p style="color: #999; font-size: 11px;">Nota: Este email se envía a jrcaguilar@gmail.com porque Resend está en modo prueba. Para enviar a ${contactEmail}, verifica tu dominio en resend.com/domains</p>
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #FF5100;">Nuevo mensaje de contacto</h2>
+                <div style="background: #F3F2EF; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                  <p><strong>De:</strong> ${name || 'Sin nombre'}</p>
+                  <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
+                  <p><strong>Teléfono:</strong> ${phone || 'No proporcionado'}</p>
+                  <p><strong>Asunto:</strong> ${subject || 'Sin asunto'}</p>
+                </div>
+                <div style="background: white; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+                  <p><strong>Mensaje:</strong></p>
+                  <p style="white-space: pre-wrap;">${message.replace(/\n/g, '<br>')}</p>
+                </div>
+                <hr style="margin: 30px 0; border: none; border-top: 1px solid #ddd;">
+                <p style="color: #666; font-size: 12px;">Recibido el ${new Date().toLocaleString('es-ES', { timeZone: 'Europe/Madrid' })}</p>
+                <p style="color: #999; font-size: 11px;">Para responder, haz reply o escribe directamente a <a href="mailto:${email}">${email}</a></p>
+              </div>
             `,
           }),
         });
 
         if (!emailResponse.ok) {
-          console.error('Failed to send email notification:', await emailResponse.text());
+          const errorText = await emailResponse.text();
+          console.error('❌ Error al enviar email:', errorText);
+        } else {
+          const result = await emailResponse.json();
+          console.log(`✅ Email enviado exitosamente a ${recipients.length} destinatario(s)`, result);
         }
+      } else {
+        console.warn('⚠️ RESEND_API_KEY no configurada, email no enviado');
       }
     } catch (emailError) {
-      console.error('Error sending email notification:', emailError);
+      console.error('❌ Error crítico enviando email de notificación:', emailError);
       // No fallar la petición si el email falla
     }
 

@@ -45,11 +45,14 @@ export function ImageUploaderWithMeta({
   };
 
   const compressImage = async (file: File): Promise<File> => {
-    const maxSizeMB = 2;
+    // Nuevo límite: 600 KB (0.6 MB)
+    const maxSizeKB = 600;
+    const maxSizeMB = maxSizeKB / 1024;
+    const fileSizeKB = file.size / 1024;
     const fileSizeMB = file.size / 1024 / 1024;
 
-    // Si la imagen ya es menor a 2MB, no comprimirla
-    if (fileSizeMB <= maxSizeMB) {
+    // Si la imagen ya es menor a 600 KB, no comprimirla
+    if (fileSizeKB <= maxSizeKB) {
       return file;
     }
 
@@ -60,10 +63,11 @@ export function ImageUploaderWithMeta({
         maxWidthOrHeight: 1920,
         useWebWorker: true,
         fileType: file.type,
+        initialQuality: 0.8, // Calidad inicial para mejor compresión
       };
 
       const compressedFile = await imageCompression(file, options);
-      console.log(`Imagen comprimida: ${fileSizeMB.toFixed(2)}MB → ${(compressedFile.size / 1024 / 1024).toFixed(2)}MB`);
+      console.log(`Imagen comprimida: ${fileSizeKB.toFixed(2)}KB → ${(compressedFile.size / 1024).toFixed(2)}KB`);
       
       return compressedFile;
     } catch (error) {
@@ -84,12 +88,13 @@ export function ImageUploaderWithMeta({
       return;
     }
 
+    const fileSizeKB = file.size / 1024;
     const fileSizeMB = file.size / 1024 / 1024;
 
-    // Si supera los 2MB, informar al usuario que se comprimirá
-    if (fileSizeMB > 2) {
+    // Si supera los 600 KB, informar al usuario que se comprimirá
+    if (fileSizeKB > 600) {
       const confirmed = confirm(
-        `La imagen pesa ${fileSizeMB.toFixed(2)}MB. El límite es 2MB.\n\n` +
+        `La imagen pesa ${fileSizeMB > 1 ? fileSizeMB.toFixed(2) + 'MB' : fileSizeKB.toFixed(0) + 'KB'}. El límite recomendado es 600KB.\n\n` +
         '¿Deseas comprimirla automáticamente? (Recomendado)'
       );
       
@@ -241,7 +246,7 @@ export function ImageUploaderWithMeta({
             Arrastra una imagen aquí o haz click para seleccionar
           </p>
           <p className="text-xs text-gray-500 mb-4">
-            Máximo 2MB · Se comprimirá automáticamente si es necesario
+            Límite recomendado: 600KB · Se comprimirá automáticamente si es mayor
           </p>
           <div className="flex gap-2 justify-center">
             <button

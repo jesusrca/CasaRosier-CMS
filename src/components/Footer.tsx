@@ -24,14 +24,15 @@ export function Footer() {
       const response = await settingsAPI.getSettings();
       setSettings(response.settings);
     } catch (error) {
-      if (import.meta.env.DEV) {
-        console.error('Error loading settings:', error);
-      }
+      console.error('Error loading settings:', error);
     }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    // Guardar referencia al formulario antes del await
+    const form = e.currentTarget;
     
     // Limpiar estados y timeout anterior
     setError('');
@@ -44,7 +45,7 @@ export function Footer() {
     setSending(true);
 
     try {
-      const formData = new FormData(e.currentTarget);
+      const formData = new FormData(form);
       const messageData = {
         name: formData.get('name') as string,
         email: formData.get('email') as string,
@@ -57,7 +58,7 @@ export function Footer() {
       
       setSuccess(true);
       setError('');
-      e.currentTarget.reset();
+      form.reset(); // Usar la referencia guardada
       
       // Ocultar mensaje de éxito después de 5 segundos
       const timeoutId = window.setTimeout(() => {
@@ -66,9 +67,7 @@ export function Footer() {
       }, 5000);
       setSuccessTimeoutId(timeoutId);
     } catch (err) {
-      if (import.meta.env.DEV) {
-        console.error('Error sending message:', err);
-      }
+      console.error('Error sending message:', err);
       setSuccess(false);
       setError('Error al enviar el mensaje. Por favor, inténtalo de nuevo.');
     } finally {

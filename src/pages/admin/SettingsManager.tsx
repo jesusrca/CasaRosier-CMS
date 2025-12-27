@@ -843,7 +843,7 @@ export function SettingsManager() {
           
           <div className="space-y-4">
             <div>
-              <label className="block text-sm mb-2">Email de Contacto</label>
+              <label className="block text-sm mb-2">Email de Contacto Principal</label>
               <input
                 type="email"
                 value={settings.contactEmail || ''}
@@ -852,6 +852,20 @@ export function SettingsManager() {
               />
               <p className="text-xs text-foreground/60 mt-1">
                 Los mensajes del formulario de contacto se enviarán a este email
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm mb-2">Email de Contacto Secundario (Opcional)</label>
+              <input
+                type="email"
+                value={settings.contactEmail2 || ''}
+                onChange={(e) => updateField('contactEmail2', e.target.value)}
+                className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                placeholder="ejemplo@casarosier.com"
+              />
+              <p className="text-xs text-foreground/60 mt-1">
+                Si se configura, los mensajes también se enviarán a este segundo email
               </p>
             </div>
 

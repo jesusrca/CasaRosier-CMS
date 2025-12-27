@@ -15,8 +15,8 @@ function WhatsAppIcon({ className }: { className?: string }) {
 }
 
 export function WhatsAppButton() {
-  // Número de WhatsApp de Casa Rosier (actualizar con el número real)
-  const phoneNumber = '34XXXXXXXXX'; // Formato: código país + número sin espacios ni símbolos
+  // Número de WhatsApp de Casa Rosier
+  const phoneNumber = '34633788860'; // Formato: código país + número sin espacios ni símbolos
   const message = '¡Hola! Me gustaría obtener más información sobre Casa Rosier.';
   
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;

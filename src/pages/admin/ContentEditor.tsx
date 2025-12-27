@@ -958,8 +958,8 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
                         </div>
                       )}
 
-                      {/* Mostrar botón inferior de Inscribirse (para clases y workshops) */}
-                      {(item.type === 'class' || item.type === 'workshop') && (
+                      {/* Mostrar botón inferior de Inscribirse (para clases, workshops y privadas) */}
+                      {(item.type === 'class' || item.type === 'workshop' || item.type === 'private') && (
                         <div className="mt-4 border-t border-foreground/10 pt-4">
                           <label className="flex items-center gap-3 cursor-pointer">
                             <input
@@ -972,6 +972,26 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
                               <span className="text-sm font-medium">Mostrar botón "Inscribirse" al final del contenido</span>
                               <p className="text-xs text-foreground/50 mt-1">
                                 Este botón aparece después de la sección de contenido (módulos, actividades, etc.)
+                              </p>
+                            </div>
+                          </label>
+                        </div>
+                      )}
+
+                      {/* Mostrar botón superior para clases privadas */}
+                      {item.type === 'private' && (
+                        <div className="mt-4 border-t border-foreground/10 pt-4">
+                          <label className="flex items-center gap-3 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={item.content?.showHeroCTA !== false}
+                              onChange={(e) => updateNestedField('content', 'showHeroCTA', e.target.checked)}
+                              className="w-5 h-5 rounded border-foreground/20 text-primary focus:ring-primary"
+                            />
+                            <div>
+                              <span className="text-sm font-medium">Mostrar botón de contacto en sección principal</span>
+                              <p className="text-xs text-foreground/50 mt-1">
+                                Este botón aparece en la parte superior después del precio y horarios
                               </p>
                             </div>
                           </label>

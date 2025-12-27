@@ -36,6 +36,20 @@ export function ClasesListing() {
     ? settings.clasesHeroTitleImage 
     : settings.clasesHeroTitleImage?.url || '';
 
+  // Extraer la imagen de fondo del hero
+  const heroBackgroundUrl = typeof settings.clasesHeroBackground === 'string'
+    ? settings.clasesHeroBackground
+    : settings.clasesHeroBackground?.url || 'https://images.unsplash.com/photo-1660958639203-cbc9bb56955b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjZXJhbWljJTIwdmFzZSUyMG1pbmltYWx8ZW58MXx8fHwxNzY1MTQ4MzMxfDA&ixlib=rb-4.1.0&q=80&w=1080';
+
+  // Extraer textos del hero
+  const heroTitle = settings.clasesHeroTitle || 'Clases';
+  const heroSubtitle = settings.clasesHeroSubtitle || 'Aprende cerámica con nosotros';
+
+  // Extraer SEO settings
+  const seoTitle = settings.clasesSeoTitle || 'Clases de Cerámica - Casa Rosier';
+  const seoDescription = settings.clasesSeoDescription || 'Descubre nuestras clases de cerámica en Barcelona. Aprende técnicas de modelado, torno y más.';
+  const seoKeywords = settings.clasesSeoKeywords || 'clases cerámica, taller cerámica Barcelona, curso cerámica, modelado, torno';
+
   // Función para obtener el label del tipo
   const getTypeLabel = (type: string) => {
     switch (type) {
@@ -64,18 +78,37 @@ export function ClasesListing() {
     }
   };
 
+  // Función para extraer texto de campos que pueden ser objetos o strings
+  const getDisplayText = (field: any): string => {
+    if (!field) return '';
+    if (typeof field === 'string') return field;
+    if (typeof field === 'object') {
+      // Si tiene description, usarla
+      if (field.description) return field.description;
+      // Si es un objeto con slots, mostrar el número de slots
+      if (field.slots && Array.isArray(field.slots)) {
+        return `${field.slots.length} sesiones`;
+      }
+      // Si tiene enabled, mostrar estado
+      if (typeof field.enabled === 'boolean') {
+        return field.enabled ? 'Disponible' : 'No disponible';
+      }
+    }
+    return '';
+  };
+
   return (
     <div className="min-h-screen">
       <SEO
-        title="Clases de Cerámica - Casa Rosier"
-        description="Descubre nuestras clases de cerámica en Barcelona. Aprende técnicas de modelado, torno y más."
-        keywords="clases cerámica, taller cerámica Barcelona, curso cerámica, modelado, torno"
+        title={seoTitle}
+        description={seoDescription}
+        keywords={seoKeywords}
       />
 
       <Hero
-        backgroundImage="https://images.unsplash.com/photo-1660958639203-cbc9bb56955b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjZXJhbWljJTIwdmFzZSUyMG1pbmltYWx8ZW58MXx8fHwxNzY1MTQ4MzMxfDA&ixlib=rb-4.1.0&q=80&w=1080"
-        title="Clases"
-        subtitle="Aprende cerámica con nosotros"
+        backgroundImage={heroBackgroundUrl}
+        title={heroTitle}
+        subtitle={heroSubtitle}
         useTextTitle={!titleImageUrl}
         titleImage={titleImageUrl}
       />
@@ -106,151 +139,95 @@ export function ClasesListing() {
             </div>
           </div>
 
+          {/* Grid de clases */}
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="bg-white rounded-lg shadow-md overflow-hidden animate-pulse">
-                  <div className="w-full h-64 bg-gray-200"></div>
-                  <div className="p-6 space-y-3">
-                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                  </div>
-                </div>
-              ))}
+            <div className="flex items-center justify-center py-12">
+              <div className="text-center">
+                <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                <p className="text-foreground/60">Cargando clases...</p>
+              </div>
             </div>
-          ) : allItems.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-foreground/60">No hay clases disponibles en este momento</p>
+          ) : sortedItems.length === 0 ? (
+            <div className="text-center py-16">
+              <p className="text-foreground/60 text-lg">
+                No hay clases disponibles en este momento.
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {sortedItems.map((item, index) => {
-                // Obtener la imagen: featuredImage o primera del array de images
-                // Manejar tanto strings como objetos con propiedad 'url'
-                let imageUrl = null;
-                
-                if (item.featuredImage) {
-                  imageUrl = typeof item.featuredImage === 'string' 
-                    ? item.featuredImage 
-                    : item.featuredImage?.url;
-                } else if (item.images && item.images.length > 0) {
-                  const firstImage = item.images[0];
-                  imageUrl = typeof firstImage === 'string' 
-                    ? firstImage 
-                    : firstImage?.url;
-                }
-                
-                console.log('🖼️ Imagen para', item.title, ':', {
-                  featuredImage: item.featuredImage,
-                  images: item.images,
-                  imageUrl
-                });
-                
-                // Crear una key única combinando tipo, id y slug
-                const uniqueKey = item.id || `${item.type}-${item.slug || index}`;
-                
-                // Determinar la ruta correcta según el tipo
-                const itemPath = item.type === 'class' 
-                  ? `/clases/${item.slug}`
-                  : item.type === 'workshop'
-                  ? `/workshops/${item.slug}`
-                  : `/privada/${item.slug}`;
+                // Extraer la primera imagen del carrusel (puede ser string o objeto)
+                const firstImage = item.images && item.images.length > 0 ? item.images[0] : null;
+                const imageUrl = typeof firstImage === 'string' 
+                  ? firstImage 
+                  : firstImage?.url || 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjZXJhbWljJTIwY2xhc3N8ZW58MXx8fHwxNzY1MTQ4MzMxfDA&ixlib=rb-4.1.0&q=80&w=1080';
                 
                 return (
-                  <motion.article
-                    key={uniqueKey}
+                  <motion.div
+                    key={item.id}
                     initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
+                    animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: index * 0.1 }}
-                    className="bg-white rounded-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-border group"
                   >
-                    <Link to={itemPath} className="block relative">
-                      {imageUrl ? (
-                        <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                          <img
-                            src={imageUrl}
-                            alt={item.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                          {/* Etiqueta de tipo */}
-                          <div className="absolute top-3 left-3">
-                            <span className={`px-3 py-1 rounded-full text-xs ${getTypeColor(item.type)}`}>
-                              {getTypeLabel(item.type)}
-                            </span>
-                          </div>
+                    <Link
+                      to={`/${item.type === 'class' ? 'clases' : item.type === 'workshop' ? 'workshops' : 'privada'}/${item.slug}`}
+                      className="group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 h-full"
+                    >
+                      {/* Imagen */}
+                      <div className="relative h-80 overflow-hidden">
+                        <img
+                          src={imageUrl}
+                          alt={item.title}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        />
+                        {/* Badge de tipo */}
+                        <div className="absolute top-4 right-4">
+                          <span className={`${getTypeColor(item.type)} px-3 py-1 rounded-full text-xs shadow-lg`}>
+                            {getTypeLabel(item.type)}
+                          </span>
                         </div>
-                      ) : (
-                        <div className="aspect-[4/3] bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center relative">
-                          <span className="text-4xl text-primary/20">🎨</span>
-                          {/* Etiqueta de tipo */}
-                          <div className="absolute top-3 left-3">
-                            <span className={`px-3 py-1 rounded-full text-xs ${getTypeColor(item.type)}`}>
-                              {getTypeLabel(item.type)}
-                            </span>
-                          </div>
-                        </div>
-                      )}
-                    </Link>
-                    
-                    <div className="p-6 space-y-4">
-                      {/* Metadata */}
-                      <div className="flex flex-wrap items-center gap-4 text-xs text-foreground/60">
-                        {item.duration && (
-                          <div className="flex items-center gap-1.5">
-                            <Clock className="w-3.5 h-3.5" />
-                            <span>{item.duration}</span>
-                          </div>
-                        )}
-                        {item.level && (
-                          <div className="flex items-center gap-1.5">
-                            <Users className="w-3.5 h-3.5" />
-                            <span className="capitalize">{item.level}</span>
-                          </div>
-                        )}
                       </div>
 
-                      <Link to={itemPath}>
-                        <h3 className="text-xl leading-tight group-hover:text-primary transition-colors line-clamp-2">
+                      {/* Contenido */}
+                      <div className="p-6 space-y-4">
+                        <h3 className="text-xl group-hover:text-primary transition-colors">
                           {item.title}
                         </h3>
-                      </Link>
-
-                      {item.subtitle && (
-                        <p className="text-sm text-primary/80 line-clamp-1">
-                          {item.subtitle}
+                        
+                        <p className="text-foreground/70 text-sm line-clamp-2">
+                          {item.excerpt}
                         </p>
-                      )}
 
-                      {item.shortDescription && (
-                        <p className="text-foreground/70 text-sm leading-relaxed line-clamp-3">
-                          {item.shortDescription}
-                        </p>
-                      )}
-
-                      {/* Precio - solo mostrar si existe y es mayor que 0 */}
-                      {item.price && item.price > 0 && (
-                        <div className="pt-2 border-t border-border">
-                          <p className="text-lg text-primary">
-                            {item.price}€
-                            {item.priceDetails && (
-                              <span className="text-sm text-foreground/60 ml-2">
-                                {item.priceDetails}
-                              </span>
-                            )}
-                          </p>
+                        {/* Metadata */}
+                        <div className="flex flex-wrap gap-4 text-sm text-foreground/60">
+                          {item.duration && getDisplayText(item.duration) && (
+                            <div className="flex items-center gap-1">
+                              <Clock className="w-4 h-4" />
+                              <span>{getDisplayText(item.duration)}</span>
+                            </div>
+                          )}
+                          {item.schedule && getDisplayText(item.schedule) && (
+                            <div className="flex items-center gap-1">
+                              <Calendar className="w-4 h-4" />
+                              <span>{getDisplayText(item.schedule)}</span>
+                            </div>
+                          )}
+                          {item.capacity && getDisplayText(item.capacity) && (
+                            <div className="flex items-center gap-1">
+                              <Users className="w-4 h-4" />
+                              <span>{getDisplayText(item.capacity)}</span>
+                            </div>
+                          )}
                         </div>
-                      )}
 
-                      <Link
-                        to={itemPath}
-                        className="inline-flex items-center gap-2 text-primary text-sm hover:gap-3 transition-all pt-2"
-                      >
-                        Ver detalles
-                        <ArrowRight className="w-4 h-4" />
-                      </Link>
-                    </div>
-                  </motion.article>
+                        {/* CTA */}
+                        <div className="flex items-center gap-2 text-primary pt-2">
+                          <span className="text-sm">Más información</span>
+                          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      </div>
+                    </Link>
+                  </motion.div>
                 );
               })}
             </div>

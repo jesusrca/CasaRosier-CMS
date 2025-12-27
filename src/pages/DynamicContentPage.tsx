@@ -61,6 +61,7 @@ interface ContentItem {
     }>;
     ctaButtonText?: string;
     showBottomCTA?: boolean;
+    showHeroCTA?: boolean;
   };
   visible: boolean;
   seo?: {
@@ -187,7 +188,9 @@ export function DynamicContentPage() {
   };
 
   const handleConsultar = () => {
-    window.open('https://wa.me/34633788860', '_blank');
+    const pageUrl = window.location.href;
+    const message = `¡Hola! Me interesa "${content.title}". Vi la información en: ${pageUrl}`;
+    window.open(`https://wa.me/34633788860?text=${encodeURIComponent(message)}`, '_blank');
   };
 
   return (
@@ -218,6 +221,8 @@ export function DynamicContentPage() {
                         key={images[0]}
                         src={images[0]}
                         alt={content.title}
+                        loading="eager"
+                        fetchpriority="high"
                         initial={{ opacity: 0, scale: 1.05 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
@@ -240,6 +245,7 @@ export function DynamicContentPage() {
                           key={index}
                           src={image}
                           alt={`${content.title} detalle ${index + 1}`}
+                          loading="lazy"
                           onClick={() => handleImageClick(index)}
                           className="w-full h-32 object-cover rounded-lg shadow-md cursor-pointer hover:opacity-80 transition-opacity"
                         />
@@ -384,10 +390,14 @@ export function DynamicContentPage() {
               )}
 
               {/* CTA Button for Private Classes */}
-              {type === 'private' && (
+              {type === 'private' && (content.content?.showHeroCTA !== false) && (
                 <div className="pt-4">
                   <motion.button
-                    onClick={() => window.open('https://wa.me/34633788860', '_blank')}
+                    onClick={() => {
+                      const pageUrl = window.location.href;
+                      const message = `¡Hola! Me interesa "${content.title}". Vi la información en: ${pageUrl}`;
+                      window.open(`https://wa.me/34633788860?text=${encodeURIComponent(message)}`, '_blank');
+                    }}
                     className="border-2 border-primary text-primary px-6 py-3 rounded-lg text-sm transition-colors"
                     whileHover={{ 
                       backgroundColor: '#FF5100',
@@ -624,7 +634,11 @@ export function DynamicContentPage() {
                 {(content.content?.showBottomCTA !== false) && (
                   <div className="pt-6 flex justify-start">
                     <motion.button
-                      onClick={() => window.open('https://wa.me/34633788860', '_blank')}
+                      onClick={() => {
+                        const pageUrl = window.location.href;
+                        const message = `¡Hola! Me interesa "${content.title}". Vi la información en: ${pageUrl}`;
+                        window.open(`https://wa.me/34633788860?text=${encodeURIComponent(message)}`, '_blank');
+                      }}
                       className="border-2 border-primary text-primary px-6 py-3 rounded-lg text-sm transition-colors"
                       whileHover={{ 
                         backgroundColor: '#FF5100',

@@ -98,7 +98,7 @@ export function ScrollHeader() {
           <nav className="hidden md:flex items-center space-x-1">
             {menuItems.map((item, index) => (
               <div
-                key={item.name}
+                key={`${item.name}-${item.path || 'nopath'}-${index}`}
                 className="relative flex items-center"
                 onMouseEnter={() => item.submenu && setHoveredItem(item.name)}
                 onMouseLeave={() => setHoveredItem(null)}
@@ -131,9 +131,9 @@ export function ScrollHeader() {
                         transition={{ duration: 0.2 }}
                         className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-xl overflow-hidden min-w-[220px]"
                       >
-                        {item.submenu.map((subItem) => (
+                        {item.submenu.map((subItem, subIndex) => (
                           <Link
-                            key={subItem.path}
+                            key={`${item.name}-desktop-${subItem.path}-${subIndex}`}
                             to={subItem.path}
                             className="block px-5 py-3 text-foreground hover:bg-muted transition-colors duration-150 text-sm border-b border-border last:border-b-0"
                           >
@@ -176,13 +176,13 @@ export function ScrollHeader() {
             <div className="px-4 py-4 space-y-1">
               {menuItems.map((item, index) => (
                 <motion.div
-                  key={item.name}
+                  key={`scrollheader-mobile-${item.name}-${item.path || 'nopath'}-${index}`}
                   initial={{ x: -20, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ delay: index * 0.05 }}
                 >
-                  {/* Si tiene submenú, mostrar botón expandible (independiente de si tiene path) */}
-                  {item.submenu ? (
+                  {/* Si tiene submenú CON items, mostrar botón expandible */}
+                  {item.submenu && item.submenu.length > 0 ? (
                     <>
                       <div className="flex items-center gap-2">
                         {/* Si tiene path, mostrar también el link */}
@@ -218,9 +218,9 @@ export function ScrollHeader() {
                             transition={{ duration: 0.2 }}
                             className="overflow-hidden bg-white/10 rounded-lg my-1"
                           >
-                            {item.submenu.map((subItem) => (
+                            {item.submenu.map((subItem, subIndex) => (
                               <Link
-                                key={subItem.path}
+                                key={`${item.name}-mobile-${subItem.path}-${subIndex}`}
                                 to={subItem.path}
                                 onClick={() => {
                                   setIsMenuOpen(false);
@@ -236,7 +236,7 @@ export function ScrollHeader() {
                       </AnimatePresence>
                     </>
                   ) : (
-                    /* Si NO tiene submenú, solo mostrar link */
+                    /* Si NO tiene submenú o está vacío, solo mostrar link */
                     <Link
                       to={item.path || '/'}
                       onClick={() => setIsMenuOpen(false)}

@@ -108,14 +108,13 @@ export function ContentProvider({ children }: { children: ReactNode }) {
     try {
       setError(null);
       
+      // Timeout de seguridad de 10 segundos para evitar carga infinita
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Timeout loading content')), 10000);
+      });
+
       // Cargar todo en paralelo para máxima velocidad
-      const [
-        contentResponse,
-        blogResponse,
-        menuResponse,
-        settingsResponse,
-        pagesResponse
-      ] = await Promise.all([
+      const loadPromise = Promise.all([
         contentAPI.getAllItems().catch((err) => {
           console.warn('Error loading content items:', err.message);
           return { items: [] };
@@ -148,6 +147,14 @@ export function ContentProvider({ children }: { children: ReactNode }) {
           return { pages: [] };
         })
       ]);
+
+      const [
+        contentResponse,
+        blogResponse,
+        menuResponse,
+        settingsResponse,
+        pagesResponse
+      ] = await Promise.race([loadPromise, timeoutPromise]) as any;
 
       // Separar clases, workshops y privados
       const allItems = contentResponse.items || [];
@@ -188,6 +195,10 @@ export function ContentProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Cargar TODO el contenido una sola vez al montar
     loadAllContent();
+    
+    // Log del navegador para debugging de Android
+    console.log('🌐 User Agent:', navigator.userAgent);
+    console.log('🔌 Connection:', (navigator as any).connection?.effectiveType || 'unknown');
   }, []);
 
   // Métodos de búsqueda rápida

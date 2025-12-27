@@ -48,28 +48,16 @@ export function SEOHead({
   // 3. Valores por defecto
   const finalOgUrl = url || settings.ogUrl || window.location.href;
   const finalOgType = type || settings.ogType || 'website';
-  
-  // Para OG title y description: usar primero valores específicos de la página, 
-  // luego OG personalizados, luego SEO generales
-  const finalOgTitle = title || settings.ogTitle || settings.seoTitle || settings.siteName || 'Casa Rosier';
-  const finalOgDescription = description || settings.ogDescription || settings.seoDescription || settings.siteDescription || '';
-
-  // Construir URL completa de imagen si es relativa
-  const getFullImageUrl = (imageUrl: string) => {
-    if (!imageUrl) return '';
-    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
-      return imageUrl;
-    }
-    // Si la imagen es relativa, construir URL completa
-    const baseUrl = settings.ogUrl || window.location.origin;
-    return `${baseUrl}${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
-  };
-
-  const fullImageUrl = getFullImageUrl(finalImage);
 
   return (
     <Helmet>
-      {/* Basic Meta Tags */}
+      {/* Preconnect a dominios externos para mejorar rendimiento */}
+      <link rel="preconnect" href="https://images.unsplash.com" />
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      <link rel="dns-prefetch" href="https://images.unsplash.com" />
+      
+      {/* SEO básico */}
       <title>{finalTitle}</title>
       {finalDescription && <meta name="description" content={finalDescription} />}
       {finalKeywords && <meta name="keywords" content={finalKeywords} />}
@@ -77,19 +65,19 @@ export function SEOHead({
       {/* Open Graph / Facebook */}
       <meta property="og:type" content={finalOgType} />
       <meta property="og:url" content={finalOgUrl} />
-      <meta property="og:title" content={finalOgTitle} />
-      {finalOgDescription && <meta property="og:description" content={finalOgDescription} />}
-      {fullImageUrl && <meta property="og:image" content={fullImageUrl} />}
-      {fullImageUrl && <meta property="og:image:secure_url" content={fullImageUrl} />}
+      <meta property="og:title" content={finalTitle} />
+      {finalDescription && <meta property="og:description" content={finalDescription} />}
+      {finalImage && <meta property="og:image" content={finalImage} />}
+      {finalImage && <meta property="og:image:secure_url" content={finalImage} />}
       <meta property="og:site_name" content={settings.siteName || 'Casa Rosier'} />
       <meta property="og:locale" content="es_ES" />
 
       {/* Twitter Card */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:url" content={finalOgUrl} />
-      <meta name="twitter:title" content={finalOgTitle} />
-      {finalOgDescription && <meta name="twitter:description" content={finalOgDescription} />}
-      {fullImageUrl && <meta name="twitter:image" content={fullImageUrl} />}
+      <meta name="twitter:title" content={finalTitle} />
+      {finalDescription && <meta name="twitter:description" content={finalDescription} />}
+      {finalImage && <meta name="twitter:image" content={finalImage} />}
 
       {/* Article specific meta tags */}
       {finalOgType === 'article' && (

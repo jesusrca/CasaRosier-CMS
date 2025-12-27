@@ -48,6 +48,7 @@ async function getAuthToken(): Promise<string | null> {
 async function apiCall(endpoint: string, options: RequestInit = {}, cacheKey?: string, cacheTTL?: number) {
   const maxRetries = 3;
   const retryDelay = 1000; // 1 segundo
+  const requestTimeout = 8000; // 8 segundos timeout por petición
   
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
@@ -76,38 +77,60 @@ async function apiCall(endpoint: string, options: RequestInit = {}, cacheKey?: s
         headers['Authorization'] = `Bearer ${publicAnonKey}`;
       }
 
-      const response = await fetch(url, {
-        ...options,
-        headers,
-      });
+      // Crear controller para timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), requestTimeout);
 
-      if (!response.ok) {
-        const error = await response.json().catch(() => ({ error: 'Unknown error' }));
-        throw new Error(error.error || `API error: ${response.status}`);
+      try {
+        const response = await fetch(url, {
+          ...options,
+          headers,
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+          const errorObj = new Error(error.error || `API error: ${response.status}`) as any;
+          errorObj.status = response.status; // Guardar el status code
+          throw errorObj;
+        }
+
+        const data = await response.json();
+
+        // Guardar en caché si es GET y tenemos cacheKey
+        if ((!options.method || options.method === 'GET') && cacheKey) {
+          apiCache.set(cacheKey, data, cacheTTL);
+        }
+
+        return data;
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        throw fetchError;
       }
-
-      const data = await response.json();
-
-      // Guardar en caché si es GET y tenemos cacheKey
-      if ((!options.method || options.method === 'GET') && cacheKey) {
-        apiCache.set(cacheKey, data, cacheTTL);
-      }
-
-      return data;
-    } catch (error) {
+    } catch (error: any) {
       const isLastAttempt = attempt === maxRetries;
       
-      // Si es un error de red (Failed to fetch) y no es el último intento, reintentar
-      if (error instanceof TypeError && error.message === 'Failed to fetch' && !isLastAttempt) {
+      // No reintentar para errores 4xx (errores del cliente, como 404 Not Found)
+      // Solo reintentar para errores de red (TypeError, DOMException) o errores 5xx del servidor
+      const shouldRetry = (error instanceof TypeError || error instanceof DOMException) && !isLastAttempt;
+      const is5xxError = error.status >= 500 && error.status < 600 && !isLastAttempt;
+      
+      if (shouldRetry || is5xxError) {
         console.warn(`API call failed for ${endpoint} (attempt ${attempt}/${maxRetries}), retrying...`);
         await new Promise(resolve => setTimeout(resolve, retryDelay * attempt));
         continue;
       }
       
-      // Log the error and throw
-      console.warn(`API call failed for ${endpoint}:`, error);
+      // Para errores 404, no hacer log warning (es normal que algunas páginas no existan)
+      if (error.status === 404) {
+        console.log(`Resource not found: ${endpoint}`);
+      } else if (!isLastAttempt) {
+        console.warn(`API call failed for ${endpoint}:`, error);
+      }
       
-      // Si es el último intento o no es un error de red, lanzar el error
+      // Lanzar el error
       throw error;
     }
   }

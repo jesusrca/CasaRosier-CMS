@@ -126,17 +126,17 @@ export function InstagramLightbox({
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="relative w-full max-w-6xl bg-white rounded-2xl overflow-hidden shadow-2xl flex flex-col lg:flex-row max-h-[90vh]"
+            className="relative w-full max-w-6xl bg-white rounded-2xl overflow-hidden shadow-2xl flex flex-col lg:flex-row h-[90vh] max-h-[90vh]"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Image Section */}
-            <div className="relative w-full lg:w-3/5 bg-foreground/5 flex items-center justify-center overflow-hidden">
+            <div className="relative w-full lg:w-3/5 bg-foreground/5 flex items-center justify-center overflow-hidden h-[50vh] lg:h-auto">
               <AnimatePresence mode="wait">
                 <motion.img
                   key={currentIndex}
                   src={currentImage.url}
                   alt={currentImage.title || `Instagram image ${currentIndex + 1}`}
-                  className="w-full h-full object-contain max-h-[50vh] lg:max-h-[90vh]"
+                  className="w-full h-full object-contain"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -146,7 +146,7 @@ export function InstagramLightbox({
             </div>
 
             {/* Content Section */}
-            <div className="w-full lg:w-2/5 bg-white flex flex-col">
+            <div className="w-full lg:w-2/5 bg-white flex flex-col h-[40vh] lg:h-auto">
               {/* Header with Navigation */}
               <div className="flex items-center justify-between p-4 lg:p-6">
                 <div className="flex gap-2">

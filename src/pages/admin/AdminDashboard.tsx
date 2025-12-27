@@ -17,7 +17,8 @@ import {
   Image,
   RefreshCw,
   Gift,
-  ArrowRightLeft
+  ArrowRightLeft,
+  Palette
 } from 'lucide-react';
 import { ContentManager } from './ContentManager';
 import { BlogManager } from './BlogManager';
@@ -30,6 +31,7 @@ import { ImageLibrary } from './ImageLibrary';
 import { Dashboard } from './Dashboard';
 import { GiftCardManager } from './GiftCardManager';
 import { RedirectsManager } from './RedirectsManager';
+import { ClasesPageEditor } from './ClasesPageEditor';
 
 export function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -125,6 +127,7 @@ export function AdminDashboard() {
     { path: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard', roles: ['super_admin', 'editor'] },
     { path: '/admin/dashboard/pages', icon: FileImage, label: 'Páginas', roles: ['super_admin'] },
     { path: '/admin/dashboard/content', icon: FileText, label: 'Clases', roles: ['super_admin', 'editor'] },
+    { path: '/admin/dashboard/clases-page', icon: Palette, label: 'Página Clases', roles: ['super_admin'] },
     { path: '/admin/dashboard/blog', icon: BookOpen, label: 'Blog', roles: ['super_admin', 'editor'] },
     { path: '/admin/dashboard/menu', icon: List, label: 'Menú', roles: ['super_admin'] },
     { path: '/admin/dashboard/messages', icon: Mail, label: 'Mensajes', roles: ['super_admin', 'editor'] },
@@ -253,6 +256,7 @@ export function AdminDashboard() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/content" element={<ContentManager />} />
+            <Route path="/clases-page" element={<ClasesPageEditor />} />
             <Route path="/blog" element={<BlogManager />} />
             <Route path="/settings" element={<SettingsManager />} />
             <Route path="/menu" element={<MenuManager />} />
