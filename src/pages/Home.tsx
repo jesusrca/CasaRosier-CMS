@@ -223,6 +223,11 @@ export function Home() {
                     {coursesTitleLine2}
                   </h2>
                 </div>
+                {settings.homeCoursesDescription && (
+                  <p className="mt-4 text-lg text-[#7b7269] max-w-2xl">
+                    {settings.homeCoursesDescription}
+                  </p>
+                )}
               </div>
             </motion.div>
 
@@ -256,6 +261,11 @@ export function Home() {
                     {courses2TitleLine2}
                   </h2>
                 </div>
+                {settings.homeWorkshopsDescription && (
+                  <p className="mt-4 text-lg text-[#7b7269] max-w-2xl">
+                    {settings.homeWorkshopsDescription}
+                  </p>
+                )}
               </div>
             </motion.div>
 

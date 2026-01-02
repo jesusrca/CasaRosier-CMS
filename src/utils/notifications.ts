@@ -61,8 +61,10 @@ export const handleApiError = (error: any, context?: string) => {
   const message = error?.message || 'Ha ocurrido un error';
   const description = context ? `Error en: ${context}` : undefined;
   
-  // Log de error para debugging
-  console.error(`[API Error]${context ? ` ${context}:` : ''}`, error);
+  // Log para desarrollo (se eliminará en producción)
+  if (import.meta.env.DEV) {
+    console.error(`[API Error]${context ? ` ${context}:` : ''}`, error);
+  }
   
   notify.error(message, description);
 };

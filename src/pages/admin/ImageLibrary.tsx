@@ -88,10 +88,38 @@ export function ImageLibrary() {
     }
   };
 
-  const copyToClipboard = (url: string) => {
-    navigator.clipboard.writeText(url);
-    setCopiedUrl(url);
-    setTimeout(() => setCopiedUrl(null), 2000);
+  const copyToClipboard = async (url: string) => {
+    try {
+      // Intentar usar la API moderna del portapapeles
+      await navigator.clipboard.writeText(url);
+      setCopiedUrl(url);
+      setTimeout(() => setCopiedUrl(null), 2000);
+    } catch (error) {
+      // Fallback: usar el método clásico con un textarea temporal
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = url;
+        textarea.style.position = 'fixed';
+        textarea.style.left = '-999999px';
+        textarea.style.top = '-999999px';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textarea);
+        
+        if (successful) {
+          setCopiedUrl(url);
+          setTimeout(() => setCopiedUrl(null), 2000);
+        } else {
+          console.error('Fallback: Copy command was unsuccessful');
+          alert('No se pudo copiar la URL. Por favor, cópiala manualmente.');
+        }
+      } catch (fallbackError) {
+        console.error('Error copying to clipboard:', fallbackError);
+        alert('No se pudo copiar la URL. Por favor, cópiala manualmente.');
+      }
+    }
   };
 
   const formatFileSize = (bytes: number) => {

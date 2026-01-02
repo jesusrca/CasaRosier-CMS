@@ -80,10 +80,36 @@ export function InstagramLightbox({
     }
   };
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(window.location.href);
-    setCopySuccess(true);
-    setTimeout(() => setCopySuccess(false), 2000);
+  const handleCopyLink = async () => {
+    try {
+      // Intentar usar la API moderna del portapapeles
+      await navigator.clipboard.writeText(window.location.href);
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    } catch (error) {
+      // Fallback: usar el método clásico con un textarea temporal
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = window.location.href;
+        textarea.style.position = 'fixed';
+        textarea.style.left = '-999999px';
+        textarea.style.top = '-999999px';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textarea);
+        
+        if (successful) {
+          setCopySuccess(true);
+          setTimeout(() => setCopySuccess(false), 2000);
+        } else {
+          console.error('Fallback: Copy command was unsuccessful');
+        }
+      } catch (fallbackError) {
+        console.error('Error copying to clipboard:', fallbackError);
+      }
+    }
   };
 
   const handleShare = (platform: string) => {

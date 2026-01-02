@@ -66,7 +66,7 @@ function AppContent() {
               
               {/* Admin Routes */}
               <Route path="/admin/login" element={<AdminLogin />} />
-              <Route path="/admin/dashboard/*" element={<AdminDashboard />} />
+              <Route path="/admin/dashboard/*" element={<AdminDashboard />} /> 
               
               {/* Dynamic custom pages - antes del 404 */}
               <Route path="/:slug" element={<PageTransition><DynamicPage /></PageTransition>} />

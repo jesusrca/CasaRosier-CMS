@@ -4,17 +4,19 @@ import { Link } from 'react-router-dom';
 import { ChevronDown, Menu, X, Plus } from 'lucide-react';
 import { useContent } from '../contexts/ContentContext';
 import { Logo } from './Logo';
+import { settingsAPI } from '../utils/api';
 import heroTextImage from "figma:asset/00083d30bea445cb191f41f57aa132965c193e0d.png";
+import heroBackgroundImage from "figma:asset/cf3b622b1e53dff197470df428faee1c6f268025.png";
 
 interface HeroProps {
-  backgroundImage: string;
+  backgroundImage?: string; // Ahora es opcional
   title: string;
   subtitle?: string;
   showScrollIndicator?: boolean;
-  useTextTitle?: boolean; // Nuevo prop para decidir si usar texto o imagen
-  showWhiteGradient?: boolean; // Nuevo prop para mostrar degradado blanco al final (para Home)
-  titleImage?: string; // Imagen del título editable desde el administrador
-  reducedHeight?: boolean; // Nuevo prop para reducir altura (solo para blog)
+  useTextTitle?: boolean;
+  showWhiteGradient?: boolean;
+  titleImage?: string;
+  reducedHeight?: boolean;
 }
 
 interface SubMenuItem {
@@ -35,19 +37,74 @@ export function Hero({ backgroundImage, title, subtitle, showScrollIndicator = t
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [mobileOpenSubmenu, setMobileOpenSubmenu] = useState<string | null>(null);
   const [isDarkBackground, setIsDarkBackground] = useState(true);
+  const [heroImage, setHeroImage] = useState<string>(backgroundImage || heroBackgroundImage);
   const { menuItems } = useContent();
+
+  console.log('🎭 Hero props recibidas:', { 
+    backgroundImage, 
+    title, 
+    subtitle, 
+    useTextTitle, 
+    showScrollIndicator, 
+    reducedHeight,
+    heroImage 
+  });
+
+  // Cargar imagen de ajustes si no se proporciona backgroundImage
+  useEffect(() => {
+    const loadHeroImageFromSettings = async () => {
+      // Si ya se pasó una backgroundImage, usarla y NO cargar de settings
+      if (backgroundImage) {
+        console.log('✅ Hero usando backgroundImage proporcionada:', backgroundImage);
+        setHeroImage(backgroundImage);
+        return; // IMPORTANTE: salir aquí para no hacer la llamada a settings
+      }
+
+      // Solo si NO hay backgroundImage, cargar de settings
+      try {
+        const response = await settingsAPI.getSettings();
+        if (response.settings) {
+          const isMobile = window.innerWidth < 768;
+          
+          // Usar imagen mobile o desktop según el tamaño de pantalla
+          const settingsImage = isMobile 
+            ? (typeof response.settings.heroImageMobile === 'string' 
+                ? response.settings.heroImageMobile 
+                : response.settings.heroImageMobile?.url)
+            : (typeof response.settings.heroImageDesktop === 'string' 
+                ? response.settings.heroImageDesktop 
+                : response.settings.heroImageDesktop?.url);
+          
+          if (settingsImage) {
+            console.log('🖼️ Hero cargando imagen desde ajustes:', settingsImage);
+            setHeroImage(settingsImage);
+          } else {
+            console.log('📦 Usando imagen por defecto');
+            setHeroImage(heroBackgroundImage);
+          }
+        } else {
+          setHeroImage(heroBackgroundImage);
+        }
+      } catch (error) {
+        console.log('⚠️ Error cargando imagen de ajustes, usando default:', error);
+        setHeroImage(heroBackgroundImage);
+      }
+    };
+
+    loadHeroImageFromSettings();
+  }, [backgroundImage]);
 
   // Detect if background image is light or dark
   useEffect(() => {
     // Skip detection if no background image
-    if (!backgroundImage) {
+    if (!heroImage) {
       setIsDarkBackground(true);
       return;
     }
 
     const img = new Image();
     img.crossOrigin = 'Anonymous';
-    img.src = backgroundImage;
+    img.src = heroImage;
     
     img.onload = () => {
       try {
@@ -91,7 +148,7 @@ export function Hero({ backgroundImage, title, subtitle, showScrollIndicator = t
       // Silently default to dark background if image fails to load
       setIsDarkBackground(true);
     };
-  }, [backgroundImage]);
+  }, [heroImage]);
 
   const scrollToContent = () => {
     window.scrollTo({
@@ -120,7 +177,7 @@ export function Hero({ backgroundImage, title, subtitle, showScrollIndicator = t
       {/* Background Image */}
       <div className="absolute inset-0">
         <img
-          src={backgroundImage}
+          src={heroImage}
           alt=""
           className="w-full h-full object-cover"
           loading="eager"
@@ -148,7 +205,7 @@ export function Hero({ backgroundImage, title, subtitle, showScrollIndicator = t
             <nav className="hidden md:flex items-center gap-1">
               {menuItems.map((item, index) => (
                 <div
-                  key={`hero-page-${item.name}-${item.path || 'nopath'}-${index}`}
+                  key={`desktop-hero-${item.name}-${index}`}
                   className="flex items-center relative"
                   onMouseEnter={() => item.submenu && setHoveredItem(item.name)}
                   onMouseLeave={() => setHoveredItem(null)}
@@ -183,7 +240,7 @@ export function Hero({ backgroundImage, title, subtitle, showScrollIndicator = t
                         >
                           {item.submenu.map((subItem, subIndex) => (
                             <Link
-                              key={`${item.name}-desktop-${subItem.path}-${subIndex}`}
+                              key={`${subItem.path}-${subIndex}`}
                               to={subItem.path}
                               className="block px-5 py-3 text-secondary hover:bg-muted transition-colors duration-150 text-sm border-b border-border last:border-b-0"
                             >
@@ -226,13 +283,13 @@ export function Hero({ backgroundImage, title, subtitle, showScrollIndicator = t
               <div className="px-4 py-4 space-y-1">
                 {menuItems.map((item, index) => (
                   <motion.div
-                    key={`hero-page-mobile-${item.name}-${item.path || 'nopath'}-${index}`}
+                    key={`mobile-hero-${item.name}-${index}`}
                     initial={{ x: -20, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ delay: index * 0.05 }}
                   >
-                    {/* Si tiene submenú CON items, mostrar botón expandible */}
-                    {item.submenu && item.submenu.length > 0 ? (
+                    {/* Si tiene submenú, mostrar botón expandible (independiente de si tiene path) */}
+                    {item.submenu ? (
                       <>
                         <div className="flex items-center gap-2">
                           {/* Si tiene path, mostrar también el link */}
@@ -270,7 +327,7 @@ export function Hero({ backgroundImage, title, subtitle, showScrollIndicator = t
                             >
                               {item.submenu.map((subItem, subIndex) => (
                                 <Link
-                                  key={`${item.name}-mobile-${subItem.path}-${subIndex}`}
+                                  key={`${subItem.path}-${subIndex}`}
                                   to={subItem.path}
                                   onClick={() => {
                                     setIsMenuOpen(false);
@@ -286,7 +343,7 @@ export function Hero({ backgroundImage, title, subtitle, showScrollIndicator = t
                         </AnimatePresence>
                       </>
                     ) : (
-                      /* Si NO tiene submenú o está vacío, solo mostrar link */
+                      /* Si NO tiene submenú, solo mostrar link */
                       <Link
                         to={item.path || '/'}
                         onClick={() => setIsMenuOpen(false)}

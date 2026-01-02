@@ -98,7 +98,7 @@ export function ScrollHeader() {
           <nav className="hidden md:flex items-center space-x-1">
             {menuItems.map((item, index) => (
               <div
-                key={`${item.name}-${item.path || 'nopath'}-${index}`}
+                key={`desktop-${item.name}-${index}`}
                 className="relative flex items-center"
                 onMouseEnter={() => item.submenu && setHoveredItem(item.name)}
                 onMouseLeave={() => setHoveredItem(null)}
@@ -133,7 +133,7 @@ export function ScrollHeader() {
                       >
                         {item.submenu.map((subItem, subIndex) => (
                           <Link
-                            key={`${item.name}-desktop-${subItem.path}-${subIndex}`}
+                            key={`${subItem.path}-${subIndex}`}
                             to={subItem.path}
                             className="block px-5 py-3 text-foreground hover:bg-muted transition-colors duration-150 text-sm border-b border-border last:border-b-0"
                           >
@@ -176,12 +176,12 @@ export function ScrollHeader() {
             <div className="px-4 py-4 space-y-1">
               {menuItems.map((item, index) => (
                 <motion.div
-                  key={`scrollheader-mobile-${item.name}-${item.path || 'nopath'}-${index}`}
+                  key={`mobile-${item.name}-${index}`}
                   initial={{ x: -20, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ delay: index * 0.05 }}
                 >
-                  {/* Si tiene submenú CON items, mostrar botón expandible */}
+                  {/* Si tiene submenú, mostrar botón expandible (independiente de si tiene path) */}
                   {item.submenu && item.submenu.length > 0 ? (
                     <>
                       <div className="flex items-center gap-2">
@@ -220,7 +220,7 @@ export function ScrollHeader() {
                           >
                             {item.submenu.map((subItem, subIndex) => (
                               <Link
-                                key={`${item.name}-mobile-${subItem.path}-${subIndex}`}
+                                key={`${subItem.path}-${subIndex}`}
                                 to={subItem.path}
                                 onClick={() => {
                                   setIsMenuOpen(false);
@@ -236,7 +236,7 @@ export function ScrollHeader() {
                       </AnimatePresence>
                     </>
                   ) : (
-                    /* Si NO tiene submenú o está vacío, solo mostrar link */
+                    /* Si NO tiene submenú, solo mostrar link */
                     <Link
                       to={item.path || '/'}
                       onClick={() => setIsMenuOpen(false)}

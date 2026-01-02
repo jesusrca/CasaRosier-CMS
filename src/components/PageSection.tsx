@@ -3,10 +3,25 @@ import { useState } from 'react';
 import { Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ScheduleDisplay } from './ScheduleDisplay';
+import { Hero } from './Hero';
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
 
 interface PageSectionProps {
   section: any;
   siteSettings?: any;
+  isFirstSection?: boolean;
+}
+
+// Componente para renderizar contenido rico (HTML/Markdown)
+function RichContent({ content }: { content: string }) {
+  return (
+    <div className="prose prose-lg max-w-none text-foreground/80">
+      <ReactMarkdown rehypePlugins={[rehypeRaw]}>
+        {content}
+      </ReactMarkdown>
+    </div>
+  );
 }
 
 // Componente para el layout de clase/workshop con galería
@@ -49,11 +64,9 @@ function ClassLayoutSection({ section }: { section: any }) {
               <p className="text-lg leading-relaxed mb-4 text-[#7B7269] text-center uppercase tracking-[0.1em] font-light">{section.subtitle}</p>
             )}
 
-            {/* Descripción */}
+            {/* Descripción con soporte HTML */}
             {section.description && (
-              <div className="prose prose-lg max-w-none text-foreground/80">
-                <p className="whitespace-pre-wrap break-words">{section.description}</p>
-              </div>
+              <RichContent content={section.description} />
             )}
           </motion.div>
         </div>
@@ -62,9 +75,31 @@ function ClassLayoutSection({ section }: { section: any }) {
   );
 }
 
-export function PageSection({ section, siteSettings }: PageSectionProps) {
+export function PageSection({ section, siteSettings, isFirstSection }: PageSectionProps) {
   switch (section.type) {
     case 'hero':
+      // Si es la primera sección de un landing page, usar el componente Hero completo
+      if (isFirstSection) {
+        console.log('🎨 Renderizando Hero de landing page:', {
+          hasImage: !!section.image,
+          image: section.image,
+          title: section.title,
+          subtitle: section.subtitle
+        });
+        
+        return (
+          <Hero
+            backgroundImage={section.image}
+            title={section.title || 'Casa Rosier'}
+            subtitle={section.subtitle}
+            useTextTitle={true}
+            showScrollIndicator={true}
+            reducedHeight={false}
+          />
+        );
+      }
+      
+      // Si NO es la primera sección, usar el hero simple sin menú
       return (
         <section className="relative h-[60vh] min-h-[500px] overflow-hidden">
           {section.image && (
@@ -124,9 +159,7 @@ export function PageSection({ section, siteSettings }: PageSectionProps) {
               {isPaymentMethods && siteSettings?.paymentMethods ? (
                 <div className="space-y-6">
                   {section.content && (
-                    <p className="text-base text-foreground/80">
-                      {section.content}
-                    </p>
+                    <RichContent content={section.content} />
                   )}
                   {Object.values(siteSettings.paymentMethods).some((enabled: any) => enabled) && (
                     <div className="flex flex-wrap gap-3 items-center">
@@ -180,9 +213,7 @@ export function PageSection({ section, siteSettings }: PageSectionProps) {
                 </div>
               ) : (
                 section.content && (
-                  <div className="prose prose-lg max-w-none text-foreground/80 whitespace-pre-wrap">
-                    {section.content}
-                  </div>
+                  <RichContent content={section.content} />
                 )
               )}
             </motion.div>
@@ -304,11 +335,9 @@ export function PageSection({ section, siteSettings }: PageSectionProps) {
                   <h2>{section.title}</h2>
                 )}
 
-                {/* Contenido */}
+                {/* Contenido con soporte HTML */}
                 {section.content && (
-                  <div className="prose prose-lg max-w-none text-foreground/80">
-                    <p className="whitespace-pre-wrap break-words">{section.content}</p>
-                  </div>
+                  <RichContent content={section.content} />
                 )}
               </motion.div>
             </div>

@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Instagram, Mail, Phone, Facebook } from 'lucide-react';
 import { settingsAPI, messagesAPI } from '../utils/api';
+import { landingPagesAPI } from '../utils/landingPagesApi';
 import { InstagramCarousel } from './InstagramCarousel';
 import { Logo } from './Logo';
 
@@ -14,9 +15,11 @@ export function Footer() {
   const [error, setError] = useState('');
   const [successTimeoutId, setSuccessTimeoutId] = useState<number | null>(null);
   const [settings, setSettings] = useState<any>({});
+  const [landingPages, setLandingPages] = useState<any[]>([]);
 
   useEffect(() => {
     loadSettings();
+    loadLandingPages();
   }, []);
 
   const loadSettings = async () => {
@@ -28,11 +31,18 @@ export function Footer() {
     }
   };
 
+  const loadLandingPages = async () => {
+    try {
+      const response = await landingPagesAPI.getPublishedLandingPages();
+      setLandingPages(response.landingPages || []);
+    } catch (error) {
+      // Silently fail if error occurs
+      console.error('Error loading landing pages:', error);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
-    // Guardar referencia al formulario antes del await
-    const form = e.currentTarget;
     
     // Limpiar estados y timeout anterior
     setError('');
@@ -45,7 +55,7 @@ export function Footer() {
     setSending(true);
 
     try {
-      const formData = new FormData(form);
+      const formData = new FormData(e.currentTarget);
       const messageData = {
         name: formData.get('name') as string,
         email: formData.get('email') as string,
@@ -58,7 +68,7 @@ export function Footer() {
       
       setSuccess(true);
       setError('');
-      form.reset(); // Usar la referencia guardada
+      e.currentTarget.reset();
       
       // Ocultar mensaje de éxito después de 5 segundos
       const timeoutId = window.setTimeout(() => {
@@ -67,7 +77,9 @@ export function Footer() {
       }, 5000);
       setSuccessTimeoutId(timeoutId);
     } catch (err) {
-      console.error('Error sending message:', err);
+      if (import.meta.env.DEV) {
+        console.error('Error sending message:', err);
+      }
       setSuccess(false);
       setError('Error al enviar el mensaje. Por favor, inténtalo de nuevo.');
     } finally {
@@ -212,6 +224,25 @@ export function Footer() {
             </div>
 
             <div className="pt-6 border-t border-foreground/10">
+              {/* Landing Pages Menu */}
+              {landingPages.length > 0 && (
+                <div className="mb-4">
+                  <h4 className="mb-3 text-sm">Landing Pages</h4>
+                  <ul className="space-y-2">
+                    {landingPages.map((page) => (
+                      <li key={page.id}>
+                        <Link
+                          to={`/${page.slug}`}
+                          className="text-sm text-muted-foreground hover:text-primary transition-colors block"
+                        >
+                          {page.title}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              
               <Link
                 to="/admin/login"
                 className="text-xs text-foreground/40 hover:text-primary transition-colors block"

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { settingsAPI, uploadAPI, contentAPI } from '../../utils/api';
 import { Save, AlertCircle, CheckCircle, Upload, X, Plus, Trash2, RefreshCw, Image as ImageIcon, ArrowUp, ArrowDown } from 'lucide-react';
 import { ImageUploader } from '../../components/ImageUploader';
@@ -16,6 +16,11 @@ export function SettingsManager() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [uploadingInstagram, setUploadingInstagram] = useState(false);
+  
+  // Estado para modal de galería al agregar imagen de Instagram
+  const [showInstagramGallery, setShowInstagramGallery] = useState(false);
+  const [instagramGalleryImages, setInstagramGalleryImages] = useState<any[]>([]);
+  const [loadingInstagramGallery, setLoadingInstagramGallery] = useState(false);
   
   // Estado local para el orden de items destacados
   const [featuredOrder, setFeaturedOrder] = useState<{
@@ -66,11 +71,96 @@ export function SettingsManager() {
 
   const loadSettings = async () => {
     try {
+      console.log('SettingsManager - Cargando settings...');
       const response = await settingsAPI.getSettings();
-      setSettings(response.settings);
-      setInitialSettingsSnapshot(JSON.stringify(response.settings));
+      console.log('SettingsManager - Response:', response);
+      console.log('SettingsManager - Settings:', response.settings);
+      
+      // También cargar las imágenes disponibles para informar al usuario
+      try {
+        const imagesResponse = await uploadAPI.getImages();
+        console.log('SettingsManager - Imágenes disponibles en storage:', imagesResponse.images?.length || 0);
+        if (imagesResponse.images && imagesResponse.images.length > 0) {
+          console.log('✅ Tus imágenes subidas anteriormente siguen disponibles en la galería');
+        }
+      } catch (err) {
+        console.log('No se pudieron cargar las imágenes del storage');
+      }
+      
+      // Inicializar settings con valores por defecto si están vacíos
+      const defaultSettings = {
+        siteName: 'Casa Rosier',
+        siteDescription: 'Taller de cerámica en Barcelona',
+        seoTitle: 'Casa Rosier - Taller de Cerámica en Barcelona',
+        seoDescription: 'Descubre la cerámica en Casa Rosier. Clases, workshops y espacios para eventos en Barcelona.',
+        seoKeywords: 'cerámica, Barcelona, taller, clases, workshops, torno',
+        ogImage: '',
+        ogUrl: 'https://casarosierceramica.com',
+        ogType: 'website',
+        ogTitle: '',
+        ogDescription: '',
+        contactEmail: 'info@casarosierceramica.com',
+        contactEmail2: '',
+        contactPhone: '+34 633788860',
+        heroImageDesktop: '',
+        heroImageMobile: '',
+        heroTextImage1: '',
+        heroTextImage2: '',
+        blogHeroImage: '',
+        blogTitleImage: '',
+        clasesHeroTitleImage: '',
+        homeCoursesDescription: '',
+        homeWorkshopsDescription: '',
+        instagramTitle: 'Y TÚ, ¿CUÁNDO TUVISTE TU ÚLTIMA IDEA?',
+        instagramHandle: '@casarosier',
+        instagramLink: 'https://instagram.com/casarosier',
+        instagramImages: [],
+        googleAnalyticsId: '',
+        paymentMethods: {
+          transferencia: false,
+          paypal: false,
+          tarjeta: false,
+          efectivo: false,
+          bizum: false
+        },
+        landingPages: []
+      };
+      
+      // Verificar si faltan campos importantes
+      const needsDefaultSettings = !response.settings.siteName || 
+                                   !response.settings.contactEmail || 
+                                   response.settings.instagramImages === undefined;
+      
+      // Combinar settings por defecto con los existentes (preservar landingPages y otros datos existentes)
+      const mergedSettings = {
+        ...defaultSettings,
+        ...response.settings,
+        // Asegurar que paymentMethods tenga estructura correcta
+        paymentMethods: {
+          ...defaultSettings.paymentMethods,
+          ...(response.settings.paymentMethods || {})
+        }
+      };
+      
+      console.log('SettingsManager - Settings combinados con defaults:', mergedSettings);
+      console.log('SettingsManager - ¿Necesita valores por defecto?:', needsDefaultSettings);
+      
+      setSettings(mergedSettings);
+      setInitialSettingsSnapshot(JSON.stringify(mergedSettings));
+      
+      // Si necesitamos valores por defecto, mostrar un mensaje explicativo
+      if (needsDefaultSettings) {
+        setMessage({ 
+          type: 'error', 
+          text: '⚠️ La restauración borró la configuración guardada. BUENAS NOTICIAS: Tus imágenes siguen en la galería - solo necesitas volver a seleccionarlas. Haz clic en "Establecer imagen" y usa la galería.' 
+        });
+      }
     } catch (error) {
       console.error('Error loading settings:', error);
+      setMessage({ 
+        type: 'error', 
+        text: 'Error al cargar la configuración. Por favor recarga la página.' 
+      });
     } finally {
       setLoading(false);
     }
@@ -154,7 +244,39 @@ export function SettingsManager() {
     input.click();
   };
 
-  const handleInstagramImageUpload = async (file: File) => {
+  const handleInstagramImageSelect = () => {
+    // Abrir galería en lugar del selector de archivos
+    setShowInstagramGallery(true);
+    loadInstagramGallery();
+  };
+  
+  const loadInstagramGallery = async () => {
+    setLoadingInstagramGallery(true);
+    try {
+      const response = await uploadAPI.getImages();
+      setInstagramGalleryImages(response.images || []);
+    } catch (error) {
+      console.error('Error loading gallery:', error);
+    } finally {
+      setLoadingInstagramGallery(false);
+    }
+  };
+  
+  const handleSelectFromGalleryForNewInstagram = (url: string) => {
+    const currentImages = settings.instagramImages || [];
+    const newImage = {
+      url: url,
+      title: '',
+      description: '',
+      source: 'OKA // INSTAGRAM',
+      date: new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' }).toUpperCase()
+    };
+    updateField('instagramImages', [...currentImages, newImage]);
+    setShowInstagramGallery(false);
+    setMessage({ type: 'success', text: 'Imagen agregada al carrusel. No olvides guardar los cambios.' });
+  };
+  
+  const handleUploadNewForInstagram = async (file: File) => {
     setUploadingInstagram(true);
     try {
       const response = await uploadAPI.uploadImage(file);
@@ -167,26 +289,15 @@ export function SettingsManager() {
         date: new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' }).toUpperCase()
       };
       updateField('instagramImages', [...currentImages, newImage]);
-      setMessage({ type: 'success', text: 'Imagen agregada al carrusel. No olvides guardar los cambios.' });
+      setShowInstagramGallery(false);
+      await loadInstagramGallery(); // Recargar galería
+      setMessage({ type: 'success', text: 'Imagen subida y agregada al carrusel. No olvides guardar los cambios.' });
     } catch (error) {
       console.error('Error uploading Instagram image:', error);
       setMessage({ type: 'error', text: 'Error al subir la imagen' });
     } finally {
       setUploadingInstagram(false);
     }
-  };
-
-  const handleInstagramImageSelect = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.onchange = (e: any) => {
-      const file = e.target.files?.[0];
-      if (file) {
-        handleInstagramImageUpload(file);
-      }
-    };
-    input.click();
   };
 
   const removeInstagramImage = (index: number) => {
@@ -726,21 +837,47 @@ export function SettingsManager() {
 
         {/* Clases y Workshops destacados en Home */}
         <div className="bg-white rounded-lg shadow-md p-6">
+          <h3 className="text-xl mb-4">Descripciones de Secciones del Home</h3>
+          <p className="text-sm text-foreground/60 mb-4">
+            Agrega descripciones que aparecerán debajo de los títulos de cada sección en la página de inicio
+          </p>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm mb-2">Descripción Sección de Clases (Sección 1)</label>
+              <textarea
+                value={settings.homeCoursesDescription || ''}
+                onChange={(e) => updateField('homeCoursesDescription', e.target.value)}
+                rows={3}
+                placeholder="Ej: Explora nuestras clases regulares de cerámica en Barcelona"
+                className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-y"
+              />
+              <p className="text-xs text-foreground/60 mt-1">
+                Texto que aparece debajo del título "CURSOS Y WORKSHOPS"
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm mb-2">Descripción Sección de Workshops (Sección 2)</label>
+              <textarea
+                value={settings.homeWorkshopsDescription || ''}
+                onChange={(e) => updateField('homeWorkshopsDescription', e.target.value)}
+                rows={3}
+                placeholder="Ej: Talleres intensivos de fin de semana para todos los niveles"
+                className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-y"
+              />
+              <p className="text-xs text-foreground/60 mt-1">
+                Texto que aparece debajo del título de la segunda sección del home
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-md p-6">
           <h3 className="text-xl mb-4">Clases Destacadas en Home (Sección 1)</h3>
           <p className="text-sm text-foreground/60 mb-4">
             Orden de las clases que aparecen en la primera sección del home. Para agregar o quitar clases, edítalas desde el Gestor de Contenido.
           </p>
-          
-          {/* Debug Info */}
-          <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded text-xs space-y-1">
-            <div><strong>Debug:</strong></div>
-            <div>Total clases: {classes.length}</div>
-            <div>Total workshops: {workshops.length}</div>
-            <div>Clases con showInHome=true: {[...classes, ...workshops].filter((item: any) => item.showInHome === true).length}</div>
-            <div>Clases con showInHome=true Y visible=true: {[...classes, ...workshops].filter((item: any) => item.showInHome === true && item.visible === true).length}</div>
-            <div>featuredOrder.courses: {JSON.stringify(featuredOrder.courses)}</div>
-            <div>Items devueltos por getFeaturedCourses(): {getFeaturedCourses().length}</div>
-          </div>
           
           {getFeaturedCourses().length > 0 ? (
             <div className="space-y-2">
@@ -938,6 +1075,97 @@ export function SettingsManager() {
           setHasUnsavedChanges(false);
         }}
       />
+      
+      {/* Modal de galería para Instagram */}
+      <AnimatePresence>
+        {showInstagramGallery && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+            onClick={() => setShowInstagramGallery(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-lg max-w-4xl w-full max-h-[80vh] overflow-y-auto p-6"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl">Agregar Imagen al Carrusel</h3>
+                <button
+                  type="button"
+                  onClick={() => setShowInstagramGallery(false)}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              {/* Botón de subir desde computadora */}
+              <div className="mb-6">
+                <label className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors cursor-pointer">
+                  <Upload size={18} className={uploadingInstagram ? 'animate-spin' : ''} />
+                  <span>
+                    {uploadingInstagram ? 'Subiendo imagen...' : 'Subir nueva imagen desde computadora'}
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    disabled={uploadingInstagram}
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        await handleUploadNewForInstagram(file);
+                      }
+                    }}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+
+              <div className="border-t border-gray-200 pt-6 mb-4">
+                <h4 className="font-medium mb-3">O selecciona de la galería:</h4>
+              </div>
+
+              {loadingInstagramGallery ? (
+                <div className="py-12 text-center">
+                  <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                  <p className="text-gray-600">Cargando imágenes...</p>
+                </div>
+              ) : instagramGalleryImages.length === 0 ? (
+                <div className="py-12 text-center text-gray-500">
+                  No hay imágenes en la galería. Sube una nueva imagen arriba.
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {instagramGalleryImages.map((image) => (
+                    <button
+                      key={image.name}
+                      type="button"
+                      onClick={() => handleSelectFromGalleryForNewInstagram(image.url)}
+                      className="relative group aspect-square rounded-lg overflow-hidden border-2 border-gray-200 hover:border-primary transition-colors"
+                    >
+                      <img
+                        src={image.url}
+                        alt={image.name}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                        <span className="text-white opacity-0 group-hover:opacity-100 transition-opacity text-sm">
+                          Seleccionar
+                        </span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

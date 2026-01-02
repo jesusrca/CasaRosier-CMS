@@ -108,27 +108,29 @@ export function ContentProvider({ children }: { children: ReactNode }) {
     try {
       setError(null);
       
-      // Timeout de seguridad de 10 segundos para evitar carga infinita
+      console.log('🔄 Iniciando carga de contenido...');
+      
+      // Timeout de seguridad de 15 segundos (aumentado desde 10)
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Timeout loading content')), 10000);
+        setTimeout(() => reject(new Error('Timeout loading content')), 15000);
       });
 
       // Cargar todo en paralelo para máxima velocidad
       const loadPromise = Promise.all([
         contentAPI.getAllItems().catch((err) => {
-          console.warn('Error loading content items:', err.message);
+          console.warn('⚠️ Error loading content items:', err);
           return { items: [] };
         }),
         blogAPI.getPosts(true).catch((err) => {
-          console.warn('Error loading blog posts:', err.message);
+          console.warn('⚠️ Error loading blog posts:', err);
           return { posts: [] };
         }),
         menuAPI.getMenu().catch((err) => {
-          console.warn('Error loading menu:', err.message);
+          console.warn('⚠️ Error loading menu:', err);
           return { menu: { items: [] } };
         }),
         settingsAPI.getSettings().catch((err) => {
-          console.warn('Error loading settings:', err.message);
+          console.warn('⚠️ Error loading settings:', err);
           return { 
             settings: {
               siteName: 'Casa Rosier',
@@ -143,7 +145,7 @@ export function ContentProvider({ children }: { children: ReactNode }) {
           };
         }),
         pagesAPI.getAllPages().catch((err) => {
-          console.warn('Error loading pages:', err.message);
+          console.warn('⚠️ Error loading pages:', err);
           return { pages: [] };
         })
       ]);
@@ -184,7 +186,23 @@ export function ContentProvider({ children }: { children: ReactNode }) {
         menuItems: (menuResponse.menu?.items || []).length
       });
     } catch (err) {
-      console.error('Error cargando contenido:', err);
+      console.error('❌ Error cargando contenido:', err);
+      
+      // Proporcionar datos por defecto para que la app no falle
+      setMenuItems([
+        { name: 'Inicio', path: '/', order: 0 },
+        { name: 'Clases', path: '/clases', order: 1 },
+        { name: 'Workshops', path: '/workshops', order: 2 },
+        { name: 'Blog', path: '/blog', order: 3 }
+      ]);
+      
+      setSettings({
+        siteName: 'Casa Rosier',
+        siteDescription: 'Taller de cerámica en Barcelona',
+        contactEmail: 'info@casarosierceramica.com',
+        contactPhone: '+34 633788860',
+      });
+      
       // No mostrar error al usuario - el contenido público debería funcionar sin auth
       // setError('Error al cargar el contenido');
     } finally {

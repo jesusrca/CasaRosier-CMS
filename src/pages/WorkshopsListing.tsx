@@ -28,7 +28,6 @@ export function WorkshopsListing() {
       />
 
       <Hero
-        backgroundImage="https://images.unsplash.com/photo-1638341840302-a2d9579b821e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwb3R0ZXJ5JTIwc3R1ZGlvJTIwd29ya3NwYWNlfGVufDF8fHx8MTc2NTEwOTMwOHww&ixlib=rb-4.1.0&q=80&w=1080"
         title="Workshops"
         subtitle="Talleres especializados de cerámica"
         useTextTitle={true}

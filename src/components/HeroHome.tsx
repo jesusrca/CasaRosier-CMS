@@ -236,7 +236,7 @@ export function HeroHome() {
           >
             {mainMenuItems.map((item, index) => (
               <motion.div
-                key={`hero-${item.name}-${item.path || 'nopath'}-${index}`}
+                key={`home-${item.name}-${index}`}
                 initial={{ opacity: 0, y: -5 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.5 + index * 0.08 }}
@@ -273,7 +273,7 @@ export function HeroHome() {
                       >
                         {item.submenu.map((subItem, subIndex) => (
                           <Link
-                            key={`${item.name}-${subItem.path}-${subIndex}`}
+                            key={`${subItem.path}-${subIndex}`}
                             to={subItem.path}
                             className="block px-5 py-3 text-secondary hover:bg-muted transition-colors duration-150 text-sm border-b border-border last:border-b-0"
                           >
@@ -305,7 +305,7 @@ export function HeroHome() {
           {/* Render all images */}
           {heroTextImages.map((image, index) => (
             <motion.img 
-              key={`hero-text-${image}-${index}`}
+              key={index}
               src={image} 
               alt="estudio Cerámica creativa en Barcelona" 
               className={`w-full h-auto ${index === 0 ? 'relative' : 'absolute top-0 left-0'}`}

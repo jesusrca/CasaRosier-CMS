@@ -7,6 +7,8 @@ import { SEOHead } from '../components/SEOHead';
 import { NotFound } from './NotFound';
 import { PageSection } from '../components/PageSection';
 import { LoadingScreen } from '../components/LoadingScreen';
+import { Navigation } from '../components/Navigation';
+import { landingPagesAPI } from '../utils/landingPagesApi';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 
@@ -29,6 +31,60 @@ export function DynamicPage() {
   const { slug } = useParams<{ slug: string }>();
   const { getPageBySlug, loading, settings, pages } = useContent();
   const [showNotFound, setShowNotFound] = useState(false);
+  const [landingPage, setLandingPage] = useState<any>(null);
+  const [checkingLanding, setCheckingLanding] = useState(true);
+  
+  // Primero intentar cargar una landing page
+  useEffect(() => {
+    const checkLandingPage = async () => {
+      try {
+        const data = await landingPagesAPI.getLandingPage(slug!);
+        if (data?.landingPage && data.landingPage.visible) {
+          const lp = data.landingPage;
+          
+          // Transformar los campos hero en una sección si existen
+          let transformedSections = [...(lp.sections || [])];
+          
+          // Si tiene heroImage/heroTitle pero no tiene una sección hero al inicio, crearla
+          const hasHeroSection = transformedSections[0]?.type === 'hero';
+          
+          if ((lp.heroImage || lp.heroTitle) && !hasHeroSection) {
+            // Crear sección hero al inicio
+            const heroSection = {
+              type: 'hero',
+              image: lp.heroImage,
+              title: lp.heroTitle || lp.title,
+              subtitle: lp.heroSubtitle || ''
+            };
+            transformedSections = [heroSection, ...transformedSections];
+          }
+          
+          // Actualizar el landing page con las secciones transformadas
+          const transformedLandingPage = {
+            ...lp,
+            sections: transformedSections
+          };
+          
+          console.log('✅ Landing page transformado:', {
+            original: lp,
+            transformed: transformedLandingPage,
+            hasHeroImage: !!lp.heroImage,
+            sectionsCount: transformedSections.length
+          });
+          
+          setLandingPage(transformedLandingPage);
+        }
+      } catch (error) {
+        console.log('No landing page found, checking custom pages');
+      } finally {
+        setCheckingLanding(false);
+      }
+    };
+
+    if (slug) {
+      checkLandingPage();
+    }
+  }, [slug]);
   
   const page = getPageBySlug(slug || '');
 
@@ -46,7 +102,7 @@ export function DynamicPage() {
 
   // Control del delay antes de mostrar 404 para evitar flash durante transiciones
   useEffect(() => {
-    if (!page && !loading) {
+    if (!page && !loading && !checkingLanding) {
       // Dar un margen de tiempo más largo antes de mostrar 404
       const timer = setTimeout(() => {
         console.log('⚠️ Mostrando 404 para slug:', slug);
@@ -56,15 +112,47 @@ export function DynamicPage() {
     } else {
       setShowNotFound(false);
     }
-  }, [page, loading, slug]);
+  }, [page, loading, slug, checkingLanding]);
 
   // Si está cargando o esperando para mostrar 404, mostrar skeleton
-  if (loading || (!page && !showNotFound)) {
+  if (loading || (!page && !landingPage && !showNotFound && checkingLanding)) {
     return <LoadingScreen />;
+  }
+
+  // Si encontramos una landing page, renderizarla
+  if (landingPage) {
+    console.log('📄 Landing Page detectada:', {
+      title: landingPage.title,
+      slug: landingPage.slug,
+      sectionsCount: landingPage.sections?.length || 0,
+      sections: landingPage.sections
+    });
+    
+    return (
+      <div className="min-h-screen">
+        <SEOHead
+          title={landingPage.seo?.metaTitle || landingPage.title}
+          description={landingPage.seo?.metaDescription}
+          keywords={Array.isArray(landingPage.seo?.keywords) ? landingPage.seo?.keywords.join(', ') : landingPage.seo?.keywords}
+          image={landingPage.heroImage}
+          url={`${settings.ogUrl || window.location.origin}/${slug}`}
+          type={settings.ogType || 'website'}
+        />
+
+        {landingPage.sections && landingPage.sections.length > 0 && landingPage.sections.map((section: any, index: number) => (
+          <PageSection key={index} section={section} siteSettings={settings} isFirstSection={index === 0} />
+        ))}
+      </div>
+    );
   }
 
   if (!page && showNotFound) {
     return <NotFound />;
+  }
+
+  // Safety check - if page is null/undefined, show loading
+  if (!page) {
+    return <LoadingScreen />;
   }
 
   // Si la página tiene secciones, renderizarlas directamente sin el contenedor blanco

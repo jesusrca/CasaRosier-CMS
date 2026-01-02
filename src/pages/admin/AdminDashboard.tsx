@@ -18,7 +18,7 @@ import {
   RefreshCw,
   Gift,
   ArrowRightLeft,
-  Palette
+  Rocket
 } from 'lucide-react';
 import { ContentManager } from './ContentManager';
 import { BlogManager } from './BlogManager';
@@ -30,8 +30,8 @@ import { MessagesManager } from './MessagesManager';
 import { ImageLibrary } from './ImageLibrary';
 import { Dashboard } from './Dashboard';
 import { GiftCardManager } from './GiftCardManager';
+import { LandingPageManager } from './LandingPageManager';
 import { RedirectsManager } from './RedirectsManager';
-import { ClasesPageEditor } from './ClasesPageEditor';
 
 export function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -127,7 +127,6 @@ export function AdminDashboard() {
     { path: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard', roles: ['super_admin', 'editor'] },
     { path: '/admin/dashboard/pages', icon: FileImage, label: 'Páginas', roles: ['super_admin'] },
     { path: '/admin/dashboard/content', icon: FileText, label: 'Clases', roles: ['super_admin', 'editor'] },
-    { path: '/admin/dashboard/clases-page', icon: Palette, label: 'Página Clases', roles: ['super_admin'] },
     { path: '/admin/dashboard/blog', icon: BookOpen, label: 'Blog', roles: ['super_admin', 'editor'] },
     { path: '/admin/dashboard/menu', icon: List, label: 'Menú', roles: ['super_admin'] },
     { path: '/admin/dashboard/messages', icon: Mail, label: 'Mensajes', roles: ['super_admin', 'editor'] },
@@ -136,6 +135,7 @@ export function AdminDashboard() {
     { path: '/admin/dashboard/images', icon: Image, label: 'Imágenes', roles: ['super_admin'] },
     { path: '/admin/dashboard/giftcards', icon: Gift, label: 'Tarjetas Regalo', roles: ['super_admin'] },
     { path: '/admin/dashboard/redirects', icon: ArrowRightLeft, label: 'Redirecciones', roles: ['super_admin'] },
+    { path: '/admin/dashboard/landingpage', icon: Rocket, label: 'Landing Pages', roles: ['super_admin'] },
   ];
 
   // Filtrar items del menú según el rol del usuario
@@ -256,7 +256,6 @@ export function AdminDashboard() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/content" element={<ContentManager />} />
-            <Route path="/clases-page" element={<ClasesPageEditor />} />
             <Route path="/blog" element={<BlogManager />} />
             <Route path="/settings" element={<SettingsManager />} />
             <Route path="/menu" element={<MenuManager />} />
@@ -266,6 +265,7 @@ export function AdminDashboard() {
             <Route path="/images" element={<ImageLibrary />} />
             <Route path="/giftcards" element={<GiftCardManager />} />
             <Route path="/redirects" element={<RedirectsManager />} />
+            <Route path="/landingpage" element={<LandingPageManager />} />
           </Routes>
         </main>
       </div>

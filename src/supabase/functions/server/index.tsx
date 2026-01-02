@@ -69,18 +69,22 @@ app.use(
 
 // Middleware to verify authenticated user
 async function verifyAuth(c: any, next: any) {
+  console.log(`🔒 verifyAuth called for path: ${c.req.path}`);
   const accessToken = c.req.header('Authorization')?.split(' ')[1];
   
   if (!accessToken) {
+    console.log('❌ No token provided');
     return c.json({ error: 'Unauthorized: No token provided' }, 401);
   }
 
   const { data: { user }, error } = await supabase.auth.getUser(accessToken);
   
   if (error || !user?.id) {
+    console.log('❌ Invalid token or error:', error);
     return c.json({ error: 'Unauthorized: Invalid token' }, 401);
   }
 
+  console.log('✅ Auth successful for user:', user.email);
   c.set('userId', user.id);
   c.set('userEmail', user.email);
   return await next();
@@ -145,6 +149,12 @@ async function verifySuperAdmin(c: any, next: any) {
 // Health check endpoint
 app.get("/make-server-0ba58e95/health", (c) => {
   return c.json({ status: "ok" });
+});
+
+// Test public endpoint - completely unrestricted
+app.get("/make-server-0ba58e95/test", async (c) => {
+  console.log('✅ TEST ENDPOINT HIT - NO AUTH');
+  return c.json({ message: 'Test endpoint works', timestamp: new Date().toISOString() });
 });
 
 // ==================== AUTH ENDPOINTS ====================
@@ -861,15 +871,6 @@ app.post('/make-server-0ba58e95/messages', async (c) => {
       const contactEmail2 = settings?.contactEmail2; // Segundo email opcional
       const resendApiKey = Deno.env.get('RESEND_API_KEY');
 
-      // Debug: mostrar configuración de emails
-      console.log('📋 Settings obtenidos:', {
-        contactEmail,
-        contactEmail2,
-        contactEmail2Type: typeof contactEmail2,
-        contactEmail2Length: contactEmail2?.length,
-        hasResendKey: !!resendApiKey
-      });
-
       if (resendApiKey) {
         // Preparar lista de destinatarios con los emails configurados en settings
         const recipients = [contactEmail];
@@ -877,17 +878,9 @@ app.post('/make-server-0ba58e95/messages', async (c) => {
         // Si hay un segundo email configurado, añadirlo también
         if (contactEmail2 && contactEmail2.trim() !== '') {
           recipients.push(contactEmail2);
-          console.log('✅ Segundo email añadido:', contactEmail2);
-        } else {
-          console.log('⚠️ Segundo email NO añadido:', { 
-            contactEmail2, 
-            isEmpty: !contactEmail2,
-            isEmptyString: contactEmail2 === '',
-            trimmedIsEmpty: contactEmail2?.trim() === ''
-          });
         }
 
-        console.log(`📧 Enviando email a: ${recipients.join(', ')} (total: ${recipients.length} destinatarios)`);
+        console.log(`📧 Enviando email a: ${recipients.join(', ')}`);
 
         const emailResponse = await fetch('https://api.resend.com/emails', {
           method: 'POST',
@@ -1055,6 +1048,146 @@ app.post("/make-server-0ba58e95/settings", verifyAuth, async (c) => {
   } catch (error) {
     console.error('Error saving settings:', error);
     return c.json({ error: `Error saving settings: ${error}` }, 500);
+  }
+});
+
+// ==================== PUBLIC LANDING PAGES ENDPOINTS ====================
+// These routes MUST be defined BEFORE authenticated landing pages routes
+
+// Get published landing pages (public - no auth required)
+app.get("/make-server-0ba58e95/public-landing-pages", async (c) => {
+  console.log('📍 PUBLIC ENDPOINT HIT: /public-landing-pages');
+  try {
+    const landingPages = await kv.get('landing_pages') || [];
+    console.log(`Found ${landingPages.length} total landing pages`);
+    // Filter only published and visible landing pages
+    const publishedPages = landingPages.filter((lp: any) => 
+      lp.status === 'published' && lp.visible === true
+    );
+    console.log(`Returning ${publishedPages.length} published landing pages`);
+    return c.json({ landingPages: publishedPages });
+  } catch (error) {
+    console.error('Error fetching published landing pages:', error);
+    return c.json({ error: 'Failed to fetch published landing pages' }, 500);
+  }
+});
+
+// Get single landing page by slug (public)
+app.get("/make-server-0ba58e95/public-landing-pages/:slug", async (c) => {
+  console.log('📍 PUBLIC SLUG ENDPOINT HIT');
+  try {
+    const slug = c.req.param('slug');
+    const landingPages = await kv.get('landing_pages') || [];
+    const landingPage = landingPages.find((lp: any) => lp.slug === slug);
+    
+    if (!landingPage) {
+      return c.json({ error: 'Landing page not found' }, 404);
+    }
+    
+    // Only return visible landing pages to public
+    if (!landingPage.visible) {
+      return c.json({ error: 'Landing page not found' }, 404);
+    }
+    
+    return c.json({ landingPage });
+  } catch (error) {
+    console.error('Error fetching landing page:', error);
+    return c.json({ error: 'Failed to fetch landing page' }, 500);
+  }
+});
+
+// ==================== LANDING PAGES ENDPOINTS (ADMIN) ====================
+
+// Get all landing pages (requires auth for admin)
+app.get("/make-server-0ba58e95/landing-pages", verifyAuth, async (c) => {
+  console.log('📍 ADMIN ENDPOINT HIT: /landing-pages (requires auth)');
+  try {
+    const landingPages = await kv.get('landing_pages') || [];
+    return c.json({ landingPages });
+  } catch (error) {
+    console.error('Error fetching landing pages:', error);
+    return c.json({ error: 'Failed to fetch landing pages' }, 500);
+  }
+});
+
+// Save/update landing page (requires auth)
+app.post("/make-server-0ba58e95/landing-pages", verifyAuth, async (c) => {
+  try {
+    const { landingPage } = await c.req.json();
+    
+    if (!landingPage || !landingPage.id) {
+      return c.json({ error: 'Invalid landing page data' }, 400);
+    }
+    
+    // Get existing landing pages
+    const landingPages = await kv.get('landing_pages') || [];
+    
+    // Find index of existing page
+    const existingIndex = landingPages.findIndex((lp: any) => lp.id === landingPage.id);
+    
+    // Update timestamp
+    landingPage.updatedAt = new Date().toISOString();
+    
+    if (existingIndex >= 0) {
+      // Update existing
+      landingPages[existingIndex] = landingPage;
+    } else {
+      // Add new
+      landingPage.createdAt = new Date().toISOString();
+      landingPages.push(landingPage);
+    }
+    
+    // Save with retries
+    let retries = 3;
+    let saved = false;
+    let lastError = null;
+    
+    while (retries > 0 && !saved) {
+      try {
+        await kv.set('landing_pages', landingPages);
+        saved = true;
+        console.log('Landing page saved successfully:', landingPage.slug);
+      } catch (err) {
+        lastError = err;
+        retries--;
+        if (retries > 0) {
+          console.log(`Failed to save landing page, retrying... (${retries} attempts left)`);
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+      }
+    }
+    
+    if (!saved) {
+      console.error('Error saving landing page after all retries:', lastError);
+      return c.json({ error: `Failed to save landing page: ${lastError}` }, 500);
+    }
+    
+    return c.json({ landingPage });
+  } catch (error) {
+    console.error('Error saving landing page:', error);
+    return c.json({ error: `Error saving landing page: ${error}` }, 500);
+  }
+});
+
+// Delete landing page (requires auth)
+app.delete("/make-server-0ba58e95/landing-pages/:id", verifyAuth, async (c) => {
+  try {
+    const id = c.req.param('id');
+    const landingPages = await kv.get('landing_pages') || [];
+    
+    const filteredPages = landingPages.filter((lp: any) => lp.id !== id);
+    
+    if (filteredPages.length === landingPages.length) {
+      return c.json({ error: 'Landing page not found' }, 404);
+    }
+    
+    await kv.set('landing_pages', filteredPages);
+    
+    console.log('Landing page deleted:', id);
+    return c.json({ message: 'Landing page deleted' });
+  } catch (error) {
+    console.error('Error deleting landing page:', error);
+    return c.json({ error: 'Failed to delete landing page' }, 500);
   }
 });
 
@@ -1264,7 +1397,7 @@ app.get("/make-server-0ba58e95/upload/images", verifyAuth, async (c) => {
     const { data, error } = await supabase.storage
       .from(bucketName)
       .list('uploads', {
-        limit: 100,
+        limit: 1000, // Aumentado de 100 a 1000
         offset: 0,
         sortBy: { column: 'created_at', order: 'desc' },
       });
@@ -1288,6 +1421,7 @@ app.get("/make-server-0ba58e95/upload/images", verifyAuth, async (c) => {
       };
     });
 
+    console.log(`📸 Listando imágenes del bucket: ${images.length} imágenes encontradas`);
     return c.json({ images });
   } catch (error) {
     console.error('Error fetching images:', error);
