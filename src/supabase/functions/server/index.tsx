@@ -1060,10 +1060,9 @@ app.get("/make-server-0ba58e95/public-landing-pages", async (c) => {
   try {
     const landingPages = await kv.get('landing_pages') || [];
     console.log(`Found ${landingPages.length} total landing pages`);
-    // Filter only published and visible landing pages
-    const publishedPages = landingPages.filter((lp: any) => 
-      lp.status === 'published' && lp.visible === true
-    );
+    console.log('Landing pages data:', JSON.stringify(landingPages, null, 2));
+    // Filter only visible landing pages
+    const publishedPages = landingPages.filter((lp: any) => lp.visible === true);
     console.log(`Returning ${publishedPages.length} published landing pages`);
     return c.json({ landingPages: publishedPages });
   } catch (error) {

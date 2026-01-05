@@ -410,6 +410,20 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
                     </div>
 
                     <div>
+                      <label className="block text-sm mb-2">Extracto para Home</label>
+                      <textarea
+                        value={item.excerpt || ''}
+                        onChange={(e) => updateField('excerpt', e.target.value)}
+                        rows={3}
+                        placeholder="Descripción breve que aparecerá en la tarjeta del Home (recomendado: 2-3 líneas)"
+                        className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                      />
+                      <p className="text-xs text-foreground/60 mt-1">
+                        Este texto aparecerá en la tarjeta de la clase/workshop cuando se muestre en la página de inicio
+                      </p>
+                    </div>
+
+                    <div>
                       <label className="block text-sm mb-2">Descripción completa</label>
                       <RichTextEditor
                         value={item.description || ''}

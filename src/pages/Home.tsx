@@ -63,7 +63,7 @@ export function Home() {
         
         return {
           title: item.title || '',
-          subtitle: item.subtitle || item.shortDescription || '',
+          subtitle: item.excerpt || '', // Usar el nuevo campo excerpt
           image: imageUrl,
           link: linkPrefix + item.slug
         };
@@ -98,7 +98,7 @@ export function Home() {
         
         return {
           title: item.title || '',
-          subtitle: item.subtitle || item.shortDescription || '',
+          subtitle: item.excerpt || '', // Usar el nuevo campo excerpt
           image: imageUrl,
           link: linkPrefix + item.slug
         };
@@ -192,7 +192,7 @@ export function Home() {
             >
               <div className="space-y-4 text-left">
                 {contentParagraphs.map((paragraph: string, index: number) => (
-                  <p key={index} className="text-lg lg:text-xl leading-relaxed text-[#7b7269] text-left font-serif font-light max-w-sm">
+                  <p key={index} className="text-lg lg:text-xl leading-relaxed text-[#7b7269] text-left font-serif font-light max-w-xs">
                     {paragraph}
                   </p>
                 ))}
@@ -233,7 +233,7 @@ export function Home() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
               {featuredCourses.map((course: any, index: number) => (
-                <CourseCard key={index} {...course} index={index} hideSubtitle={true} />
+                <CourseCard key={index} {...course} index={index} hideSubtitle={false} />
               ))}
             </div>
           </div>
@@ -271,7 +271,7 @@ export function Home() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
               {featuredWorkshops.map((course: any, index: number) => (
-                <CourseCard key={index} {...course} index={index} hideSubtitle={true} />
+                <CourseCard key={index} {...course} index={index} hideSubtitle={false} />
               ))}
             </div>
           </div>

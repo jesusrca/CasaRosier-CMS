@@ -17,7 +17,23 @@ interface PageSectionProps {
 function RichContent({ content }: { content: string }) {
   return (
     <div className="prose prose-lg max-w-none text-foreground/80">
-      <ReactMarkdown rehypePlugins={[rehypeRaw]}>
+      <ReactMarkdown 
+        rehypePlugins={[rehypeRaw]}
+        components={{
+          iframe: ({ node, ...props }) => {
+            // Convertir atributos string a booleanos para iframe
+            const iframeProps = { ...props };
+            
+            // Convertir allowfullscreen string a allowFullScreen boolean
+            if ('allowfullscreen' in iframeProps || 'allowFullScreen' in iframeProps) {
+              delete iframeProps.allowfullscreen;
+              iframeProps.allowFullScreen = true;
+            }
+            
+            return <iframe {...iframeProps} />;
+          }
+        }}
+      >
         {content}
       </ReactMarkdown>
     </div>
@@ -308,10 +324,10 @@ export function PageSection({ section, siteSettings, isFirstSection }: PageSecti
       return (
         <section className="py-12 lg:py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.5fr] gap-8 lg:gap-12">
+            <div className={!section.mainImage ? '' : 'grid grid-cols-1 lg:grid-cols-[1fr_1.5fr] gap-8 lg:gap-12'}>
               {/* Columna Izquierda - Imagen */}
-              <div>
-                {section.mainImage && (
+              {section.mainImage && (
+                <div>
                   <div className="relative w-full">
                     <img
                       src={section.mainImage}
@@ -319,8 +335,8 @@ export function PageSection({ section, siteSettings, isFirstSection }: PageSecti
                       className="w-full h-auto object-contain"
                     />
                   </div>
-                )}
-              </div>
+                </div>
+              )}
 
               {/* Columna Derecha - Contenido */}
               <motion.div
@@ -328,7 +344,7 @@ export function PageSection({ section, siteSettings, isFirstSection }: PageSecti
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="space-y-6 flex flex-col justify-center"
+                className={`space-y-6 flex flex-col justify-center ${!section.mainImage ? 'text-center items-center w-full' : ''}`}
               >
                 {/* Título */}
                 {section.title && (
@@ -502,10 +518,10 @@ export function PageSection({ section, siteSettings, isFirstSection }: PageSecti
 
     case 'team':
       return (
-        <section className="py-12 lg:py-20 bg-background">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="py-12 lg:py-20 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {section.title && (
-              <h2 className="text-3xl lg:text-4xl mb-12 text-center">{section.title}</h2>
+              <h2 className="mb-12 text-center">{section.title}</h2>
             )}
             <div className="space-y-12 lg:space-y-16">
               {section.members && section.members.map((member: any, index: number) => (
@@ -515,33 +531,33 @@ export function PageSection({ section, siteSettings, isFirstSection }: PageSecti
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-6 lg:gap-12 bg-white rounded-2xl overflow-hidden shadow-lg"
+                  className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-8 lg:gap-16 items-start"
                 >
                   {/* Photo Left */}
-                  <div className="relative aspect-square md:aspect-auto">
+                  <div className="relative w-full">
                     {member.photo ? (
                       <img
                         src={member.photo}
                         alt={member.name || 'Profesor'}
-                        className="w-full h-full object-cover"
+                        className="w-full h-[425px] lg:h-[510px] object-cover rounded-lg"
                       />
                     ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                      <div className="w-full h-[500px] lg:h-[600px] bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center rounded-lg">
                         <span className="text-6xl text-primary/30">👤</span>
                       </div>
                     )}
                   </div>
 
                   {/* Text Right */}
-                  <div className="p-6 lg:p-8 flex flex-col justify-center">
+                  <div className="flex flex-col justify-center space-y-6">
                     {member.name && (
-                      <h3 className="text-2xl lg:text-3xl mb-2">{member.name}</h3>
+                      <h3 className="text-4xl lg:text-5xl text-[#70482C]">{member.name}</h3>
                     )}
                     {member.role && (
-                      <p className="text-lg text-primary mb-4">{member.role}</p>
+                      <p className="text-sm tracking-[0.2em] uppercase text-[#70482C]">{member.role}</p>
                     )}
                     {member.bio && (
-                      <div className="prose prose-lg max-w-none text-foreground/80 whitespace-pre-wrap">
+                      <div className="prose prose-lg max-w-none text-[#7B7269] leading-relaxed whitespace-pre-wrap font-light">
                         {member.bio}
                       </div>
                     )}
@@ -549,6 +565,90 @@ export function PageSection({ section, siteSettings, isFirstSection }: PageSecti
                 </motion.div>
               ))}
             </div>
+          </div>
+        </section>
+      );
+
+    case 'image-text':
+      return (
+        <section className="py-12 lg:py-20 bg-background">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className={`grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center ${
+              section.layout === 'right' ? 'lg:grid-flow-dense' : ''
+            }`}>
+              {/* Imagen */}
+              <motion.div
+                initial={{ opacity: 0, x: section.layout === 'right' ? 30 : -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                className={section.layout === 'right' ? 'lg:col-start-2' : ''}
+              >
+                {section.image && (
+                  <img
+                    src={section.image}
+                    alt={section.title || 'Imagen'}
+                    className="w-full h-auto rounded-lg shadow-lg"
+                  />
+                )}
+              </motion.div>
+
+              {/* Contenido */}
+              <motion.div
+                initial={{ opacity: 0, x: section.layout === 'right' ? -30 : 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className={section.layout === 'right' ? 'lg:col-start-1 lg:row-start-1' : ''}
+              >
+                {section.title && (
+                  <h2 className="mb-6">{section.title}</h2>
+                )}
+                {section.content && (
+                  <RichContent content={section.content} />
+                )}
+              </motion.div>
+            </div>
+          </div>
+        </section>
+      );
+
+    case 'features':
+      return (
+        <section className="py-12 lg:py-20 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {section.title && (
+              <h2 className="mb-12 text-center">{section.title}</h2>
+            )}
+            {section.content && (
+              <div className="mb-12 text-center">
+                <RichContent content={section.content} />
+              </div>
+            )}
+            {section.features && section.features.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {section.features.map((feature: any, index: number) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: index * 0.1 }}
+                    className="text-center"
+                  >
+                    {feature.icon && (
+                      <div className="text-4xl mb-4">{feature.icon}</div>
+                    )}
+                    {feature.title && (
+                      <h3 className="text-xl mb-3">{feature.title}</h3>
+                    )}
+                    {feature.description && (
+                      <p className="text-foreground/70">{feature.description}</p>
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+            )}
           </div>
         </section>
       );

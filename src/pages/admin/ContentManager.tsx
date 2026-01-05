@@ -100,6 +100,7 @@ export function ContentManager() {
       subtitle: '',
       slug: '',
       shortDescription: '',
+      excerpt: '', // Extracto para mostrar en Home
       description: '',
       price: 0,
       priceOptions: [], // Opciones de precio adicionales

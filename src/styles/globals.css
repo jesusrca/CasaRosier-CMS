@@ -415,3 +415,32 @@ body {
 .rich-content i {
   font-style: italic;
 }
+
+/* Estilos para iframes y videos en rich content */
+.rich-content iframe,
+.rich-content .ql-video {
+  max-width: 100%;
+  width: 100%;
+  aspect-ratio: 16/9;
+  border-radius: 0.5rem;
+  margin: 1.5em 0;
+  border: none;
+}
+
+.rich-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  margin: 1em 0;
+}
+
+/* Estilos para ReactMarkdown con iframes/videos */
+.prose iframe,
+.prose .ql-video {
+  max-width: 100%;
+  width: 100%;
+  aspect-ratio: 16/9;
+  border-radius: 0.5rem;
+  margin: 1.5em 0;
+  border: none;
+}

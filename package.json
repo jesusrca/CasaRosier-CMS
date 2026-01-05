@@ -49,6 +49,7 @@
           "react-helmet-async": "*",
           "react-hook-form": "^7.55.0",
           "react-markdown": "*",
+          "react-quill": "*",
           "react-resizable-panels": "^2.1.7",
           "react-router-dom": "*",
           "react-slick": "*",

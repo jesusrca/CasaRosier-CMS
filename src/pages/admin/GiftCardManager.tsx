@@ -73,6 +73,7 @@ export function GiftCardManager() {
       subtitle: '',
       slug: '',
       shortDescription: '',
+      excerpt: '', // Extracto para mostrar en Home
       description: '',
       price: 0,
       priceOptions: [],

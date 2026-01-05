@@ -4,6 +4,7 @@ import { Save, AlertCircle, CheckCircle, Plus, Trash2, Copy, Eye, EyeOff, Extern
 import { ImageUploader } from '../../components/ImageUploader';
 import { NavigationBlocker } from '../../components/NavigationBlocker';
 import { landingPagesAPI } from '../../utils/landingPagesApi';
+import { RichTextEditor } from '../../components/RichTextEditor';
 
 interface LandingPage {
   id: string;
@@ -622,10 +623,9 @@ export function LandingPageManager() {
 
                         <div>
                           <label className="block text-sm mb-2">Contenido</label>
-                          <textarea
+                          <RichTextEditor
                             value={section.content}
-                            onChange={(e) => updateSection(section.id, { content: e.target.value })}
-                            rows={4}
+                            onChange={(value) => updateSection(section.id, { content: value })}
                             className="w-full px-4 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-y"
                           />
                         </div>

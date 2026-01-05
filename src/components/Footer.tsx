@@ -34,6 +34,8 @@ export function Footer() {
   const loadLandingPages = async () => {
     try {
       const response = await landingPagesAPI.getPublishedLandingPages();
+      console.log('📍 Footer - Landing pages received:', response);
+      console.log('📍 Footer - Landing pages array:', response.landingPages);
       setLandingPages(response.landingPages || []);
     } catch (error) {
       // Silently fail if error occurs
@@ -224,31 +226,28 @@ export function Footer() {
             </div>
 
             <div className="pt-6 border-t border-foreground/10">
-              {/* Landing Pages Menu */}
-              {landingPages.length > 0 && (
-                <div className="mb-4">
-                  <h4 className="mb-3 text-sm">Landing Pages</h4>
-                  <ul className="space-y-2">
-                    {landingPages.map((page) => (
-                      <li key={page.id}>
-                        <Link
-                          to={`/${page.slug}`}
-                          className="text-sm text-muted-foreground hover:text-primary transition-colors block"
-                        >
-                          {page.title}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              
-              <Link
-                to="/admin/login"
-                className="text-xs text-foreground/40 hover:text-primary transition-colors block"
-              >
-                Administración
-              </Link>
+              {/* Landing Pages y Administración en la misma línea */}
+              <div className="flex flex-wrap items-center gap-2">
+                <Link
+                  to="/admin/login"
+                  className="text-xs text-foreground/40 hover:text-primary transition-colors"
+                >
+                  Administración
+                </Link>
+                
+                {landingPages.length > 0 && landingPages.map((page, index) => (
+                  <>
+                    <span key={`sep-${page.id}`} className="text-xs text-foreground/20">·</span>
+                    <Link
+                      key={page.id}
+                      to={`/${page.slug}`}
+                      className="text-xs text-foreground/40 hover:text-primary transition-colors"
+                    >
+                      {page.title}
+                    </Link>
+                  </>
+                ))}
+              </div>
             </div>
           </div>
         </div>
