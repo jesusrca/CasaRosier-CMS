@@ -235,17 +235,16 @@ export function Footer() {
                   Administración
                 </Link>
                 
-                {landingPages.length > 0 && landingPages.map((page, index) => (
-                  <>
-                    <span key={`sep-${page.id}`} className="text-xs text-foreground/20">·</span>
+                {landingPages.length > 0 && landingPages.map((page) => (
+                  <span key={page.id} className="contents">
+                    <span className="text-xs text-foreground/20">·</span>
                     <Link
-                      key={page.id}
                       to={`/${page.slug}`}
                       className="text-xs text-foreground/40 hover:text-primary transition-colors"
                     >
                       {page.title}
                     </Link>
-                  </>
+                  </span>
                 ))}
               </div>
             </div>

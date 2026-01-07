@@ -259,7 +259,7 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
   ];
 
   return (
-    <div className="max-w-7xl">
+    <div className="max-w-7xl overflow-visible">
       <div className="flex items-center justify-between mb-6 sm:mb-8">
         <div>
           <h1 className="text-2xl sm:text-3xl">
@@ -294,7 +294,7 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
         </div>
       </div>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="overflow-visible">
         {/* Botones Guardar y Publicar Superior */}
         <div className="flex justify-end gap-3 mb-6">
           <motion.button
@@ -324,9 +324,9 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
         </div>
 
         {/* Layout con columnas: Principal (izquierda) + Menú (derecha) */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 overflow-visible">
           {/* Columna Principal (2/3 del ancho) */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-6 overflow-visible">
             {/* Tabs */}
             <div className="flex gap-1 sm:gap-2 border-b border-foreground/10 overflow-x-auto">
               {tabs.map((tab) => (
@@ -347,11 +347,11 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
 
             {/* Basic Info Tab */}
             {activeTab === 'basic' && (
-              <div className="space-y-6">
-                <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="space-y-6 overflow-visible">
+                <div className="bg-white rounded-lg shadow-md p-6 overflow-visible">
                   <h3 className="text-xl mb-4">Información General</h3>
                   
-                  <div className="space-y-4">
+                  <div className="space-y-4 overflow-visible">
                     <div>
                       <label className="block text-sm mb-2">Título *</label>
                       <input
@@ -423,7 +423,7 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
                       </p>
                     </div>
 
-                    <div>
+                    <div className="overflow-visible">
                       <label className="block text-sm mb-2">Descripción completa</label>
                       <RichTextEditor
                         value={item.description || ''}
@@ -545,7 +545,7 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
                   </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-md p-6">
+                <div className="bg-white rounded-lg shadow-md p-6 overflow-visible">
                   <h3 className="text-xl mb-4">Imágenes</h3>
 
                   <div className="space-y-6">
@@ -600,7 +600,7 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
                   </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-md p-6">
+                <div className="bg-white rounded-lg shadow-md p-6 overflow-visible">
                   <h3 className="text-xl mb-4">¿Qué incluye?</h3>
                   
                   <div className="space-y-3">
@@ -637,8 +637,8 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
 
             {/* Schedule Tab */}
             {activeTab === 'schedule' && (
-              <div className="space-y-6">
-                <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="space-y-6 overflow-visible">
+                <div className="bg-white rounded-lg shadow-md p-6 overflow-visible">
                   <div className="flex items-center justify-between mb-6">
                     <h3 className="text-xl">Descripción del Horario</h3>
                     <label className="flex items-center gap-3 cursor-pointer">
@@ -669,7 +669,7 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
                   </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-md p-6">
+                <div className="bg-white rounded-lg shadow-md p-6 overflow-visible">
                   <h3 className="text-xl mb-4">Horarios Disponibles</h3>
                   
                   <div className="space-y-4">
@@ -784,11 +784,11 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
 
             {/* Content Tab */}
             {activeTab === 'content' && (
-              <div className="space-y-6">
-                <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="space-y-6 overflow-visible">
+                <div className="bg-white rounded-lg shadow-md p-6" style={{ overflow: 'visible' }}>
                   <h3 className="text-xl mb-4">Contenido del Curso</h3>
                   
-                  <div className="space-y-4">
+                  <div className="space-y-4" style={{ overflow: 'visible' }}>
                     <div>
                       <label className="block text-sm mb-2">Título de la sección "¿Qué aprenderás?"</label>
                       <input
@@ -800,7 +800,7 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
                       />
                     </div>
 
-                    <div>
+                    <div className="relative" style={{ overflow: 'visible', zIndex: 50 }}>
                       <label className="block text-sm mb-2">¿Qué aprenderás?</label>
                       <RichTextEditor
                         value={item.content?.whatYouWillLearn || ''}
@@ -821,7 +821,7 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
                       />
                     </div>
 
-                    <div>
+                    <div className="relative" style={{ overflow: 'visible', zIndex: 50 }}>
                       <label className="block text-sm mb-2">¿Quién puede participar?</label>
                       <RichTextEditor
                         value={item.content?.whoCanParticipate || ''}
@@ -886,12 +886,13 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
                       <label className="block text-xs mb-2 text-foreground/60">Información extra (opcional)</label>
                       {item.type === 'gift-card' ? (
                         // Bloques repetibles para tarjetas de regalo
-                        <div className="space-y-4">
+                        <div className="space-y-4" style={{ overflow: 'visible' }}>
                           {(item.content?.infoBlocks || []).map((block: any, index: number) => (
-                            <div key={index} className="border-2 border-foreground/20 rounded-lg p-4 bg-foreground/5">
+                            <div key={index} className="border-2 border-foreground/20 rounded-lg p-4 bg-foreground/5 relative" style={{ overflow: 'visible', zIndex: 40 }}>
                               <div className="flex justify-between items-start mb-3">
                                 <span className="text-sm font-medium">Bloque {index + 1}</span>
                                 <button
+                                  type="button"
                                   onClick={() => {
                                     const blocks = [...(item.content?.infoBlocks || [])];
                                     blocks.splice(index, 1);
@@ -902,7 +903,7 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
                                   <Trash2 className="w-4 h-4" />
                                 </button>
                               </div>
-                              <div className="space-y-3">
+                              <div className="space-y-3" style={{ overflow: 'visible' }}>
                                 <div>
                                   <label className="block text-xs mb-1">Título del bloque</label>
                                   <input
@@ -917,7 +918,7 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
                                     className="w-full px-3 py-2 border border-foreground/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                                   />
                                 </div>
-                                <div>
+                                <div className="relative" style={{ overflow: 'visible', zIndex: 50 }}>
                                   <label className="block text-xs mb-1">Descripción</label>
                                   <RichTextEditor
                                     value={block.description || ''}
@@ -927,13 +928,14 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
                                       updateNestedField('content', 'infoBlocks', blocks);
                                     }}
                                     placeholder="Descripción del bloque..."
-                                    height="150px"
+                                    height="250px"
                                   />
                                 </div>
                               </div>
                             </div>
                           ))}
                           <button
+                            type="button"
                             onClick={() => {
                               const blocks = [...(item.content?.infoBlocks || []), { title: '', description: '' }];
                               updateNestedField('content', 'infoBlocks', blocks);
@@ -1016,7 +1018,7 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
                 </div>
 
                 {/* Activities Section (for private classes) */}
-                <div className="bg-white rounded-lg shadow-md p-6">
+                <div className="bg-white rounded-lg shadow-md p-6 overflow-visible">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-xl">¿Qué tipo de actividades pueden hacer?</h3>
                     <label className="flex items-center gap-2 cursor-pointer">
@@ -1144,7 +1146,7 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
                 </div>
 
                 {/* Course Modules/Lessons */}
-                <div className="bg-white rounded-lg shadow-md p-6">
+                <div className="bg-white rounded-lg shadow-md p-6 overflow-visible">
                   <h3 className="text-xl mb-4">Módulos del Curso</h3>
                   
                   <div className="space-y-4">
@@ -1240,8 +1242,8 @@ export function ContentEditor({ item: initialItem, onSave, onCancel, onDelete }:
 
             {/* SEO Tab */}
             {activeTab === 'seo' && (
-              <div className="space-y-6">
-                <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="space-y-6 overflow-visible">
+                <div className="bg-white rounded-lg shadow-md p-6 overflow-visible">
                   <h3 className="text-xl mb-4">Optimización SEO</h3>
                   
                   <div className="space-y-4">

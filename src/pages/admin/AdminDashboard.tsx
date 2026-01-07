@@ -33,7 +33,7 @@ import { GiftCardManager } from './GiftCardManager';
 import { LandingPageManager } from './LandingPageManager';
 import { RedirectsManager } from './RedirectsManager';
 
-export function AdminDashboard() {
+export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [clearingCache, setClearingCache] = useState(false);
   const [showCacheModal, setShowCacheModal] = useState(false);

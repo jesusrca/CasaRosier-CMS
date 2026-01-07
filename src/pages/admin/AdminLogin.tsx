@@ -6,7 +6,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { notify } from '../../utils/notifications';
 import logoImage from "figma:asset/28612bd890b3dcd85d8f93665d63bdc17b7bfea3.png";
 
-export function AdminLogin() {
+export default function AdminLogin() {
   const [email, setEmail] = useState(localStorage.getItem('rememberAdmin') || '');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(!!localStorage.getItem('rememberAdmin'));
