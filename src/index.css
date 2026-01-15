@@ -1,8 +1,13 @@
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap");
+
 /*! tailwindcss v4.1.3 | MIT License | https://tailwindcss.com */
 @layer properties {
   @supports (((-webkit-hyphens: none)) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color: rgb(from red r g b)))) {
-    *, :before, :after, ::backdrop {
+
+    *,
+    :before,
+    :after,
+    ::backdrop {
       --tw-translate-x: 0;
       --tw-translate-y: 0;
       --tw-translate-z: 0;
@@ -75,7 +80,9 @@
 }
 
 @layer theme {
-  :root, :host {
+
+  :root,
+  :host {
     --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
@@ -206,7 +213,11 @@
 }
 
 @layer base {
-  *, :after, :before, ::backdrop {
+
+  *,
+  :after,
+  :before,
+  ::backdrop {
     box-sizing: border-box;
     border: 0 solid;
     margin: 0;
@@ -220,7 +231,8 @@
     padding: 0;
   }
 
-  html, :host {
+  html,
+  :host {
     -webkit-text-size-adjust: 100%;
     tab-size: 4;
     line-height: 1.5;
@@ -245,7 +257,12 @@
     text-decoration: underline dotted;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-size: inherit;
     font-weight: inherit;
   }
@@ -257,11 +274,15 @@
     text-decoration: inherit;
   }
 
-  b, strong {
+  b,
+  strong {
     font-weight: bolder;
   }
 
-  code, kbd, samp, pre {
+  code,
+  kbd,
+  samp,
+  pre {
     font-family: var(--default-mono-font-family, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);
     font-feature-settings: var(--default-mono-font-feature-settings, normal);
     font-variation-settings: var(--default-mono-font-variation-settings, normal);
@@ -272,7 +293,8 @@
     font-size: 80%;
   }
 
-  sub, sup {
+  sub,
+  sup {
     vertical-align: baseline;
     font-size: 75%;
     line-height: 0;
@@ -305,21 +327,35 @@
     display: list-item;
   }
 
-  ol, ul, menu {
+  ol,
+  ul,
+  menu {
     list-style: none;
   }
 
-  img, svg, video, canvas, audio, iframe, embed, object {
+  img,
+  svg,
+  video,
+  canvas,
+  audio,
+  iframe,
+  embed,
+  object {
     vertical-align: middle;
     display: block;
   }
 
-  img, video {
+  img,
+  video {
     max-width: 100%;
     height: auto;
   }
 
-  button, input, select, optgroup, textarea {
+  button,
+  input,
+  select,
+  optgroup,
+  textarea {
     font: inherit;
     font-feature-settings: inherit;
     font-variation-settings: inherit;
@@ -425,7 +461,8 @@
     box-shadow: none;
   }
 
-  button, input:where([type="button"], [type="reset"], [type="submit"]) {
+  button,
+  input:where([type="button"], [type="reset"], [type="submit"]) {
     appearance: button;
   }
 
@@ -505,7 +542,8 @@
     line-height: 1.5;
   }
 
-  :where(:not(:has([class*=" text-"]), :not(:has([class^="text-"])))) label, :where(:not(:has([class*=" text-"]), :not(:has([class^="text-"])))) button {
+  :where(:not(:has([class*=" text-"]), :not(:has([class^="text-"])))) label,
+  :where(:not(:has([class*=" text-"]), :not(:has([class^="text-"])))) button {
     font-size: var(--text-base);
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
@@ -527,7 +565,7 @@
     line-height: 1.5;
   }
 
-  @media (width >= 1024px) {
+  @media (width >=1024px) {
     h2 {
       font-size: 1.5rem;
     }
@@ -711,31 +749,31 @@
     width: 100%;
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .container {
       max-width: 40rem;
     }
   }
 
-  @media (width >= 48rem) {
+  @media (width >=48rem) {
     .container {
       max-width: 48rem;
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .container {
       max-width: 64rem;
     }
   }
 
-  @media (width >= 80rem) {
+  @media (width >=80rem) {
     .container {
       max-width: 80rem;
     }
   }
 
-  @media (width >= 96rem) {
+  @media (width >=96rem) {
     .container {
       max-width: 96rem;
     }
@@ -1631,11 +1669,11 @@
   }
 
   .rounded-md {
-    border-radius: calc(var(--radius)  - 2px);
+    border-radius: calc(var(--radius) - 2px);
   }
 
   .rounded-xl {
-    border-radius: calc(var(--radius)  + 4px);
+    border-radius: calc(var(--radius) + 4px);
   }
 
   .rounded-r-lg {
@@ -2808,7 +2846,8 @@
     color: #4a90e2;
   }
 
-  .text-\[\#7B7269\], .text-\[\#7b7269\] {
+  .text-\[\#7B7269\],
+  .text-\[\#7b7269\] {
     color: #7b7269;
   }
 
@@ -3984,181 +4023,181 @@
     opacity: .5;
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:mt-0 {
       margin-top: calc(var(--spacing) * 0);
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:mb-6 {
       margin-bottom: calc(var(--spacing) * 6);
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:mb-8 {
       margin-bottom: calc(var(--spacing) * 8);
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:block {
       display: block;
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:flex {
       display: flex;
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:hidden {
       display: none;
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:inline {
       display: inline;
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:aspect-square {
       aspect-ratio: 1;
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:h-5 {
       height: calc(var(--spacing) * 5);
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:h-6 {
       height: calc(var(--spacing) * 6);
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:h-12 {
       height: calc(var(--spacing) * 12);
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:h-20 {
       height: calc(var(--spacing) * 20);
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:h-\[446px\] {
       height: 446px;
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:w-5 {
       width: calc(var(--spacing) * 5);
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:w-6 {
       width: calc(var(--spacing) * 6);
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:w-auto {
       width: auto;
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:flex-none {
       flex: none;
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:grid-cols-2 {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:grid-cols-3 {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:grid-cols-\[200px_1fr\] {
       grid-template-columns: 200px 1fr;
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:flex-col {
       flex-direction: column;
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:flex-row {
       flex-direction: row;
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:items-center {
       align-items: center;
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:justify-start {
       justify-content: flex-start;
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:gap-1 {
       gap: calc(var(--spacing) * 1);
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:gap-2 {
       gap: calc(var(--spacing) * 2);
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:gap-3 {
       gap: calc(var(--spacing) * 3);
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:gap-4 {
       gap: calc(var(--spacing) * 4);
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:gap-6 {
       gap: calc(var(--spacing) * 6);
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     :where(.sm\:space-y-8 > :not(:last-child)) {
       --tw-space-y-reverse: 0;
       margin-block-start: calc(calc(var(--spacing) * 8) * var(--tw-space-y-reverse));
@@ -4166,498 +4205,498 @@
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:self-center {
       align-self: center;
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:p-3 {
       padding: calc(var(--spacing) * 3);
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:p-4 {
       padding: calc(var(--spacing) * 4);
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:p-6 {
       padding: calc(var(--spacing) * 6);
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:p-8 {
       padding: calc(var(--spacing) * 8);
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:px-2 {
       padding-inline: calc(var(--spacing) * 2);
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:px-4 {
       padding-inline: calc(var(--spacing) * 4);
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:px-6 {
       padding-inline: calc(var(--spacing) * 6);
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:py-3 {
       padding-block: calc(var(--spacing) * 3);
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:py-4 {
       padding-block: calc(var(--spacing) * 4);
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:pt-4 {
       padding-top: calc(var(--spacing) * 4);
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:pt-6 {
       padding-top: calc(var(--spacing) * 6);
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:pr-6 {
       padding-right: calc(var(--spacing) * 6);
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:pl-0 {
       padding-left: calc(var(--spacing) * 0);
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:pl-6 {
       padding-left: calc(var(--spacing) * 6);
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:text-2xl {
       font-size: var(--text-2xl);
       line-height: var(--tw-leading, var(--text-2xl--line-height));
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:text-3xl {
       font-size: var(--text-3xl);
       line-height: var(--tw-leading, var(--text-3xl--line-height));
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:text-6xl {
       font-size: var(--text-6xl);
       line-height: var(--tw-leading, var(--text-6xl--line-height));
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:text-base {
       font-size: var(--text-base);
       line-height: var(--tw-leading, var(--text-base--line-height));
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:text-lg {
       font-size: var(--text-lg);
       line-height: var(--tw-leading, var(--text-lg--line-height));
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:text-sm {
       font-size: var(--text-sm);
       line-height: var(--tw-leading, var(--text-sm--line-height));
     }
   }
 
-  @media (width >= 40rem) {
+  @media (width >=40rem) {
     .sm\:text-xl {
       font-size: var(--text-xl);
       line-height: var(--tw-leading, var(--text-xl--line-height));
     }
   }
 
-  @media (width >= 48rem) {
+  @media (width >=48rem) {
     .md\:relative {
       position: relative;
     }
   }
 
-  @media (width >= 48rem) {
+  @media (width >=48rem) {
     .md\:top-auto {
       top: auto;
     }
   }
 
-  @media (width >= 48rem) {
+  @media (width >=48rem) {
     .md\:col-span-2 {
       grid-column: span 2 / span 2;
     }
   }
 
-  @media (width >= 48rem) {
+  @media (width >=48rem) {
     .md\:mt-\[10vh\] {
       margin-top: 10vh;
     }
   }
 
-  @media (width >= 48rem) {
+  @media (width >=48rem) {
     .md\:block {
       display: block;
     }
   }
 
-  @media (width >= 48rem) {
+  @media (width >=48rem) {
     .md\:flex {
       display: flex;
     }
   }
 
-  @media (width >= 48rem) {
+  @media (width >=48rem) {
     .md\:hidden {
       display: none;
     }
   }
 
-  @media (width >= 48rem) {
+  @media (width >=48rem) {
     .md\:h-7 {
       height: calc(var(--spacing) * 7);
     }
   }
 
-  @media (width >= 48rem) {
+  @media (width >=48rem) {
     .md\:h-\[323px\] {
       height: 323px;
     }
   }
 
-  @media (width >= 48rem) {
+  @media (width >=48rem) {
     .md\:w-7 {
       width: calc(var(--spacing) * 7);
     }
   }
 
-  @media (width >= 48rem) {
+  @media (width >=48rem) {
     .md\:w-\[50\%\] {
       width: 50%;
     }
   }
 
-  @media (width >= 48rem) {
+  @media (width >=48rem) {
     .md\:w-\[400px\] {
       width: 400px;
     }
   }
 
-  @media (width >= 48rem) {
+  @media (width >=48rem) {
     .md\:w-\[calc\(50\%-12px\)\] {
       width: calc(50% - 12px);
     }
   }
 
-  @media (width >= 48rem) {
+  @media (width >=48rem) {
     .md\:w-auto {
       width: auto;
     }
   }
 
-  @media (width >= 48rem) {
+  @media (width >=48rem) {
     .md\:flex-1 {
       flex: 1;
     }
   }
 
-  @media (width >= 48rem) {
+  @media (width >=48rem) {
     .md\:translate-y-0 {
       --tw-translate-y: calc(var(--spacing) * 0);
       translate: var(--tw-translate-x) var(--tw-translate-y);
     }
   }
 
-  @media (width >= 48rem) {
+  @media (width >=48rem) {
     .md\:grid-cols-2 {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 
-  @media (width >= 48rem) {
+  @media (width >=48rem) {
     .md\:grid-cols-3 {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 
-  @media (width >= 48rem) {
+  @media (width >=48rem) {
     .md\:grid-cols-\[300px_1fr\] {
       grid-template-columns: 300px 1fr;
     }
   }
 
-  @media (width >= 48rem) {
+  @media (width >=48rem) {
     .md\:items-center {
       align-items: center;
     }
   }
 
-  @media (width >= 48rem) {
+  @media (width >=48rem) {
     .md\:justify-center {
       justify-content: center;
     }
   }
 
-  @media (width >= 48rem) {
+  @media (width >=48rem) {
     .md\:text-2xl {
       font-size: var(--text-2xl);
       line-height: var(--tw-leading, var(--text-2xl--line-height));
     }
   }
 
-  @media (width >= 48rem) {
+  @media (width >=48rem) {
     .md\:text-5xl {
       font-size: var(--text-5xl);
       line-height: var(--tw-leading, var(--text-5xl--line-height));
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:sticky {
       position: sticky;
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:top-8 {
       top: calc(var(--spacing) * 8);
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:col-span-1 {
       grid-column: span 1 / span 1;
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:col-span-2 {
       grid-column: span 2 / span 2;
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:col-start-1 {
       grid-column-start: 1;
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:col-start-2 {
       grid-column-start: 2;
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:row-start-1 {
       grid-row-start: 1;
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:mb-24 {
       margin-bottom: calc(var(--spacing) * 24);
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:grid {
       display: grid;
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:hidden {
       display: none;
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:inline {
       display: inline;
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:aspect-square {
       aspect-ratio: 1;
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:h-14 {
       height: calc(var(--spacing) * 14);
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:h-\[411px\] {
       height: 411px;
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:h-\[510px\] {
       height: 510px;
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:h-\[600px\] {
       height: 600px;
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:h-auto {
       height: auto;
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:w-2\/5 {
       width: 40%;
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:w-3\/5 {
       width: 60%;
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:w-12 {
       width: calc(var(--spacing) * 12);
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:w-\[40\%\] {
       width: 40%;
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:w-\[calc\(33\.333\%-16px\)\] {
       width: calc(33.333% - 16px);
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:translate-x-0 {
       --tw-translate-x: calc(var(--spacing) * 0);
       translate: var(--tw-translate-x) var(--tw-translate-y);
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:grid-flow-dense {
       grid-auto-flow: dense;
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:grid-cols-2 {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:grid-cols-3 {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:grid-cols-4 {
       grid-template-columns: repeat(4, minmax(0, 1fr));
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:grid-cols-\[1fr_1\.5fr\] {
       grid-template-columns: 1fr 1.5fr;
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:grid-cols-\[2fr_3fr\] {
       grid-template-columns: 2fr 3fr;
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:grid-cols-\[400px_1fr\] {
       grid-template-columns: 400px 1fr;
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:flex-row {
       flex-direction: row;
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:justify-start {
       justify-content: flex-start;
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:gap-4 {
       gap: calc(var(--spacing) * 4);
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:gap-12 {
       gap: calc(var(--spacing) * 12);
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:gap-16 {
       gap: calc(var(--spacing) * 16);
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     :where(.lg\:space-y-16 > :not(:last-child)) {
       --tw-space-y-reverse: 0;
       margin-block-start: calc(calc(var(--spacing) * 16) * var(--tw-space-y-reverse));
@@ -4665,180 +4704,180 @@
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:self-start {
       align-self: flex-start;
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:object-contain {
       object-fit: contain;
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:object-right {
       object-position: right;
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:p-6 {
       padding: calc(var(--spacing) * 6);
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:p-8 {
       padding: calc(var(--spacing) * 8);
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:p-12 {
       padding: calc(var(--spacing) * 12);
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:px-4 {
       padding-inline: calc(var(--spacing) * 4);
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:px-8 {
       padding-inline: calc(var(--spacing) * 8);
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:py-16 {
       padding-block: calc(var(--spacing) * 16);
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:py-20 {
       padding-block: calc(var(--spacing) * 20);
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:py-24 {
       padding-block: calc(var(--spacing) * 24);
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:pt-5 {
       padding-top: calc(var(--spacing) * 5);
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:pt-24 {
       padding-top: calc(var(--spacing) * 24);
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:pb-12 {
       padding-bottom: calc(var(--spacing) * 12);
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:pb-24 {
       padding-bottom: calc(var(--spacing) * 24);
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:pl-8 {
       padding-left: calc(var(--spacing) * 8);
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:text-2xl {
       font-size: var(--text-2xl);
       line-height: var(--tw-leading, var(--text-2xl--line-height));
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:text-3xl {
       font-size: var(--text-3xl);
       line-height: var(--tw-leading, var(--text-3xl--line-height));
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:text-4xl {
       font-size: var(--text-4xl);
       line-height: var(--tw-leading, var(--text-4xl--line-height));
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:text-5xl {
       font-size: var(--text-5xl);
       line-height: var(--tw-leading, var(--text-5xl--line-height));
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:text-6xl {
       font-size: var(--text-6xl);
       line-height: var(--tw-leading, var(--text-6xl--line-height));
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:text-7xl {
       font-size: var(--text-7xl);
       line-height: var(--tw-leading, var(--text-7xl--line-height));
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:text-8xl {
       font-size: var(--text-8xl);
       line-height: var(--tw-leading, var(--text-8xl--line-height));
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:text-base {
       font-size: var(--text-base);
       line-height: var(--tw-leading, var(--text-base--line-height));
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:text-lg {
       font-size: var(--text-lg);
       line-height: var(--tw-leading, var(--text-lg--line-height));
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:text-sm {
       font-size: var(--text-sm);
       line-height: var(--tw-leading, var(--text-sm--line-height));
     }
   }
 
-  @media (width >= 64rem) {
+  @media (width >=64rem) {
     .lg\:text-xl {
       font-size: var(--text-xl);
       line-height: var(--tw-leading, var(--text-xl--line-height));
     }
   }
 
-  @media (width >= 80rem) {
+  @media (width >=80rem) {
     .xl\:grid-cols-5 {
       grid-template-columns: repeat(5, minmax(0, 1fr));
     }
@@ -4982,7 +5021,8 @@ body {
   outline: none;
 }
 
-.slick-slider .slick-track, .slick-slider .slick-list {
+.slick-slider .slick-track,
+.slick-slider .slick-list {
   transform: translate3d(0, 0, 0);
 }
 
@@ -4995,7 +5035,8 @@ body {
   left: 0;
 }
 
-.slick-track:before, .slick-track:after {
+.slick-track:before,
+.slick-track:after {
   content: "";
   display: table;
 }
@@ -5011,7 +5052,8 @@ body {
   display: none;
 }
 
-.slick-slide img, .slick-initialized .slick-slide {
+.slick-slide img,
+.slick-initialized .slick-slide {
   display: block;
 }
 
@@ -5077,11 +5119,12 @@ body {
   bottom: 1.5rem !important;
 }
 
-.blog-carousel-dots li.slick-active button > div {
+.blog-carousel-dots li.slick-active button>div {
   background-color: #2d252099 !important;
 }
 
-.rich-content ul, .rich-content ol {
+.rich-content ul,
+.rich-content ol {
   margin: 1em 0;
   padding-left: 1.5rem;
 }
@@ -5124,15 +5167,18 @@ body {
   text-decoration: none;
 }
 
-.rich-content strong, .rich-content b {
+.rich-content strong,
+.rich-content b {
   font-weight: 700;
 }
 
-.rich-content em, .rich-content i {
+.rich-content em,
+.rich-content i {
   font-style: italic;
 }
 
-.rich-content iframe, .rich-content .ql-video {
+.rich-content iframe,
+.rich-content .ql-video {
   aspect-ratio: 16 / 9;
   border: none;
   border-radius: .5rem;
@@ -5148,7 +5194,8 @@ body {
   margin: 1em 0;
 }
 
-.prose iframe, .prose .ql-video {
+.prose iframe,
+.prose .ql-video {
   aspect-ratio: 16 / 9;
   border: none;
   border-radius: .5rem;
@@ -5532,7 +5579,9 @@ body {
 }
 
 @keyframes ping {
-  75%, 100% {
+
+  75%,
+  100% {
     opacity: 0;
     transform: scale(2);
   }
@@ -5544,9 +5593,9 @@ body {
   }
 }
 
-@import url(https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap);
 /* virtual-fs:file:///styles/globals.css */
 @custom-variant dark (&:is(.dark *));
+
 :root {
   --font-size: 16px;
   --background: #F3F2EF;
@@ -5587,6 +5636,7 @@ body {
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 }
+
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
@@ -5623,11 +5673,53 @@ body {
   --sidebar-border: oklch(0.269 0 0);
   --sidebar-ring: oklch(0.439 0 0);
 }
-@theme inline { --color-background: var(--background); --color-foreground: var(--foreground); --color-card: var(--card); --color-card-foreground: var(--card-foreground); --color-popover: var(--popover); --color-popover-foreground: var(--popover-foreground); --color-primary: var(--primary); --color-primary-foreground: var(--primary-foreground); --color-secondary: var(--secondary); --color-secondary-foreground: var(--secondary-foreground); --color-muted: var(--muted); --color-muted-foreground: var(--muted-foreground); --color-accent: var(--accent); --color-accent-foreground: var(--accent-foreground); --color-destructive: var(--destructive); --color-destructive-foreground: var(--destructive-foreground); --color-border: var(--border); --color-input: var(--input); --color-input-background: var(--input-background); --color-switch-background: var(--switch-background); --color-ring: var(--ring); --color-chart-1: var(--chart-1); --color-chart-2: var(--chart-2); --color-chart-3: var(--chart-3); --color-chart-4: var(--chart-4); --color-chart-5: var(--chart-5); --radius-sm: calc(var(--radius) - 4px); --radius-md: calc(var(--radius) - 2px); --radius-lg: var(--radius); --radius-xl: calc(var(--radius) + 4px); --color-sidebar: var(--sidebar); --color-sidebar-foreground: var(--sidebar-foreground); --color-sidebar-primary: var(--sidebar-primary); --color-sidebar-primary-foreground: var(--sidebar-primary-foreground); --color-sidebar-accent: var(--sidebar-accent); --color-sidebar-accent-foreground: var(--sidebar-accent-foreground); --color-sidebar-border: var(--sidebar-border); --color-sidebar-ring: var(--sidebar-ring); }
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
     -webkit-font-smoothing: antialiased;
@@ -5636,6 +5728,7 @@ body {
     max-width: 100vw;
   }
 }
+
 @layer base {
   :where(:not(:has([class*=" text-"]), :not(:has([class^=text-])))) {
     h1 {
@@ -5643,37 +5736,44 @@ body {
       font-weight: var(--font-weight-medium);
       line-height: 1.5;
     }
+
     h3 {
       font-size: var(--text-lg);
       font-weight: var(--font-weight-medium);
       line-height: 1.5;
     }
+
     h4 {
       font-size: var(--text-base);
       font-weight: var(--font-weight-medium);
       line-height: 1.5;
     }
+
     p {
       font-size: var(--text-base);
       font-weight: var(--font-weight-normal);
       line-height: 1.5;
     }
+
     label {
       font-size: var(--text-base);
       font-weight: var(--font-weight-medium);
       line-height: 1.5;
     }
+
     button {
       font-size: var(--text-base);
       font-weight: var(--font-weight-medium);
       line-height: 1.5;
     }
+
     input {
       font-size: var(--text-base);
       font-weight: var(--font-weight-normal);
       line-height: 1.5;
     }
   }
+
   h2 {
     font-size: 1.5rem;
     font-weight: 300;
@@ -5683,23 +5783,28 @@ body {
     letter-spacing: 0.1em;
     text-align: center;
   }
+
   @media (min-width: 1024px) {
     h2 {
       font-size: 1.5rem;
     }
   }
 }
+
 html {
   font-size: var(--font-size);
 }
+
 body {
   font-family: "Inter", sans-serif;
   letter-spacing: -0.01em;
 }
+
 .font-display {
   font-family: "Playfair Display", serif;
   letter-spacing: -0.02em;
 }
+
 .video-container {
   position: relative;
   padding-bottom: 56.25%;
@@ -5707,6 +5812,7 @@ body {
   overflow: hidden;
   max-width: 100%;
 }
+
 .video-container iframe {
   position: absolute;
   top: 0;
@@ -5715,6 +5821,7 @@ body {
   height: 100%;
   border-radius: 0.5rem;
 }
+
 .slick-slider {
   position: relative;
   display: block;
@@ -5722,6 +5829,7 @@ body {
   user-select: none;
   touch-action: pan-y;
 }
+
 .slick-list {
   position: relative;
   display: block;
@@ -5729,13 +5837,16 @@ body {
   margin: 0;
   padding: 0;
 }
+
 .slick-list:focus {
   outline: none;
 }
+
 .slick-slider .slick-track,
 .slick-slider .slick-list {
   transform: translate3d(0, 0, 0);
 }
+
 .slick-track {
   position: relative;
   top: 0;
@@ -5744,29 +5855,36 @@ body {
   margin-left: auto;
   margin-right: auto;
 }
+
 .slick-track:before,
 .slick-track:after {
   display: table;
   content: "";
 }
+
 .slick-track:after {
   clear: both;
 }
+
 .slick-slide {
   display: none;
   float: left;
   height: 100%;
   min-height: 1px;
 }
+
 .slick-slide img {
   display: block;
 }
+
 .slick-initialized .slick-slide {
   display: block;
 }
+
 .slick-loading .slick-slide {
   visibility: hidden;
 }
+
 .slick-arrow {
   display: block;
   position: absolute;
@@ -5779,12 +5897,15 @@ body {
   outline: none;
   z-index: 10;
 }
+
 .slick-prev {
   left: -25px;
 }
+
 .slick-next {
   right: -25px;
 }
+
 .slick-dots {
   display: block;
   width: 100%;
@@ -5793,6 +5914,7 @@ body {
   list-style: none;
   text-align: center;
 }
+
 .slick-dots li {
   position: relative;
   display: inline-block;
@@ -5800,6 +5922,7 @@ body {
   padding: 0;
   cursor: pointer;
 }
+
 .slick-dots li button {
   font-size: 0;
   line-height: 0;
@@ -5813,57 +5936,71 @@ body {
   outline: none;
   background: transparent;
 }
+
 .blog-carousel-dots {
   bottom: 1.5rem !important;
   position: absolute;
   width: 100%;
 }
-.blog-carousel-dots li.slick-active button > div {
+
+.blog-carousel-dots li.slick-active button>div {
   background-color: rgba(45, 37, 32, 0.6) !important;
 }
+
 .rich-content ul,
 .rich-content ol {
   padding-left: 1.5rem;
   margin: 1em 0;
 }
+
 .rich-content ul {
   list-style-type: disc;
   list-style-position: outside;
 }
+
 .rich-content ol {
   list-style-type: decimal;
   list-style-position: outside;
 }
+
 .rich-content li {
   margin: 0.5em 0;
   line-height: 1.7;
   padding-left: 0.25rem;
 }
+
 .rich-content p {
   margin: 0.75em 0;
   line-height: 1.7;
 }
+
 .rich-content h2 {
   margin: 1.5em 0 0.75em 0;
 }
+
 .rich-content h3 {
   margin: 1.25em 0 0.5em 0;
 }
+
 .rich-content a {
   color: #FF5100;
   text-decoration: underline;
 }
+
 .rich-content a:hover {
   text-decoration: none;
 }
+
 .rich-content strong,
 .rich-content b {
   font-weight: 700;
 }
+
 .rich-content em,
 .rich-content i {
   font-style: italic;
 }
+
 .rich-content iframe,
 .rich-content .ql-video {
   max-width: 100%;
@@ -5873,12 +6010,14 @@ body {
   margin: 1.5em 0;
   border: none;
 }
+
 .rich-content img {
   max-width: 100%;
   height: auto;
   border-radius: 0.5rem;
   margin: 1em 0;
 }
+
 .prose iframe,
 .prose .ql-video {
   max-width: 100%;
@@ -5888,4 +6027,5 @@ body {
   margin: 1.5em 0;
   border: none;
 }
+
 /*# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsic3R5bGVzL2dsb2JhbHMuY3NzIl0sCiAgInNvdXJjZXNDb250ZW50IjogWyJAY3VzdG9tLXZhcmlhbnQgZGFyayAoJjppcyguZGFyayAqKSk7XG5cbjpyb290IHtcbiAgLS1mb250LXNpemU6IDE2cHg7XG4gIC0tYmFja2dyb3VuZDogI0YzRjJFRjtcbiAgLS1mb3JlZ3JvdW5kOiAjMmQyNTIwO1xuICAtLWNhcmQ6ICNmZmZmZmY7XG4gIC0tY2FyZC1mb3JlZ3JvdW5kOiAjMmQyNTIwO1xuICAtLXBvcG92ZXI6ICNmZmZmZmY7XG4gIC0tcG9wb3Zlci1mb3JlZ3JvdW5kOiAjMmQyNTIwO1xuICAtLXByaW1hcnk6ICNGRjUxMDA7XG4gIC0tcHJpbWFyeS1mb3JlZ3JvdW5kOiAjZmZmZmZmO1xuICAtLXNlY29uZGFyeTogIzhCNzM1NTtcbiAgLS1zZWNvbmRhcnktZm9yZWdyb3VuZDogI2ZmZmZmZjtcbiAgLS1tdXRlZDogI2U4ZTVlMDtcbiAgLS1tdXRlZC1mb3JlZ3JvdW5kOiAjNmI1ZDUyO1xuICAtLWFjY2VudDogI0Q0QTU3NDtcbiAgLS1hY2NlbnQtZm9yZWdyb3VuZDogIzJkMjUyMDtcbiAgLS1kZXN0cnVjdGl2ZTogI2Q0MTgzZDtcbiAgLS1kZXN0cnVjdGl2ZS1mb3JlZ3JvdW5kOiAjZmZmZmZmO1xuICAtLWJvcmRlcjogcmdiYSgxMzksIDExNSwgODUsIDAuMik7XG4gIC0taW5wdXQ6IHRyYW5zcGFyZW50O1xuICAtLWlucHV0LWJhY2tncm91bmQ6ICNmZmZmZmY7XG4gIC0tc3dpdGNoLWJhY2tncm91bmQ6ICNjYmNlZDQ7XG4gIC0tZm9udC13ZWlnaHQtbWVkaXVtOiA1MDA7XG4gIC0tZm9udC13ZWlnaHQtbm9ybWFsOiA0MDA7XG4gIC0tcmluZzogI0ZGNTEwMDtcbiAgLS1jaGFydC0xOiBva2xjaCgwLjY0NiAwLjIyMiA0MS4xMTYpO1xuICAtLWNoYXJ0LTI6IG9rbGNoKDAuNiAwLjExOCAxODQuNzA0KTtcbiAgLS1jaGFydC0zOiBva2xjaCgwLjM5OCAwLjA3IDIyNy4zOTIpO1xuICAtLWNoYXJ0LTQ6IG9rbGNoKDAuODI4IDAuMTg5IDg0LjQyOSk7XG4gIC0tY2hhcnQtNTogb2tsY2goMC43NjkgMC4xODggNzAuMDgpO1xuICAtLXJhZGl1czogMC42MjVyZW07XG4gIC0tc2lkZWJhcjogb2tsY2goMC45ODUgMCAwKTtcbiAgLS1zaWRlYmFyLWZvcmVncm91bmQ6IG9rbGNoKDAuMTQ1IDAgMCk7XG4gIC0tc2lkZWJhci1wcmltYXJ5OiAjMDMwMjEzO1xuICAtLXNpZGViYXItcHJpbWFyeS1mb3JlZ3JvdW5kOiBva2xjaCgwLjk4NSAwIDApO1xuICAtLXNpZGViYXItYWNjZW50OiBva2xjaCgwLjk3IDAgMCk7XG4gIC0tc2lkZWJhci1hY2NlbnQtZm9yZWdyb3VuZDogb2tsY2goMC4yMDUgMCAwKTtcbiAgLS1zaWRlYmFyLWJvcmRlcjogb2tsY2goMC45MjIgMCAwKTtcbiAgLS1zaWRlYmFyLXJpbmc6IG9rbGNoKDAuNzA4IDAgMCk7XG59XG5cbi5kYXJrIHtcbiAgLS1iYWNrZ3JvdW5kOiBva2xjaCgwLjE0NSAwIDApO1xuICAtLWZvcmVncm91bmQ6IG9rbGNoKDAuOTg1IDAgMCk7XG4gIC0tY2FyZDogb2tsY2goMC4xNDUgMCAwKTtcbiAgLS1jYXJkLWZvcmVncm91bmQ6IG9rbGNoKDAuOTg1IDAgMCk7XG4gIC0tcG9wb3Zlcjogb2tsY2goMC4xNDUgMCAwKTtcbiAgLS1wb3BvdmVyLWZvcmVncm91bmQ6IG9rbGNoKDAuOTg1IDAgMCk7XG4gIC0tcHJpbWFyeTogb2tsY2goMC45ODUgMCAwKTtcbiAgLS1wcmltYXJ5LWZvcmVncm91bmQ6IG9rbGNoKDAuMjA1IDAgMCk7XG4gIC0tc2Vjb25kYXJ5OiBva2xjaCgwLjI2OSAwIDApO1xuICAtLXNlY29uZGFyeS1mb3JlZ3JvdW5kOiBva2xjaCgwLjk4NSAwIDApO1xuICAtLW11dGVkOiBva2xjaCgwLjI2OSAwIDApO1xuICAtLW11dGVkLWZvcmVncm91bmQ6IG9rbGNoKDAuNzA4IDAgMCk7XG4gIC0tYWNjZW50OiBva2xjaCgwLjI2OSAwIDApO1xuICAtLWFjY2VudC1mb3JlZ3JvdW5kOiBva2xjaCgwLjk4NSAwIDApO1xuICAtLWRlc3RydWN0aXZlOiBva2xjaCgwLjM5NiAwLjE0MSAyNS43MjMpO1xuICAtLWRlc3RydWN0aXZlLWZvcmVncm91bmQ6IG9rbGNoKDAuNjM3IDAuMjM3IDI1LjMzMSk7XG4gIC0tYm9yZGVyOiBva2xjaCgwLjI2OSAwIDApO1xuICAtLWlucHV0OiBva2xjaCgwLjI2OSAwIDApO1xuICAtLXJpbmc6IG9rbGNoKDAuNDM5IDAgMCk7XG4gIC0tZm9udC13ZWlnaHQtbWVkaXVtOiA1MDA7XG4gIC0tZm9udC13ZWlnaHQtbm9ybWFsOiA0MDA7XG4gIC0tY2hhcnQtMTogb2tsY2goMC40ODggMC4yNDMgMjY0LjM3Nik7XG4gIC0tY2hhcnQtMjogb2tsY2goMC42OTYgMC4xNyAxNjIuNDgpO1xuICAtLWNoYXJ0LTM6IG9rbGNoKDAuNzY5IDAuMTg4IDcwLjA4KTtcbiAgLS1jaGFydC00OiBva2xjaCgwLjYyNyAwLjI2NSAzMDMuOSk7XG4gIC0tY2hhcnQtNTogb2tsY2goMC42NDUgMC4yNDYgMTYuNDM5KTtcbiAgLS1zaWRlYmFyOiBva2xjaCgwLjIwNSAwIDApO1xuICAtLXNpZGViYXItZm9yZWdyb3VuZDogb2tsY2goMC45ODUgMCAwKTtcbiAgLS1zaWRlYmFyLXByaW1hcnk6IG9rbGNoKDAuNDg4IDAuMjQzIDI2NC4zNzYpO1xuICAtLXNpZGViYXItcHJpbWFyeS1mb3JlZ3JvdW5kOiBva2xjaCgwLjk4NSAwIDApO1xuICAtLXNpZGViYXItYWNjZW50OiBva2xjaCgwLjI2OSAwIDApO1xuICAtLXNpZGViYXItYWNjZW50LWZvcmVncm91bmQ6IG9rbGNoKDAuOTg1IDAgMCk7XG4gIC0tc2lkZWJhci1ib3JkZXI6IG9rbGNoKDAuMjY5IDAgMCk7XG4gIC0tc2lkZWJhci1yaW5nOiBva2xjaCgwLjQzOSAwIDApO1xufVxuXG5AdGhlbWUgaW5saW5lIHtcbiAgLS1jb2xvci1iYWNrZ3JvdW5kOiB2YXIoLS1iYWNrZ3JvdW5kKTtcbiAgLS1jb2xvci1mb3JlZ3JvdW5kOiB2YXIoLS1mb3JlZ3JvdW5kKTtcbiAgLS1jb2xvci1jYXJkOiB2YXIoLS1jYXJkKTtcbiAgLS1jb2xvci1jYXJkLWZvcmVncm91bmQ6IHZhcigtLWNhcmQtZm9yZWdyb3VuZCk7XG4gIC0tY29sb3ItcG9wb3ZlcjogdmFyKC0tcG9wb3Zlcik7XG4gIC0tY29sb3ItcG9wb3Zlci1mb3JlZ3JvdW5kOiB2YXIoLS1wb3BvdmVyLWZvcmVncm91bmQpO1xuICAtLWNvbG9yLXByaW1hcnk6IHZhcigtLXByaW1hcnkpO1xuICAtLWNvbG9yLXByaW1hcnktZm9yZWdyb3VuZDogdmFyKC0tcHJpbWFyeS1mb3JlZ3JvdW5kKTtcbiAgLS1jb2xvci1zZWNvbmRhcnk6IHZhcigtLXNlY29uZGFyeSk7XG4gIC0tY29sb3Itc2Vjb25kYXJ5LWZvcmVncm91bmQ6IHZhcigtLXNlY29uZGFyeS1mb3JlZ3JvdW5kKTtcbiAgLS1jb2xvci1tdXRlZDogdmFyKC0tbXV0ZWQpO1xuICAtLWNvbG9yLW11dGVkLWZvcmVncm91bmQ6IHZhcigtLW11dGVkLWZvcmVncm91bmQpO1xuICAtLWNvbG9yLWFjY2VudDogdmFyKC0tYWNjZW50KTtcbiAgLS1jb2xvci1hY2NlbnQtZm9yZWdyb3VuZDogdmFyKC0tYWNjZW50LWZvcmVncm91bmQpO1xuICAtLWNvbG9yLWRlc3RydWN0aXZlOiB2YXIoLS1kZXN0cnVjdGl2ZSk7XG4gIC0tY29sb3ItZGVzdHJ1Y3RpdmUtZm9yZWdyb3VuZDogdmFyKC0tZGVzdHJ1Y3RpdmUtZm9yZWdyb3VuZCk7XG4gIC0tY29sb3ItYm9yZGVyOiB2YXIoLS1ib3JkZXIpO1xuICAtLWNvbG9yLWlucHV0OiB2YXIoLS1pbnB1dCk7XG4gIC0tY29sb3ItaW5wdXQtYmFja2dyb3VuZDogdmFyKC0taW5wdXQtYmFja2dyb3VuZCk7XG4gIC0tY29sb3Itc3dpdGNoLWJhY2tncm91bmQ6IHZhcigtLXN3aXRjaC1iYWNrZ3JvdW5kKTtcbiAgLS1jb2xvci1yaW5nOiB2YXIoLS1yaW5nKTtcbiAgLS1jb2xvci1jaGFydC0xOiB2YXIoLS1jaGFydC0xKTtcbiAgLS1jb2xvci1jaGFydC0yOiB2YXIoLS1jaGFydC0yKTtcbiAgLS1jb2xvci1jaGFydC0zOiB2YXIoLS1jaGFydC0zKTtcbiAgLS1jb2xvci1jaGFydC00OiB2YXIoLS1jaGFydC00KTtcbiAgLS1jb2xvci1jaGFydC01OiB2YXIoLS1jaGFydC01KTtcbiAgLS1yYWRpdXMtc206IGNhbGModmFyKC0tcmFkaXVzKSAtIDRweCk7XG4gIC0tcmFkaXVzLW1kOiBjYWxjKHZhcigtLXJhZGl1cykgLSAycHgpO1xuICAtLXJhZGl1cy1sZzogdmFyKC0tcmFkaXVzKTtcbiAgLS1yYWRpdXMteGw6IGNhbGModmFyKC0tcmFkaXVzKSArIDRweCk7XG4gIC0tY29sb3Itc2lkZWJhcjogdmFyKC0tc2lkZWJhcik7XG4gIC0tY29sb3Itc2lkZWJhci1mb3JlZ3JvdW5kOiB2YXIoLS1zaWRlYmFyLWZvcmVncm91bmQpO1xuICAtLWNvbG9yLXNpZGViYXItcHJpbWFyeTogdmFyKC0tc2lkZWJhci1wcmltYXJ5KTtcbiAgLS1jb2xvci1zaWRlYmFyLXByaW1hcnktZm9yZWdyb3VuZDogdmFyKC0tc2lkZWJhci1wcmltYXJ5LWZvcmVncm91bmQpO1xuICAtLWNvbG9yLXNpZGViYXItYWNjZW50OiB2YXIoLS1zaWRlYmFyLWFjY2VudCk7XG4gIC0tY29sb3Itc2lkZWJhci1hY2NlbnQtZm9yZWdyb3VuZDogdmFyKC0tc2lkZWJhci1hY2NlbnQtZm9yZWdyb3VuZCk7XG4gIC0tY29sb3Itc2lkZWJhci1ib3JkZXI6IHZhcigtLXNpZGViYXItYm9yZGVyKTtcbiAgLS1jb2xvci1zaWRlYmFyLXJpbmc6IHZhcigtLXNpZGViYXItcmluZyk7XG59XG5cbkBsYXllciBiYXNlIHtcbiAgKiB7XG4gICAgQGFwcGx5IGJvcmRlci1ib3JkZXIgb3V0bGluZS1yaW5nLzUwO1xuICB9XG5cbiAgYm9keSB7XG4gICAgQGFwcGx5IGJnLWJhY2tncm91bmQgdGV4dC1mb3JlZ3JvdW5kO1xuICAgIC13ZWJraXQtZm9udC1zbW9vdGhpbmc6IGFudGlhbGlhc2VkO1xuICAgIC1tb3otb3N4LWZvbnQtc21vb3RoaW5nOiBncmF5c2NhbGU7XG4gICAgb3ZlcmZsb3cteDogaGlkZGVuO1xuICAgIG1heC13aWR0aDogMTAwdnc7XG4gIH1cbn1cblxuLyoqXG4gKiBCYXNlIHR5cG9ncmFwaHkuIFRoaXMgaXMgbm90IGFwcGxpZWQgdG8gZWxlbWVudHMgd2hpY2ggaGF2ZSBhbiBhbmNlc3RvciB3aXRoIGEgVGFpbHdpbmQgdGV4dCBjbGFzcy5cbiAqL1xuQGxheWVyIGJhc2Uge1xuICA6d2hlcmUoOm5vdCg6aGFzKFtjbGFzcyo9JyB0ZXh0LSddKSwgOm5vdCg6aGFzKFtjbGFzc149J3RleHQtJ10pKSkpIHtcbiAgICBoMSB7XG4gICAgICBmb250LXNpemU6IHZhcigtLXRleHQtMnhsKTtcbiAgICAgIGZvbnQtd2VpZ2h0OiB2YXIoLS1mb250LXdlaWdodC1tZWRpdW0pO1xuICAgICAgbGluZS1oZWlnaHQ6IDEuNTtcbiAgICB9XG5cbiAgICBoMyB7XG4gICAgICBmb250LXNpemU6IHZhcigtLXRleHQtbGcpO1xuICAgICAgZm9udC13ZWlnaHQ6IHZhcigtLWZvbnQtd2VpZ2h0LW1lZGl1bSk7XG4gICAgICBsaW5lLWhlaWdodDogMS41O1xuICAgIH1cblxuICAgIGg0IHtcbiAgICAgIGZvbnQtc2l6ZTogdmFyKC0tdGV4dC1iYXNlKTtcbiAgICAgIGZvbnQtd2VpZ2h0OiB2YXIoLS1mb250LXdlaWdodC1tZWRpdW0pO1xuICAgICAgbGluZS1oZWlnaHQ6IDEuNTtcbiAgICB9XG5cbiAgICBwIHtcbiAgICAgIGZvbnQtc2l6ZTogdmFyKC0tdGV4dC1iYXNlKTtcbiAgICAgIGZvbnQtd2VpZ2h0OiB2YXIoLS1mb250LXdlaWdodC1ub3JtYWwpO1xuICAgICAgbGluZS1oZWlnaHQ6IDEuNTtcbiAgICB9XG5cbiAgICBsYWJlbCB7XG4gICAgICBmb250LXNpemU6IHZhcigtLXRleHQtYmFzZSk7XG4gICAgICBmb250LXdlaWdodDogdmFyKC0tZm9udC13ZWlnaHQtbWVkaXVtKTtcbiAgICAgIGxpbmUtaGVpZ2h0OiAxLjU7XG4gICAgfVxuXG4gICAgYnV0dG9uIHtcbiAgICAgIGZvbnQtc2l6ZTogdmFyKC0tdGV4dC1iYXNlKTtcbiAgICAgIGZvbnQtd2VpZ2h0OiB2YXIoLS1mb250LXdlaWdodC1tZWRpdW0pO1xuICAgICAgbGluZS1oZWlnaHQ6IDEuNTtcbiAgICB9XG5cbiAgICBpbnB1dCB7XG4gICAgICBmb250LXNpemU6IHZhcigtLXRleHQtYmFzZSk7XG4gICAgICBmb250LXdlaWdodDogdmFyKC0tZm9udC13ZWlnaHQtbm9ybWFsKTtcbiAgICAgIGxpbmUtaGVpZ2h0OiAxLjU7XG4gICAgfVxuICB9XG5cbiAgLyogaDIgY29uIGVzdGlsb3MgZXNwZWNcdTAwRURmaWNvcyBhcGxpY2Fkb3MgZ2xvYmFsbWVudGUgKi9cbiAgaDIge1xuICAgIGZvbnQtc2l6ZTogMS41cmVtO1xuICAgIGZvbnQtd2VpZ2h0OiAzMDA7XG4gICAgbGluZS1oZWlnaHQ6IDEuNTtcbiAgICBjb2xvcjogIzdiNzI2OTtcbiAgICB0ZXh0LXRyYW5zZm9ybTogdXBwZXJjYXNlO1xuICAgIGxldHRlci1zcGFjaW5nOiAwLjFlbTtcbiAgICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gIH1cblxuICBAbWVkaWEgKG1pbi13aWR0aDogMTAyNHB4KSB7XG4gICAgaDIge1xuICAgICAgZm9udC1zaXplOiAxLjVyZW07XG4gICAgfVxuICB9XG59XG5cbmh0bWwge1xuICBmb250LXNpemU6IHZhcigtLWZvbnQtc2l6ZSk7XG59XG5cbi8qIEN1c3RvbSBmb250cyBmb3IgQ2FzYSBSb3NpZXIgKi9cbkBfX2Rpc2FibGVkX2ltcG9ydCB1cmwoJ2h0dHBzOi8vZm9udHMuZ29vZ2xlYXBpcy5jb20vY3NzMj9mYW1pbHk9UGxheWZhaXIrRGlzcGxheTppdGFsLHdnaHRAMCw0MDA7MCw1MDA7MCw2MDA7MSw0MDAmZmFtaWx5PUludGVyOndnaHRAMzAwOzQwMDs1MDA7NjAwJmRpc3BsYXk9c3dhcCcpO1xuXG5ib2R5IHtcbiAgZm9udC1mYW1pbHk6ICdJbnRlcicsIHNhbnMtc2VyaWY7XG4gIGxldHRlci1zcGFjaW5nOiAtMC4wMWVtO1xufVxuXG4uZm9udC1kaXNwbGF5IHtcbiAgZm9udC1mYW1pbHk6ICdQbGF5ZmFpciBEaXNwbGF5Jywgc2VyaWY7XG4gIGxldHRlci1zcGFjaW5nOiAtMC4wMmVtO1xufVxuXG4vKiBSZXNwb25zaXZlIHZpZGVvIGNvbnRhaW5lciBmb3IgWW91VHViZSBlbWJlZHMgKi9cbi52aWRlby1jb250YWluZXIge1xuICBwb3NpdGlvbjogcmVsYXRpdmU7XG4gIHBhZGRpbmctYm90dG9tOiA1Ni4yNSU7IC8qIDE2OjkgYXNwZWN0IHJhdGlvICovXG4gIGhlaWdodDogMDtcbiAgb3ZlcmZsb3c6IGhpZGRlbjtcbiAgbWF4LXdpZHRoOiAxMDAlO1xufVxuXG4udmlkZW8tY29udGFpbmVyIGlmcmFtZSB7XG4gIHBvc2l0aW9uOiBhYnNvbHV0ZTtcbiAgdG9wOiAwO1xuICBsZWZ0OiAwO1xuICB3aWR0aDogMTAwJTtcbiAgaGVpZ2h0OiAxMDAlO1xuICBib3JkZXItcmFkaXVzOiAwLjVyZW07XG59XG5cbi8qIFJlYWN0IFNsaWNrIENhcm91c2VsIFN0eWxlcyAqL1xuLnNsaWNrLXNsaWRlciB7XG4gIHBvc2l0aW9uOiByZWxhdGl2ZTtcbiAgZGlzcGxheTogYmxvY2s7XG4gIGJveC1zaXppbmc6IGJvcmRlci1ib3g7XG4gIHVzZXItc2VsZWN0OiBub25lO1xuICB0b3VjaC1hY3Rpb246IHBhbi15O1xufVxuXG4uc2xpY2stbGlzdCB7XG4gIHBvc2l0aW9uOiByZWxhdGl2ZTtcbiAgZGlzcGxheTogYmxvY2s7XG4gIG92ZXJmbG93OiBoaWRkZW47XG4gIG1hcmdpbjogMDtcbiAgcGFkZGluZzogMDtcbn1cblxuLnNsaWNrLWxpc3Q6Zm9jdXMge1xuICBvdXRsaW5lOiBub25lO1xufVxuXG4uc2xpY2stc2xpZGVyIC5zbGljay10cmFjayxcbi5zbGljay1zbGlkZXIgLnNsaWNrLWxpc3Qge1xuICB0cmFuc2Zvcm06IHRyYW5zbGF0ZTNkKDAsIDAsIDApO1xufVxuXG4uc2xpY2stdHJhY2sge1xuICBwb3NpdGlvbjogcmVsYXRpdmU7XG4gIHRvcDogMDtcbiAgbGVmdDogMDtcbiAgZGlzcGxheTogYmxvY2s7XG4gIG1hcmdpbi1sZWZ0OiBhdXRvO1xuICBtYXJnaW4tcmlnaHQ6IGF1dG87XG59XG5cbi5zbGljay10cmFjazpiZWZvcmUsXG4uc2xpY2stdHJhY2s6YWZ0ZXIge1xuICBkaXNwbGF5OiB0YWJsZTtcbiAgY29udGVudDogJyc7XG59XG5cbi5zbGljay10cmFjazphZnRlciB7XG4gIGNsZWFyOiBib3RoO1xufVxuXG4uc2xpY2stc2xpZGUge1xuICBkaXNwbGF5OiBub25lO1xuICBmbG9hdDogbGVmdDtcbiAgaGVpZ2h0OiAxMDAlO1xuICBtaW4taGVpZ2h0OiAxcHg7XG59XG5cbi5zbGljay1zbGlkZSBpbWcge1xuICBkaXNwbGF5OiBibG9jaztcbn1cblxuLnNsaWNrLWluaXRpYWxpemVkIC5zbGljay1zbGlkZSB7XG4gIGRpc3BsYXk6IGJsb2NrO1xufVxuXG4uc2xpY2stbG9hZGluZyAuc2xpY2stc2xpZGUge1xuICB2aXNpYmlsaXR5OiBoaWRkZW47XG59XG5cbi5zbGljay1hcnJvdyB7XG4gIGRpc3BsYXk6IGJsb2NrO1xuICBwb3NpdGlvbjogYWJzb2x1dGU7XG4gIHRvcDogNTAlO1xuICB0cmFuc2Zvcm06IHRyYW5zbGF0ZVkoLTUwJSk7XG4gIGN1cnNvcjogcG9pbnRlcjtcbiAgYm9yZGVyOiBub25lO1xuICBiYWNrZ3JvdW5kOiB0cmFuc3BhcmVudDtcbiAgY29sb3I6IHRyYW5zcGFyZW50O1xuICBvdXRsaW5lOiBub25lO1xuICB6LWluZGV4OiAxMDtcbn1cblxuLnNsaWNrLXByZXYge1xuICBsZWZ0OiAtMjVweDtcbn1cblxuLnNsaWNrLW5leHQge1xuICByaWdodDogLTI1cHg7XG59XG5cbi5zbGljay1kb3RzIHtcbiAgZGlzcGxheTogYmxvY2s7XG4gIHdpZHRoOiAxMDAlO1xuICBwYWRkaW5nOiAwO1xuICBtYXJnaW46IDA7XG4gIGxpc3Qtc3R5bGU6IG5vbmU7XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbn1cblxuLnNsaWNrLWRvdHMgbGkge1xuICBwb3NpdGlvbjogcmVsYXRpdmU7XG4gIGRpc3BsYXk6IGlubGluZS1ibG9jaztcbiAgbWFyZ2luOiAwIDVweDtcbiAgcGFkZGluZzogMDtcbiAgY3Vyc29yOiBwb2ludGVyO1xufVxuXG4uc2xpY2stZG90cyBsaSBidXR0b24ge1xuICBmb250LXNpemU6IDA7XG4gIGxpbmUtaGVpZ2h0OiAwO1xuICBkaXNwbGF5OiBibG9jaztcbiAgd2lkdGg6IDIwcHg7XG4gIGhlaWdodDogMjBweDtcbiAgcGFkZGluZzogNXB4O1xuICBjdXJzb3I6IHBvaW50ZXI7XG4gIGNvbG9yOiB0cmFuc3BhcmVudDtcbiAgYm9yZGVyOiAwO1xuICBvdXRsaW5lOiBub25lO1xuICBiYWNrZ3JvdW5kOiB0cmFuc3BhcmVudDtcbn1cblxuLyogQmxvZyBDYXJvdXNlbCBEb3RzIC0gRGFyayBzdHlsZSBmb3IgbGlnaHQgYmFja2dyb3VuZHMgKi9cbi5ibG9nLWNhcm91c2VsLWRvdHMge1xuICBib3R0b206IDEuNXJlbSAhaW1wb3J0YW50O1xuICBwb3NpdGlvbjogYWJzb2x1dGU7XG4gIHdpZHRoOiAxMDAlO1xufVxuXG4uYmxvZy1jYXJvdXNlbC1kb3RzIGxpLnNsaWNrLWFjdGl2ZSBidXR0b24gPiBkaXYge1xuICBiYWNrZ3JvdW5kLWNvbG9yOiByZ2JhKDQ1LCAzNywgMzIsIDAuNikgIWltcG9ydGFudDtcbn1cblxuLyogUmljaCBjb250ZW50IHN0eWxpbmcgZm9yIGxpc3RzIGFuZCBmb3JtYXR0ZWQgdGV4dCAqL1xuLnJpY2gtY29udGVudCB1bCxcbi5yaWNoLWNvbnRlbnQgb2wge1xuICBwYWRkaW5nLWxlZnQ6IDEuNXJlbTtcbiAgbWFyZ2luOiAxZW0gMDtcbn1cblxuLnJpY2gtY29udGVudCB1bCB7XG4gIGxpc3Qtc3R5bGUtdHlwZTogZGlzYztcbiAgbGlzdC1zdHlsZS1wb3NpdGlvbjogb3V0c2lkZTtcbn1cblxuLnJpY2gtY29udGVudCBvbCB7XG4gIGxpc3Qtc3R5bGUtdHlwZTogZGVjaW1hbDtcbiAgbGlzdC1zdHlsZS1wb3NpdGlvbjogb3V0c2lkZTtcbn1cblxuLnJpY2gtY29udGVudCBsaSB7XG4gIG1hcmdpbjogMC41ZW0gMDtcbiAgbGluZS1oZWlnaHQ6IDEuNztcbiAgcGFkZGluZy1sZWZ0OiAwLjI1cmVtO1xufVxuXG4ucmljaC1jb250ZW50IHAge1xuICBtYXJnaW46IDAuNzVlbSAwO1xuICBsaW5lLWhlaWdodDogMS43O1xufVxuXG4ucmljaC1jb250ZW50IGgyIHtcbiAgbWFyZ2luOiAxLjVlbSAwIDAuNzVlbSAwO1xufVxuXG4ucmljaC1jb250ZW50IGgzIHtcbiAgbWFyZ2luOiAxLjI1ZW0gMCAwLjVlbSAwO1xufVxuXG4ucmljaC1jb250ZW50IGEge1xuICBjb2xvcjogI0ZGNTEwMDtcbiAgdGV4dC1kZWNvcmF0aW9uOiB1bmRlcmxpbmU7XG59XG5cbi5yaWNoLWNvbnRlbnQgYTpob3ZlciB7XG4gIHRleHQtZGVjb3JhdGlvbjogbm9uZTtcbn1cblxuLnJpY2gtY29udGVudCBzdHJvbmcsXG4ucmljaC1jb250ZW50IGIge1xuICBmb250LXdlaWdodDogNzAwO1xufVxuXG4ucmljaC1jb250ZW50IGVtLFxuLnJpY2gtY29udGVudCBpIHtcbiAgZm9udC1zdHlsZTogaXRhbGljO1xufVxuXG4vKiBFc3RpbG9zIHBhcmEgaWZyYW1lcyB5IHZpZGVvcyBlbiByaWNoIGNvbnRlbnQgKi9cbi5yaWNoLWNvbnRlbnQgaWZyYW1lLFxuLnJpY2gtY29udGVudCAucWwtdmlkZW8ge1xuICBtYXgtd2lkdGg6IDEwMCU7XG4gIHdpZHRoOiAxMDAlO1xuICBhc3BlY3QtcmF0aW86IDE2Lzk7XG4gIGJvcmRlci1yYWRpdXM6IDAuNXJlbTtcbiAgbWFyZ2luOiAxLjVlbSAwO1xuICBib3JkZXI6IG5vbmU7XG59XG5cbi5yaWNoLWNvbnRlbnQgaW1nIHtcbiAgbWF4LXdpZHRoOiAxMDAlO1xuICBoZWlnaHQ6IGF1dG87XG4gIGJvcmRlci1yYWRpdXM6IDAuNXJlbTtcbiAgbWFyZ2luOiAxZW0gMDtcbn1cblxuLyogRXN0aWxvcyBwYXJhIFJlYWN0TWFya2Rvd24gY29uIGlmcmFtZXMvdmlkZW9zICovXG4ucHJvc2UgaWZyYW1lLFxuLnByb3NlIC5xbC12aWRlbyB7XG4gIG1heC13aWR0aDogMTAwJTtcbiAgd2lkdGg6IDEwMCU7XG4gIGFzcGVjdC1yYXRpbzogMTYvOTtcbiAgYm9yZGVyLXJhZGl1czogMC41cmVtO1xuICBtYXJnaW46IDEuNWVtIDA7XG4gIGJvcmRlcjogbm9uZTtcbn0iXSwKICAibWFwcGluZ3MiOiAiO0FBQUEsZ0JBQWdCLEtBQUssQ0FBQyxDQUFDLENBQUMsR0FBRyxDQUFDLEtBQUs7QUFFakM7QUFDRSxlQUFhO0FBQ2IsZ0JBQWM7QUFDZCxnQkFBYztBQUNkLFVBQVE7QUFDUixxQkFBbUI7QUFDbkIsYUFBVztBQUNYLHdCQUFzQjtBQUN0QixhQUFXO0FBQ1gsd0JBQXNCO0FBQ3RCLGVBQWE7QUFDYiwwQkFBd0I7QUFDeEIsV0FBUztBQUNULHNCQUFvQjtBQUNwQixZQUFVO0FBQ1YsdUJBQXFCO0FBQ3JCLGlCQUFlO0FBQ2YsNEJBQTBCO0FBQzFCLFlBQVUsS0FBSyxHQUFHLEVBQUUsR0FBRyxFQUFFLEVBQUUsRUFBRTtBQUM3QixXQUFTO0FBQ1Qsc0JBQW9CO0FBQ3BCLHVCQUFxQjtBQUNyQix3QkFBc0I7QUFDdEIsd0JBQXNCO0FBQ3RCLFVBQVE7QUFDUixhQUFXLE1BQU0sTUFBTSxNQUFNO0FBQzdCLGFBQVcsTUFBTSxJQUFJLE1BQU07QUFDM0IsYUFBVyxNQUFNLE1BQU0sS0FBSztBQUM1QixhQUFXLE1BQU0sTUFBTSxNQUFNO0FBQzdCLGFBQVcsTUFBTSxNQUFNLE1BQU07QUFDN0IsWUFBVTtBQUNWLGFBQVcsTUFBTSxNQUFNLEVBQUU7QUFDekIsd0JBQXNCLE1BQU0sTUFBTSxFQUFFO0FBQ3BDLHFCQUFtQjtBQUNuQixnQ0FBOEIsTUFBTSxNQUFNLEVBQUU7QUFDNUMsb0JBQWtCLE1BQU0sS0FBSyxFQUFFO0FBQy9CLCtCQUE2QixNQUFNLE1BQU0sRUFBRTtBQUMzQyxvQkFBa0IsTUFBTSxNQUFNLEVBQUU7QUFDaEMsa0JBQWdCLE1BQU0sTUFBTSxFQUFFO0FBQ2hDO0FBRUEsQ0FBQztBQUNDLGdCQUFjLE1BQU0sTUFBTSxFQUFFO0FBQzVCLGdCQUFjLE1BQU0sTUFBTSxFQUFFO0FBQzVCLFVBQVEsTUFBTSxNQUFNLEVBQUU7QUFDdEIscUJBQW1CLE1BQU0sTUFBTSxFQUFFO0FBQ2pDLGFBQVcsTUFBTSxNQUFNLEVBQUU7QUFDekIsd0JBQXNCLE1BQU0sTUFBTSxFQUFFO0FBQ3BDLGFBQVcsTUFBTSxNQUFNLEVBQUU7QUFDekIsd0JBQXNCLE1BQU0sTUFBTSxFQUFFO0FBQ3BDLGVBQWEsTUFBTSxNQUFNLEVBQUU7QUFDM0IsMEJBQXdCLE1BQU0sTUFBTSxFQUFFO0FBQ3RDLFdBQVMsTUFBTSxNQUFNLEVBQUU7QUFDdkIsc0JBQW9CLE1BQU0sTUFBTSxFQUFFO0FBQ2xDLFlBQVUsTUFBTSxNQUFNLEVBQUU7QUFDeEIsdUJBQXFCLE1BQU0sTUFBTSxFQUFFO0FBQ25DLGlCQUFlLE1BQU0sTUFBTSxNQUFNO0FBQ2pDLDRCQUEwQixNQUFNLE1BQU0sTUFBTTtBQUM1QyxZQUFVLE1BQU0sTUFBTSxFQUFFO0FBQ3hCLFdBQVMsTUFBTSxNQUFNLEVBQUU7QUFDdkIsVUFBUSxNQUFNLE1BQU0sRUFBRTtBQUN0Qix3QkFBc0I7QUFDdEIsd0JBQXNCO0FBQ3RCLGFBQVcsTUFBTSxNQUFNLE1BQU07QUFDN0IsYUFBVyxNQUFNLE1BQU0sS0FBSztBQUM1QixhQUFXLE1BQU0sTUFBTSxNQUFNO0FBQzdCLGFBQVcsTUFBTSxNQUFNLE1BQU07QUFDN0IsYUFBVyxNQUFNLE1BQU0sTUFBTTtBQUM3QixhQUFXLE1BQU0sTUFBTSxFQUFFO0FBQ3pCLHdCQUFzQixNQUFNLE1BQU0sRUFBRTtBQUNwQyxxQkFBbUIsTUFBTSxNQUFNLE1BQU07QUFDckMsZ0NBQThCLE1BQU0sTUFBTSxFQUFFO0FBQzVDLG9CQUFrQixNQUFNLE1BQU0sRUFBRTtBQUNoQywrQkFBNkIsTUFBTSxNQUFNLEVBQUU7QUFDM0Msb0JBQWtCLE1BQU0sTUFBTSxFQUFFO0FBQ2hDLGtCQUFnQixNQUFNLE1BQU0sRUFBRTtBQUNoQztBQUVBLE9BQU8sT0FBTyxFQUNaLGtCQUFrQixFQUFFLElBQUksYUFBYSxFQUNyQyxrQkFBa0IsRUFBRSxJQUFJLGFBQWEsRUFDckMsWUFBWSxFQUFFLElBQUksT0FBTyxFQUN6Qix1QkFBdUIsRUFBRSxJQUFJLGtCQUFrQixFQUMvQyxlQUFlLEVBQUUsSUFBSSxVQUFVLEVBQy9CLDBCQUEwQixFQUFFLElBQUkscUJBQXFCLEVBQ3JELGVBQWUsRUFBRSxJQUFJLFVBQVUsRUFDL0IsMEJBQTBCLEVBQUUsSUFBSSxxQkFBcUIsRUFDckQsaUJBQWlCLEVBQUUsSUFBSSxZQUFZLEVBQ25DLDRCQUE0QixFQUFFLElBQUksdUJBQXVCLEVBQ3pELGFBQWEsRUFBRSxJQUFJLFFBQVEsRUFDM0Isd0JBQXdCLEVBQUUsSUFBSSxtQkFBbUIsRUFDakQsY0FBYyxFQUFFLElBQUksU0FBUyxFQUM3Qix5QkFBeUIsRUFBRSxJQUFJLG9CQUFvQixFQUNuRCxtQkFBbUIsRUFBRSxJQUFJLGNBQWMsRUFDdkMsOEJBQThCLEVBQUUsSUFBSSx5QkFBeUIsRUFDN0QsY0FBYyxFQUFFLElBQUksU0FBUyxFQUM3QixhQUFhLEVBQUUsSUFBSSxRQUFRLEVBQzNCLHdCQUF3QixFQUFFLElBQUksbUJBQW1CLEVBQ2pELHlCQUF5QixFQUFFLElBQUksb0JBQW9CLEVBQ25ELFlBQVksRUFBRSxJQUFJLE9BQU8sRUFDekIsZUFBZSxFQUFFLElBQUksVUFBVSxFQUMvQixlQUFlLEVBQUUsSUFBSSxVQUFVLEVBQy9CLGVBQWUsRUFBRSxJQUFJLFVBQVUsRUFDL0IsZUFBZSxFQUFFLElBQUksVUFBVSxFQUMvQixlQUFlLEVBQUUsSUFBSSxVQUFVLEVBQy9CLFdBQVcsRUFBRSxLQUFLLElBQUksVUFBVSxFQUFFLElBQUksRUFDdEMsV0FBVyxFQUFFLEtBQUssSUFBSSxVQUFVLEVBQUUsSUFBSSxFQUN0QyxXQUFXLEVBQUUsSUFBSSxTQUFTLEVBQzFCLFdBQVcsRUFBRSxLQUFLLElBQUksVUFBVSxFQUFFLElBQUksRUFDdEMsZUFBZSxFQUFFLElBQUksVUFBVSxFQUMvQiwwQkFBMEIsRUFBRSxJQUFJLHFCQUFxQixFQUNyRCx1QkFBdUIsRUFBRSxJQUFJLGtCQUFrQixFQUMvQyxrQ0FBa0MsRUFBRSxJQUFJLDZCQUE2QixFQUNyRSxzQkFBc0IsRUFBRSxJQUFJLGlCQUFpQixFQUM3QyxpQ0FBaUMsRUFBRSxJQUFJLDRCQUE0QixFQUNuRSxzQkFBc0IsRUFBRSxJQUFJLGlCQUFpQixFQUM3QyxvQkFBb0IsRUFBRSxJQUFJLGVBQWU7QUFHM0M7QUFDRTtBQUNFLFdBQU8sY0FBYyxZQUFZLENBQUM7QUFDcEM7QUFFQTtBQUNFLFdBQU8sY0FBYztBQUNyQiw0QkFBd0I7QUFDeEIsNkJBQXlCO0FBQ3pCLGdCQUFZO0FBQ1osZUFBVztBQUNiO0FBQ0Y7QUFLQTtBQUNFLFNBQU8sS0FBSyxLQUFLLENBQUMsbUJBQW1CLEtBQUssS0FBSyxDQUFDO0FBQzlDO0FBQ0UsaUJBQVcsSUFBSTtBQUNmLG1CQUFhLElBQUk7QUFDakIsbUJBQWE7QUFDZjtBQUVBO0FBQ0UsaUJBQVcsSUFBSTtBQUNmLG1CQUFhLElBQUk7QUFDakIsbUJBQWE7QUFDZjtBQUVBO0FBQ0UsaUJBQVcsSUFBSTtBQUNmLG1CQUFhLElBQUk7QUFDakIsbUJBQWE7QUFDZjtBQUVBO0FBQ0UsaUJBQVcsSUFBSTtBQUNmLG1CQUFhLElBQUk7QUFDakIsbUJBQWE7QUFDZjtBQUVBO0FBQ0UsaUJBQVcsSUFBSTtBQUNmLG1CQUFhLElBQUk7QUFDakIsbUJBQWE7QUFDZjtBQUVBO0FBQ0UsaUJBQVcsSUFBSTtBQUNmLG1CQUFhLElBQUk7QUFDakIsbUJBQWE7QUFDZjtBQUVBO0FBQ0UsaUJBQVcsSUFBSTtBQUNmLG1CQUFhLElBQUk7QUFDakIsbUJBQWE7QUFDZjtBQUNGO0FBR0E7QUFDRSxlQUFXO0FBQ1gsaUJBQWE7QUFDYixpQkFBYTtBQUNiLFdBQU87QUFDUCxvQkFBZ0I7QUFDaEIsb0JBQWdCO0FBQ2hCLGdCQUFZO0FBQ2Q7QUFFQSxTQUFPLENBQUMsU0FBUyxFQUFFO0FBQ2pCO0FBQ0UsaUJBQVc7QUFDYjtBQUNGO0FBQ0Y7QUFFQTtBQUNFLGFBQVcsSUFBSTtBQUNqQjtBQUdBLG1CQUFtQjtBQUVuQjtBQUNFLGVBQWEsT0FBTyxFQUFFO0FBQ3RCLGtCQUFnQjtBQUNsQjtBQUVBLENBQUM7QUFDQyxlQUFhLGtCQUFrQixFQUFFO0FBQ2pDLGtCQUFnQjtBQUNsQjtBQUdBLENBQUM7QUFDQyxZQUFVO0FBQ1Ysa0JBQWdCO0FBQ2hCLFVBQVE7QUFDUixZQUFVO0FBQ1YsYUFBVztBQUNiO0FBRUEsQ0FSQyxnQkFRZ0I7QUFDZixZQUFVO0FBQ1YsT0FBSztBQUNMLFFBQU07QUFDTixTQUFPO0FBQ1AsVUFBUTtBQUNSLGlCQUFlO0FBQ2pCO0FBR0EsQ0FBQztBQUNDLFlBQVU7QUFDVixXQUFTO0FBQ1QsY0FBWTtBQUNaLGVBQWE7QUFDYixnQkFBYztBQUNoQjtBQUVBLENBQUM7QUFDQyxZQUFVO0FBQ1YsV0FBUztBQUNULFlBQVU7QUFDVixVQUFRO0FBQ1IsV0FBUztBQUNYO0FBRUEsQ0FSQyxVQVFVO0FBQ1QsV0FBUztBQUNYO0FBRUEsQ0FwQkMsYUFvQmEsQ0FBQztBQUNmLENBckJDLGFBcUJhLENBYmI7QUFjQyxhQUFXLFlBQVksQ0FBQyxFQUFFLENBQUMsRUFBRTtBQUMvQjtBQUVBLENBTGU7QUFNYixZQUFVO0FBQ1YsT0FBSztBQUNMLFFBQU07QUFDTixXQUFTO0FBQ1QsZUFBYTtBQUNiLGdCQUFjO0FBQ2hCO0FBRUEsQ0FkZSxXQWNIO0FBQ1osQ0FmZSxXQWVIO0FBQ1YsV0FBUztBQUNULFdBQVM7QUFDWDtBQUVBLENBcEJlLFdBb0JIO0FBQ1YsU0FBTztBQUNUO0FBRUEsQ0FBQztBQUNDLFdBQVM7QUFDVCxTQUFPO0FBQ1AsVUFBUTtBQUNSLGNBQVk7QUFDZDtBQUVBLENBUEMsWUFPWTtBQUNYLFdBQVM7QUFDWDtBQUVBLENBQUMsa0JBQWtCLENBWGxCO0FBWUMsV0FBUztBQUNYO0FBRUEsQ0FBQyxjQUFjLENBZmQ7QUFnQkMsY0FBWTtBQUNkO0FBRUEsQ0FBQztBQUNDLFdBQVM7QUFDVCxZQUFVO0FBQ1YsT0FBSztBQUNMLGFBQVcsV0FBVztBQUN0QixVQUFRO0FBQ1IsVUFBUTtBQUNSLGNBQVk7QUFDWixTQUFPO0FBQ1AsV0FBUztBQUNULFdBQVM7QUFDWDtBQUVBLENBQUM7QUFDQyxRQUFNO0FBQ1I7QUFFQSxDQUFDO0FBQ0MsU0FBTztBQUNUO0FBRUEsQ0FBQztBQUNDLFdBQVM7QUFDVCxTQUFPO0FBQ1AsV0FBUztBQUNULFVBQVE7QUFDUixjQUFZO0FBQ1osY0FBWTtBQUNkO0FBRUEsQ0FUQyxXQVNXO0FBQ1YsWUFBVTtBQUNWLFdBQVM7QUFDVCxVQUFRLEVBQUU7QUFDVixXQUFTO0FBQ1QsVUFBUTtBQUNWO0FBRUEsQ0FqQkMsV0FpQlcsR0FBRztBQUNiLGFBQVc7QUFDWCxlQUFhO0FBQ2IsV0FBUztBQUNULFNBQU87QUFDUCxVQUFRO0FBQ1IsV0FBUztBQUNULFVBQVE7QUFDUixTQUFPO0FBQ1AsVUFBUTtBQUNSLFdBQVM7QUFDVCxjQUFZO0FBQ2Q7QUFHQSxDQUFDO0FBQ0MsVUFBUTtBQUNSLFlBQVU7QUFDVixTQUFPO0FBQ1Q7QUFFQSxDQU5DLG1CQU1tQixFQUFFLENBQUMsYUFBYSxPQUFPLEVBQUU7QUFDM0Msb0JBQWtCLEtBQUssRUFBRSxFQUFFLEVBQUUsRUFBRSxFQUFFLEVBQUU7QUFDckM7QUFHQSxDQUFDLGFBQWE7QUFDZCxDQURDLGFBQ2E7QUFDWixnQkFBYztBQUNkLFVBQVEsSUFBSTtBQUNkO0FBRUEsQ0FOQyxhQU1hO0FBQ1osbUJBQWlCO0FBQ2pCLHVCQUFxQjtBQUN2QjtBQUVBLENBWEMsYUFXYTtBQUNaLG1CQUFpQjtBQUNqQix1QkFBcUI7QUFDdkI7QUFFQSxDQWhCQyxhQWdCYTtBQUNaLFVBQVEsTUFBTTtBQUNkLGVBQWE7QUFDYixnQkFBYztBQUNoQjtBQUVBLENBdEJDLGFBc0JhO0FBQ1osVUFBUSxPQUFPO0FBQ2YsZUFBYTtBQUNmO0FBRUEsQ0EzQkMsYUEyQmE7QUFDWixVQUFRLE1BQU0sRUFBRSxPQUFPO0FBQ3pCO0FBRUEsQ0EvQkMsYUErQmE7QUFDWixVQUFRLE9BQU8sRUFBRSxNQUFNO0FBQ3pCO0FBRUEsQ0FuQ0MsYUFtQ2E7QUFDWixTQUFPO0FBQ1AsbUJBQWlCO0FBQ25CO0FBRUEsQ0F4Q0MsYUF3Q2EsQ0FBQztBQUNiLG1CQUFpQjtBQUNuQjtBQUVBLENBNUNDLGFBNENhO0FBQ2QsQ0E3Q0MsYUE2Q2E7QUFDWixlQUFhO0FBQ2Y7QUFFQSxDQWpEQyxhQWlEYTtBQUNkLENBbERDLGFBa0RhO0FBQ1osY0FBWTtBQUNkO0FBR0EsQ0F2REMsYUF1RGE7QUFDZCxDQXhEQyxhQXdEYSxDQUFDO0FBQ2IsYUFBVztBQUNYLFNBQU87QUFDUCxnQkFBYyxFQUFFLENBQUM7QUFDakIsaUJBQWU7QUFDZixVQUFRLE1BQU07QUFDZCxVQUFRO0FBQ1Y7QUFFQSxDQWpFQyxhQWlFYTtBQUNaLGFBQVc7QUFDWCxVQUFRO0FBQ1IsaUJBQWU7QUFDZixVQUFRLElBQUk7QUFDZDtBQUdBLENBQUMsTUFBTTtBQUNQLENBREMsTUFDTSxDQWxCUTtBQW1CYixhQUFXO0FBQ1gsU0FBTztBQUNQLGdCQUFjLEVBQUUsQ0FBQztBQUNqQixpQkFBZTtBQUNmLFVBQVEsTUFBTTtBQUNkLFVBQVE7QUFDVjsiLAogICJuYW1lcyI6IFtdCn0K */

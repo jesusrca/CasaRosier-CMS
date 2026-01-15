@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300,400,500,600&display=swap');
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -203,8 +205,6 @@ html {
   font-size: var(--font-size);
 }
 
-/* Custom fonts for Casa Rosier */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap');
 
 body {
   font-family: 'Inter', sans-serif;
@@ -219,7 +219,8 @@ body {
 /* Responsive video container for YouTube embeds */
 .video-container {
   position: relative;
-  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  padding-bottom: 56.25%;
+  /* 16:9 aspect ratio */
   height: 0;
   overflow: hidden;
   max-width: 100%;
@@ -357,7 +358,7 @@ body {
   width: 100%;
 }
 
-.blog-carousel-dots li.slick-active button > div {
+.blog-carousel-dots li.slick-active button>div {
   background-color: rgba(45, 37, 32, 0.6) !important;
 }
 
