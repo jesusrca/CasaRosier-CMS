@@ -109,7 +109,8 @@ export const sanityFetchers = {
       hero{
         title,
         subtitle,
-        "image": image.asset->url
+        "image": image.asset->url,
+        "overlayImage": overlayImage.asset->url
       },
       sections[]{
         _key,

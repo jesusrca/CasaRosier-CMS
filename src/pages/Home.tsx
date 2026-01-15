@@ -177,6 +177,7 @@ export function Home() {
         image={pageData?.hero?.image}
         title={pageData?.hero?.title}
         subtitle={pageData?.hero?.subtitle}
+        textImage={pageData?.hero?.overlayImage}
       />
 
       {/* About Section */}

@@ -11,9 +11,10 @@ interface HeroHomeProps {
   image?: string;
   title?: string;
   subtitle?: string;
+  textImage?: string;
 }
 
-export function HeroHome({ image, title, subtitle }: HeroHomeProps) {
+export function HeroHome({ image, title, subtitle, textImage }: HeroHomeProps) {
   const { settings, menuItems: mainMenuItems } = useContent();
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [heroImages, setHeroImages] = useState({
@@ -44,13 +45,8 @@ export function HeroHome({ image, title, subtitle }: HeroHomeProps) {
         desktop: image,
         mobile: image
       });
-      setImagesLoaded(true);
-      return;
-    }
-
-    // Fallback to settings
-    if (settings) {
-      // Handle both string and object formats for hero images
+    } else if (settings) {
+      // Fallback to settings for background
       const desktopImage = typeof settings.heroImageDesktop === 'string'
         ? settings.heroImageDesktop
         : settings.heroImageDesktop?.url || heroBackgroundImage;
@@ -63,8 +59,13 @@ export function HeroHome({ image, title, subtitle }: HeroHomeProps) {
         desktop: desktopImage || heroBackgroundImage,
         mobile: mobileImage || heroBackgroundImage
       });
+    }
 
-      // Load hero text images
+    // Handle Text/Overlay Image
+    if (textImage) {
+      setHeroTextImages([textImage]);
+    } else if (settings) {
+      // Load hero text images from settings fallback
       const textImages: string[] = [];
       const img1 = typeof settings.heroTextImage1 === 'string'
         ? settings.heroTextImage1
@@ -79,13 +80,12 @@ export function HeroHome({ image, title, subtitle }: HeroHomeProps) {
       if (textImages.length > 0) {
         setHeroTextImages(textImages);
       } else {
-        // Use default text image if no custom images configured
         setHeroTextImages([heroTextImage]);
       }
-
-      setImagesLoaded(true);
     }
-  }, [settings, image]);
+
+    setImagesLoaded(true);
+  }, [settings, image, textImage]);
 
   // Auto-rotate text images if there are multiple
   useEffect(() => {
