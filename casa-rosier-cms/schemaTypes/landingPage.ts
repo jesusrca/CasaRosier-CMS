@@ -45,7 +45,8 @@ export default defineType({
                 { name: 'title', title: 'Título', type: 'string' },
                 { name: 'subtitle', title: 'Subtítulo', type: 'text', rows: 2 },
                 { name: 'image', title: 'Imagen de Fondo', type: 'image', options: { hotspot: true } },
-                { name: 'overlayImage', title: 'Imagen de Texto (Overlay)', type: 'image' },
+                { name: 'overlayImage', title: 'Imagen de Texto 1 (Inicial)', type: 'image' },
+                { name: 'overlayImage2', title: 'Imagen de Texto 2 (Aparición)', type: 'image' },
             ],
         }),
         defineField({

@@ -110,7 +110,8 @@ export const sanityFetchers = {
         title,
         subtitle,
         "image": image.asset->url,
-        "overlayImage": overlayImage.asset->url
+        "overlayImage": overlayImage.asset->url,
+        "overlayImage2": overlayImage2.asset->url
       },
       sections[]{
         _key,

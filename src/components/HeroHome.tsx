@@ -12,9 +12,10 @@ interface HeroHomeProps {
   title?: string;
   subtitle?: string;
   textImage?: string;
+  textImage2?: string;
 }
 
-export function HeroHome({ image, title, subtitle, textImage }: HeroHomeProps) {
+export function HeroHome({ image, title, subtitle, textImage, textImage2 }: HeroHomeProps) {
   const { settings, menuItems: mainMenuItems } = useContent();
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [heroImages, setHeroImages] = useState({
@@ -63,7 +64,9 @@ export function HeroHome({ image, title, subtitle, textImage }: HeroHomeProps) {
 
     // Handle Text/Overlay Image
     if (textImage) {
-      setHeroTextImages([textImage]);
+      const images = [textImage];
+      if (textImage2) images.push(textImage2);
+      setHeroTextImages(images);
     } else if (settings) {
       // Load hero text images from settings fallback
       const textImages: string[] = [];
