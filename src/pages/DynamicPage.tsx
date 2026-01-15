@@ -9,6 +9,7 @@ import { PageSection } from '../components/PageSection';
 import { LoadingScreen } from '../components/LoadingScreen';
 import { Navigation } from '../components/Navigation';
 import { landingPagesAPI } from '../utils/landingPagesApi';
+import { sanityFetchers } from '../utils/sanity/fetchers';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 
@@ -33,21 +34,46 @@ export function DynamicPage() {
   const [showNotFound, setShowNotFound] = useState(false);
   const [landingPage, setLandingPage] = useState<any>(null);
   const [checkingLanding, setCheckingLanding] = useState(true);
-  
+
   // Primero intentar cargar una landing page
   useEffect(() => {
     const checkLandingPage = async () => {
       try {
+        // Intentar primero con Sanity
+        const sanityLp = await sanityFetchers.getLandingPage(slug!);
+        if (sanityLp && sanityLp.visible) {
+          console.log('✅ Landing page cargada desde Sanity:', slug);
+
+          // Transformar el campo hero en una sección si existe
+          let transformedSections = [...(sanityLp.sections || [])];
+          if (sanityLp.hero && (sanityLp.hero.title || sanityLp.hero.image)) {
+            const heroSection = {
+              type: 'hero',
+              image: sanityLp.hero.image,
+              title: sanityLp.hero.title,
+              subtitle: sanityLp.hero.subtitle
+            };
+            transformedSections = [heroSection, ...transformedSections];
+          }
+
+          setLandingPage({
+            ...sanityLp,
+            sections: transformedSections
+          });
+          return;
+        }
+
+        // Fallback a Supabase si no está en Sanity
         const data = await landingPagesAPI.getLandingPage(slug!);
         if (data?.landingPage && data.landingPage.visible) {
           const lp = data.landingPage;
-          
+
           // Transformar los campos hero en una sección si existen
           let transformedSections = [...(lp.sections || [])];
-          
+
           // Si tiene heroImage/heroTitle pero no tiene una sección hero al inicio, crearla
           const hasHeroSection = transformedSections[0]?.type === 'hero';
-          
+
           if ((lp.heroImage || lp.heroTitle) && !hasHeroSection) {
             // Crear sección hero al inicio
             const heroSection = {
@@ -58,20 +84,14 @@ export function DynamicPage() {
             };
             transformedSections = [heroSection, ...transformedSections];
           }
-          
+
           // Actualizar el landing page con las secciones transformadas
           const transformedLandingPage = {
             ...lp,
             sections: transformedSections
           };
-          
-          console.log('✅ Landing page transformado:', {
-            original: lp,
-            transformed: transformedLandingPage,
-            hasHeroImage: !!lp.heroImage,
-            sectionsCount: transformedSections.length
-          });
-          
+
+          console.log('✅ Landing page cargada desde Supabase:', slug);
           setLandingPage(transformedLandingPage);
         }
       } catch (error) {
@@ -85,7 +105,7 @@ export function DynamicPage() {
       checkLandingPage();
     }
   }, [slug]);
-  
+
   const page = getPageBySlug(slug || '');
 
   // Debug logging
@@ -127,7 +147,7 @@ export function DynamicPage() {
       sectionsCount: landingPage.sections?.length || 0,
       sections: landingPage.sections
     });
-    
+
     return (
       <div className="min-h-screen">
         <SEOHead
@@ -224,9 +244,9 @@ export function DynamicPage() {
           >
             <h1 className="text-4xl lg:text-5xl mb-8 text-center">{page.title}</h1>
             {page.content ? (
-              <div 
+              <div
                 className="prose prose-lg max-w-none text-foreground/80"
-                style={{ 
+                style={{
                   whiteSpace: 'pre-wrap',
                 }}
               >

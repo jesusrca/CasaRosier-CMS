@@ -27,14 +27,14 @@ export function ScrollHeader() {
   const [isMobile, setIsMobile] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
-  const { menuItems } = useContent();
+  const { menuItems, settings } = useContent();
 
   // Detectar si es móvil
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
@@ -44,7 +44,7 @@ export function ScrollHeader() {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      
+
       // Mostrar header después de 100px de scroll
       // Se mantiene visible tanto subiendo como bajando
       if (currentScrollY > 100) {
@@ -52,7 +52,7 @@ export function ScrollHeader() {
       } else {
         setIsVisible(false);
       }
-      
+
       setLastScrollY(currentScrollY);
       setIsScrolled(currentScrollY > 50);
     };
@@ -71,25 +71,26 @@ export function ScrollHeader() {
     setMobileOpenSubmenu(mobileOpenSubmenu === itemName ? null : itemName);
   };
 
+  // Determinar qué logo usar
+  const currentLogo = settings?.siteLogoLight || settings?.siteLogo || logoImage;
+
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isVisible 
-          ? 'translate-y-0 opacity-100' 
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isVisible
+          ? 'translate-y-0 opacity-100'
           : '-translate-y-full opacity-0'
-      } ${
-        isScrolled 
-          ? 'bg-secondary/95 backdrop-blur-sm shadow-md' 
+        } ${isScrolled
+          ? 'bg-secondary/95 backdrop-blur-sm shadow-md'
           : 'bg-secondary/80 backdrop-blur-sm'
-      }`}
+        }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between py-5">
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <img 
-              src={logoImage} 
-              alt="Casa Rosier" 
+            <img
+              src={currentLogo}
+              alt="Casa Rosier"
               className="h-[52px] w-auto hover:opacity-90 transition-opacity"
             />
           </Link>

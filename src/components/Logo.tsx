@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import svgPaths from "../imports/svg-gvi2gibf3l";
+import { useContent } from '../contexts/ContentContext';
 
 interface LogoProps {
   className?: string;
@@ -8,14 +9,20 @@ interface LogoProps {
 }
 
 export function Logo({ className = "", isDark = false, asLink = false }: LogoProps) {
+  const { settings } = useContent();
   const fillColor = isDark ? "#FFFFFF" : "#1E130F";
-  
-  const logoSvg = (
+
+  // Priorizar logos de Sanity si existen
+  const sanityLogo = isDark ? (settings?.siteLogoLight || settings?.siteLogo) : (settings?.siteLogoDark || settings?.siteLogo);
+
+  const logoSvg = sanityLogo ? (
+    <img src={sanityLogo} alt="Casa Rosier" className={`w-auto h-full object-contain ${className}`} style={{ maxHeight: '64px' }} />
+  ) : (
     <div className="relative" style={{ aspectRatio: '595/290', maxHeight: '64px' }}>
-      <svg 
-        className="w-full h-full" 
-        viewBox="0 0 595 290" 
-        fill="none" 
+      <svg
+        className="w-full h-full"
+        viewBox="0 0 595 290"
+        fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
         <g>
@@ -48,7 +55,7 @@ export function Logo({ className = "", isDark = false, asLink = false }: LogoPro
           <path clipRule="evenodd" d={svgPaths.p29d24c80} fill={fillColor} fillRule="evenodd" />
           <path clipRule="evenodd" d={svgPaths.p36607700} fill={fillColor} fillRule="evenodd" />
           <path clipRule="evenodd" d={svgPaths.p25e49e00} fill={fillColor} fillRule="evenodd" />
-          
+
           {/* Todos los paths con stroke */}
           <path clipRule="evenodd" d={svgPaths.p3835a700} fillRule="evenodd" stroke={fillColor} strokeMiterlimit="10" />
           <path clipRule="evenodd" d={svgPaths.p2e53c080} fillRule="evenodd" stroke={fillColor} strokeMiterlimit="10" />
@@ -82,7 +89,7 @@ export function Logo({ className = "", isDark = false, asLink = false }: LogoPro
       </svg>
     </div>
   );
-  
+
   if (asLink) {
     return (
       <Link to="/" className={`block ${className}`}>
@@ -90,6 +97,6 @@ export function Logo({ className = "", isDark = false, asLink = false }: LogoPro
       </Link>
     );
   }
-  
+
   return <div className={className}>{logoSvg}</div>;
 }

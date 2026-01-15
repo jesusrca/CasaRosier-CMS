@@ -4,8 +4,8 @@ import { Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ScheduleDisplay } from './ScheduleDisplay';
 import { Hero } from './Hero';
-import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
+import { SanityContent } from './SanityContent';
 
 interface PageSectionProps {
   section: any;
@@ -13,32 +13,6 @@ interface PageSectionProps {
   isFirstSection?: boolean;
 }
 
-// Componente para renderizar contenido rico (HTML/Markdown)
-function RichContent({ content }: { content: string }) {
-  return (
-    <div className="prose prose-lg max-w-none text-foreground/80">
-      <ReactMarkdown 
-        rehypePlugins={[rehypeRaw]}
-        components={{
-          iframe: ({ node, ...props }) => {
-            // Convertir atributos string a booleanos para iframe
-            const iframeProps = { ...props };
-            
-            // Convertir allowfullscreen string a allowFullScreen boolean
-            if ('allowfullscreen' in iframeProps || 'allowFullScreen' in iframeProps) {
-              delete iframeProps.allowfullscreen;
-              iframeProps.allowFullScreen = true;
-            }
-            
-            return <iframe {...iframeProps} />;
-          }
-        }}
-      >
-        {content}
-      </ReactMarkdown>
-    </div>
-  );
-}
 
 // Componente para el layout de clase/workshop con galería
 function ClassLayoutSection({ section }: { section: any }) {
@@ -82,7 +56,7 @@ function ClassLayoutSection({ section }: { section: any }) {
 
             {/* Descripción con soporte HTML */}
             {section.description && (
-              <RichContent content={section.description} />
+              <SanityContent content={section.description} />
             )}
           </motion.div>
         </div>
@@ -102,7 +76,7 @@ export function PageSection({ section, siteSettings, isFirstSection }: PageSecti
           title: section.title,
           subtitle: section.subtitle
         });
-        
+
         return (
           <Hero
             backgroundImage={section.image}
@@ -114,12 +88,12 @@ export function PageSection({ section, siteSettings, isFirstSection }: PageSecti
           />
         );
       }
-      
+
       // Si NO es la primera sección, usar el hero simple sin menú
       return (
         <section className="relative h-[60vh] min-h-[500px] overflow-hidden">
           {section.image && (
-            <div 
+            <div
               className="absolute inset-0 bg-cover bg-center"
               style={{ backgroundImage: `url(${section.image})` }}
             >
@@ -155,9 +129,9 @@ export function PageSection({ section, siteSettings, isFirstSection }: PageSecti
 
     case 'text':
       // Detectar si es la sección de métodos de pago
-      const isPaymentMethods = section.title?.toUpperCase().includes('MÉTODOS DE PAGO') || 
-                               section.title?.toUpperCase().includes('METODOS DE PAGO');
-      
+      const isPaymentMethods = section.title?.toUpperCase().includes('MÉTODOS DE PAGO') ||
+        section.title?.toUpperCase().includes('METODOS DE PAGO');
+
       return (
         <section className="py-12 lg:py-16 bg-background">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -171,11 +145,11 @@ export function PageSection({ section, siteSettings, isFirstSection }: PageSecti
               {section.title && (
                 <h2 className="text-3xl lg:text-4xl mb-6">{section.title}</h2>
               )}
-              
+
               {isPaymentMethods && siteSettings?.paymentMethods ? (
                 <div className="space-y-6">
                   {section.content && (
-                    <RichContent content={section.content} />
+                    <SanityContent content={section.content} />
                   )}
                   {Object.values(siteSettings.paymentMethods).some((enabled: any) => enabled) && (
                     <div className="flex flex-wrap gap-3 items-center">
@@ -229,7 +203,7 @@ export function PageSection({ section, siteSettings, isFirstSection }: PageSecti
                 </div>
               ) : (
                 section.content && (
-                  <RichContent content={section.content} />
+                  <SanityContent content={section.content} />
                 )
               )}
             </motion.div>
@@ -353,7 +327,7 @@ export function PageSection({ section, siteSettings, isFirstSection }: PageSecti
 
                 {/* Contenido con soporte HTML */}
                 {section.content && (
-                  <RichContent content={section.content} />
+                  <SanityContent content={section.content} />
                 )}
               </motion.div>
             </div>
@@ -408,12 +382,12 @@ export function PageSection({ section, siteSettings, isFirstSection }: PageSecti
             {section.title && (
               <h2 className="mb-8 text-center">{section.title}</h2>
             )}
-            
+
             {/* Subtítulo */}
             {section.subtitle && (
               <p className="text-lg text-foreground/70 text-center mb-8">{section.subtitle}</p>
             )}
-            
+
             <div className="flex flex-wrap gap-6 justify-center">
               {section.giftCards && section.giftCards.map((card: any, index: number) => (
                 <motion.div
@@ -427,28 +401,28 @@ export function PageSection({ section, siteSettings, isFirstSection }: PageSecti
                   {/* Imagen */}
                   {card.image && (
                     <div className="w-full h-64 overflow-hidden">
-                      <img 
-                        src={card.image} 
-                        alt={card.title || 'Tarjeta de regalo'} 
+                      <img
+                        src={card.image}
+                        alt={card.title || 'Tarjeta de regalo'}
                         className="w-full h-full object-cover"
                       />
                     </div>
                   )}
-                  
+
                   <div className="p-6 lg:p-8">
                     {/* Título */}
                     {card.title && (
                       <h3 className="mb-4 text-primary">{card.title}</h3>
                     )}
-                    
+
                     {/* Descripción */}
                     {card.description && (
-                      <div 
+                      <div
                         className="text-sm text-foreground/70 mb-6 leading-relaxed rich-content"
                         dangerouslySetInnerHTML={{ __html: card.description }}
                       />
                     )}
-                    
+
                     {/* Información de clases y personas */}
                     <div className="space-y-2 mb-6 pb-6 border-b border-foreground/10">
                       {card.classes && (
@@ -464,7 +438,7 @@ export function PageSection({ section, siteSettings, isFirstSection }: PageSecti
                         </div>
                       )}
                     </div>
-                    
+
                     {/* Precio */}
                     {card.price && (
                       <div className="text-center">
@@ -473,17 +447,17 @@ export function PageSection({ section, siteSettings, isFirstSection }: PageSecti
                         </div>
                       </div>
                     )}
-                    
+
                     {/* CTA opcional */}
                     {card.ctaText && card.ctaLink && (() => {
                       // Detectar si es un link externo (URL completa) o interno (ruta relativa)
-                      const isExternal = card.ctaLink.startsWith('http://') || 
-                                        card.ctaLink.startsWith('https://') || 
-                                        card.ctaLink.startsWith('//');
-                      
+                      const isExternal = card.ctaLink.startsWith('http://') ||
+                        card.ctaLink.startsWith('https://') ||
+                        card.ctaLink.startsWith('//');
+
                       // Estilo compartido del botón
                       const buttonClass = "block w-full bg-primary text-white text-center py-3 rounded-xl hover:bg-primary/90 transition-colors mt-6";
-                      
+
                       // Si es externo, usar <a> con target="_blank"
                       if (isExternal) {
                         return (
@@ -497,7 +471,7 @@ export function PageSection({ section, siteSettings, isFirstSection }: PageSecti
                           </a>
                         );
                       }
-                      
+
                       // Si es interno, usar Link de react-router-dom para navegación SPA
                       return (
                         <Link
@@ -573,9 +547,8 @@ export function PageSection({ section, siteSettings, isFirstSection }: PageSecti
       return (
         <section className="py-12 lg:py-20 bg-background">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className={`grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center ${
-              section.layout === 'right' ? 'lg:grid-flow-dense' : ''
-            }`}>
+            <div className={`grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center ${section.layout === 'right' ? 'lg:grid-flow-dense' : ''
+              }`}>
               {/* Imagen */}
               <motion.div
                 initial={{ opacity: 0, x: section.layout === 'right' ? 30 : -30 }}
@@ -605,7 +578,7 @@ export function PageSection({ section, siteSettings, isFirstSection }: PageSecti
                   <h2 className="mb-6">{section.title}</h2>
                 )}
                 {section.content && (
-                  <RichContent content={section.content} />
+                  <SanityContent content={section.content} />
                 )}
               </motion.div>
             </div>
@@ -622,7 +595,7 @@ export function PageSection({ section, siteSettings, isFirstSection }: PageSecti
             )}
             {section.content && (
               <div className="mb-12 text-center">
-                <RichContent content={section.content} />
+                <SanityContent content={section.content} />
               </div>
             )}
             {section.features && section.features.length > 0 && (

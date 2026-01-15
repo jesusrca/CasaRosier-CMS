@@ -6,9 +6,11 @@ import { CourseCard } from '../components/CourseCard';
 import { ClickableBanner } from '../components/ClickableBanner';
 import { pagesAPI } from '../utils/api';
 import { useContent } from '../contexts/ContentContext';
+import { sanityFetchers } from '../utils/sanity/fetchers';
 import logoImage from "figma:asset/28612bd890b3dcd85d8f93665d63bdc17b7bfea3.png";
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
 import { SEOHead } from '../components/SEOHead';
+import { SanityContent } from '../components/SanityContent';
 
 export function Home() {
   const { classes, workshops, settings } = useContent(); // Usar el contexto de contenido
@@ -29,6 +31,15 @@ export function Home() {
 
   const loadPageData = async () => {
     try {
+      // Intentar primero Sanity
+      const sanityHome = await sanityFetchers.getLandingPage('home');
+      if (sanityHome) {
+        setPageData(sanityHome);
+        setLoading(false);
+        return;
+      }
+
+      // Fallback a Supabase
       const response = await pagesAPI.getPage('home');
       if (response.page) {
         setPageData(response.page);
@@ -46,21 +57,21 @@ export function Home() {
       // Combinar clases y workshops, filtrar por showInHome
       const allItems = [...classes, ...workshops];
       const featured = allItems.filter((item: any) => item.showInHome === true && item.visible === true);
-      
+
       // Convertir a formato de CourseCard
       const formattedCourses = featured.map((item: any) => {
         // Determinar el link según el tipo
-        const linkPrefix = item.type === 'class' ? '/clases/' : 
-                          item.type === 'workshop' ? '/workshops/' : 
-                          '/privada/';
-        
+        const linkPrefix = item.type === 'class' ? '/clases/' :
+          item.type === 'workshop' ? '/workshops/' :
+            '/privada/';
+
         // Obtener la primera imagen (puede ser string u objeto)
         let imageUrl = '';
         if (item.images && item.images.length > 0) {
           const firstImage = item.images[0];
           imageUrl = typeof firstImage === 'string' ? firstImage : firstImage.url || '';
         }
-        
+
         return {
           title: item.title || '',
           subtitle: item.excerpt || '', // Usar el nuevo campo excerpt
@@ -68,7 +79,7 @@ export function Home() {
           link: linkPrefix + item.slug
         };
       });
-      
+
       console.log('🏠 Featured courses loaded:', formattedCourses);
       setFeaturedCourses(formattedCourses);
     } catch (error) {
@@ -81,21 +92,21 @@ export function Home() {
       // Combinar clases y workshops, filtrar por showInHomeWorkshops
       const allItems = [...classes, ...workshops];
       const featured = allItems.filter((item: any) => item.showInHomeWorkshops === true && item.visible === true);
-      
+
       // Convertir a formato de CourseCard
       const formattedWorkshops = featured.map((item: any) => {
         // Determinar el link según el tipo
-        const linkPrefix = item.type === 'class' ? '/clases/' : 
-                          item.type === 'workshop' ? '/workshops/' : 
-                          '/privada/';
-        
+        const linkPrefix = item.type === 'class' ? '/clases/' :
+          item.type === 'workshop' ? '/workshops/' :
+            '/privada/';
+
         // Obtener la primera imagen (puede ser string u objeto)
         let imageUrl = '';
         if (item.images && item.images.length > 0) {
           const firstImage = item.images[0];
           imageUrl = typeof firstImage === 'string' ? firstImage : firstImage.url || '';
         }
-        
+
         return {
           title: item.title || '',
           subtitle: item.excerpt || '', // Usar el nuevo campo excerpt
@@ -103,7 +114,7 @@ export function Home() {
           link: linkPrefix + item.slug
         };
       });
-      
+
       console.log('🎨 Featured workshops loaded:', formattedWorkshops);
       setFeaturedWorkshops(formattedWorkshops);
     } catch (error) {
@@ -126,14 +137,16 @@ export function Home() {
   });
 
   const aboutImages = aboutSection?.images || [];
-  const aboutContent = aboutSection?.content || 'Ya sea en clases mensuales o en talleres intensivos de fin de semana, te acompañaremos para que descubras todas las posibilidades del barro.\\n\\nTambién puedes crear un evento privado totalmente personalizado.';
-  // Eliminar fallback - solo usar imagen del administrador o placeholder
+  // Use SanityContent for the whole object, but if it's missing, we still have the default text as an array of blocks for SanityContent
+  const aboutContent = aboutSection?.content || [
+    {
+      _type: 'block',
+      children: [{ _type: 'span', text: 'Ya sea en clases mensuales o en talleres intensivos de fin de semana, te acompañaremos para que descubras todas las posibilidades del barro.\n\nTambién puedes crear un evento privado totalmente personalizado.' }]
+    }
+  ];
+
   const aboutMainImage = aboutSection?.mainImage || '';
-  
-  // Debug: ver qué imagen tenemos
-  console.log('🖼️ About Main Image:', aboutMainImage);
-  console.log('📦 About Section:', aboutSection);
-  
+
   const defaultCourses = [];
 
   const courses = coursesSection?.courses || defaultCourses;
@@ -146,8 +159,6 @@ export function Home() {
   const courses2TitleLine1 = courses2Section?.titleLine1;
   const courses2TitleLine2 = courses2Section?.titleLine2;
 
-  // Split content by line breaks
-  const contentParagraphs = aboutContent.split('\\n').filter((p: string) => p.trim());
 
   return (
     <div className="min-h-screen">
@@ -162,7 +173,11 @@ export function Home() {
       />
 
       {/* Hero Section */}
-      <HeroHome />
+      <HeroHome
+        image={pageData?.hero?.image}
+        title={pageData?.hero?.title}
+        subtitle={pageData?.hero?.subtitle}
+      />
 
       {/* About Section */}
       <section id="about-section" className="py-16 lg:py-24 bg-background">
@@ -191,11 +206,10 @@ export function Home() {
               className="space-y-6 max-w-2xl"
             >
               <div className="space-y-4 text-left">
-                {contentParagraphs.map((paragraph: string, index: number) => (
-                  <p key={index} className="text-lg lg:text-xl leading-relaxed text-[#7b7269] text-left font-serif font-light max-w-xs">
-                    {paragraph}
-                  </p>
-                ))}
+                <SanityContent
+                  content={aboutContent}
+                  className="[&_p]:text-lg [&_p]:lg:text-xl [&_p]:leading-relaxed [&_p]:text-[#7b7269] [&_p]:text-left [&_p]:font-serif [&_p]:font-light [&_p]:max-w-xs"
+                />
               </div>
             </motion.div>
           </div>

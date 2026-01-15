@@ -2,27 +2,20 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronDown } from 'lucide-react';
-import { menuAPI, settingsAPI } from '../utils/api';
+import { useContent } from '../contexts/ContentContext';
 import heroBackgroundImage from "figma:asset/cf3b622b1e53dff197470df428faee1c6f268025.png";
 import logoImage from "figma:asset/2dacc970a5a37325400c034e8aab058b32fcf649.png";
 import heroTextImage from "figma:asset/00083d30bea445cb191f41f57aa132965c193e0d.png";
 
-interface SubMenuItem {
-  name: string;
-  path: string;
-  order?: number;
+interface HeroHomeProps {
+  image?: string;
+  title?: string;
+  subtitle?: string;
 }
 
-interface MenuItem {
-  name: string;
-  path?: string;
-  submenu?: SubMenuItem[];
-  order?: number;
-}
-
-export function HeroHome() {
+export function HeroHome({ image, title, subtitle }: HeroHomeProps) {
+  const { settings, menuItems: mainMenuItems } = useContent();
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
-  const [mainMenuItems, setMainMenuItems] = useState<MenuItem[]>([]);
   const [heroImages, setHeroImages] = useState({
     desktop: '',
     mobile: ''
@@ -37,17 +30,62 @@ export function HeroHome() {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     // Listen for resize
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Load menu and settings from API
+  // Update local state when settings from context change or props provided
   useEffect(() => {
-    loadMenu();
-    loadHeroImages();
-  }, []);
+    // If prop provided, use it
+    if (image) {
+      setHeroImages({
+        desktop: image,
+        mobile: image
+      });
+      setImagesLoaded(true);
+      return;
+    }
+
+    // Fallback to settings
+    if (settings) {
+      // Handle both string and object formats for hero images
+      const desktopImage = typeof settings.heroImageDesktop === 'string'
+        ? settings.heroImageDesktop
+        : settings.heroImageDesktop?.url || heroBackgroundImage;
+
+      const mobileImage = typeof settings.heroImageMobile === 'string'
+        ? settings.heroImageMobile
+        : settings.heroImageMobile?.url || heroBackgroundImage;
+
+      setHeroImages({
+        desktop: desktopImage || heroBackgroundImage,
+        mobile: mobileImage || heroBackgroundImage
+      });
+
+      // Load hero text images
+      const textImages: string[] = [];
+      const img1 = typeof settings.heroTextImage1 === 'string'
+        ? settings.heroTextImage1
+        : settings.heroTextImage1?.url;
+      const img2 = typeof settings.heroTextImage2 === 'string'
+        ? settings.heroTextImage2
+        : settings.heroTextImage2?.url;
+
+      if (img1) textImages.push(img1);
+      if (img2) textImages.push(img2);
+
+      if (textImages.length > 0) {
+        setHeroTextImages(textImages);
+      } else {
+        // Use default text image if no custom images configured
+        setHeroTextImages([heroTextImage]);
+      }
+
+      setImagesLoaded(true);
+    }
+  }, [settings, image]);
 
   // Auto-rotate text images if there are multiple
   useEffect(() => {
@@ -60,124 +98,6 @@ export function HeroHome() {
 
     return () => clearTimeout(timeout);
   }, [heroTextImages.length]);
-
-  const loadHeroImages = async () => {
-    try {
-      const response = await settingsAPI.getSettings();
-      if (response.settings) {
-        // Handle both string and object formats for hero images
-        const desktopImage = typeof response.settings.heroImageDesktop === 'string' 
-          ? response.settings.heroImageDesktop 
-          : response.settings.heroImageDesktop?.url || heroBackgroundImage;
-        
-        const mobileImage = typeof response.settings.heroImageMobile === 'string' 
-          ? response.settings.heroImageMobile 
-          : response.settings.heroImageMobile?.url || heroBackgroundImage;
-        
-        console.log('🖼️ Hero Images loaded:', { 
-          desktop: desktopImage, 
-          mobile: mobileImage,
-          isMobile: window.innerWidth < 768,
-          windowWidth: window.innerWidth
-        });
-        
-        setHeroImages({
-          desktop: desktopImage,
-          mobile: mobileImage
-        });
-
-        // Load hero text images
-        const textImages: string[] = [];
-        const img1 = typeof response.settings.heroTextImage1 === 'string' 
-          ? response.settings.heroTextImage1 
-          : response.settings.heroTextImage1?.url;
-        const img2 = typeof response.settings.heroTextImage2 === 'string' 
-          ? response.settings.heroTextImage2 
-          : response.settings.heroTextImage2?.url;
-        
-        if (img1) textImages.push(img1);
-        if (img2) textImages.push(img2);
-        
-        if (textImages.length > 0) {
-          setHeroTextImages(textImages);
-        } else {
-          // Use default text image if no custom images configured
-          setHeroTextImages([heroTextImage]);
-        }
-      } else {
-        // No settings found, use defaults
-        setHeroImages({
-          desktop: heroBackgroundImage,
-          mobile: heroBackgroundImage
-        });
-        setHeroTextImages([heroTextImage]);
-      }
-    } catch (error) {
-      console.log('Settings not found, using default images:', error);
-      // Use defaults on error
-      setHeroImages({
-        desktop: heroBackgroundImage,
-        mobile: heroBackgroundImage
-      });
-      setHeroTextImages([heroTextImage]);
-    } finally {
-      // Always mark as loaded, even if API fails
-      setImagesLoaded(true);
-    }
-  };
-
-  const loadMenu = async () => {
-    try {
-      const response = await menuAPI.getMenu();
-      if (response.menu?.items) {
-        // Sort items by order
-        const sortedItems = [...response.menu.items].sort((a, b) => (a.order || 0) - (b.order || 0));
-        // Sort submenu items
-        sortedItems.forEach(item => {
-          if (item.submenu) {
-            item.submenu.sort((a: SubMenuItem, b: SubMenuItem) => (a.order || 0) - (b.order || 0));
-          }
-        });
-        setMainMenuItems(sortedItems);
-      }
-    } catch (error) {
-      console.log('Menu not found, using default menu');
-      // Set default menu items
-      setMainMenuItems([
-        { name: 'Inicio', path: '/', order: 0 },
-        {
-          name: 'Clases',
-          order: 1,
-          submenu: [
-            { name: 'Iniciación a la cerámica', path: '/clases/iniciacion', order: 0 },
-            { name: 'Regular de modelado', path: '/clases', order: 1 },
-            { name: 'Modelado con torno', path: '/clases/torno', order: 2 },
-          ],
-        },
-        {
-          name: 'Workshops',
-          order: 2,
-          submenu: [
-            { name: 'Esmaltes online vía zoom', path: '/workshops/esmaltes-online', order: 0 },
-            { name: 'Esmaltes Barcelona', path: '/workshops/esmaltes-barcelona', order: 1 },
-            { name: 'Laboratorio Cerámico', path: '/workshops/laboratorio', order: 2 },
-            { name: 'Método Seger', path: '/workshops/metodo-seger', order: 3 },
-          ],
-        },
-        {
-          name: 'Reservas Privadas',
-          order: 3,
-          submenu: [
-            { name: 'Taller para grupos', path: '/espacios-privados', order: 0 },
-          ],
-        },
-        { name: 'Tarjeta de regalo', path: '/tarjeta-regalo', order: 4 },
-        { name: 'El Estudio', path: '/el-estudio', order: 5 },
-        { name: 'Blog', path: '/blog', order: 6 },
-        { name: 'Tiendita', path: '/tiendita', order: 7 },
-      ]);
-    }
-  };
 
   const scrollToContent = () => {
     const nextSection = document.querySelector('#about-section');
@@ -196,7 +116,7 @@ export function HeroHome() {
           src={isMobile ? heroImages.mobile : heroImages.desktop}
           alt=""
           loading="eager"
-          fetchpriority="high"
+          fetchPriority="high"
           decoding="async"
           className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
           style={{ opacity: imagesLoaded ? 1 : 0 }}
@@ -218,9 +138,9 @@ export function HeroHome() {
             className="flex justify-center mb-12 sm:mb-6 mt-8 sm:mt-0"
           >
             <Link to="/">
-              <img 
-                src={logoImage} 
-                alt="Casa Rosier" 
+              <img
+                src={settings?.siteLogoLight || settings?.siteLogo || logoImage}
+                alt="Casa Rosier"
                 loading="eager"
                 className="h-16 sm:h-20 w-auto"
               />
@@ -259,7 +179,7 @@ export function HeroHome() {
                     {item.submenu && <span className="ml-1">+</span>}
                   </button>
                 )}
-                
+
                 {/* Dropdown Menu */}
                 {item.submenu && (
                   <AnimatePresence>
@@ -304,10 +224,10 @@ export function HeroHome() {
         >
           {/* Render all images */}
           {heroTextImages.map((image, index) => (
-            <motion.img 
+            <motion.img
               key={index}
-              src={image} 
-              alt="estudio Cerámica creativa en Barcelona" 
+              src={image}
+              alt="estudio Cerámica creativa en Barcelona"
               className={`w-full h-auto ${index === 0 ? 'relative' : 'absolute top-0 left-0'}`}
               initial={{ opacity: 0 }}
               animate={{ opacity: currentTextImageIndex >= index ? 1 : 0 }}
