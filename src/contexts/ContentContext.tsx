@@ -1,5 +1,4 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { contentAPI, blogAPI, menuAPI, settingsAPI, pagesAPI } from '../utils/api';
 import { LoadingScreen } from '../components/LoadingScreen';
 import { sanityFetchers } from '../utils/sanity/fetchers';
 
@@ -106,7 +105,8 @@ interface SiteSettings {
     ogType?: string;
     googleAnalyticsId?: string;
   };
-  // Fallback compatibility with Supabase structure
+  redirects?: any[];
+  // Fallback compatibility
   siteLogo?: any;
   siteLogoDark?: any;
   siteLogoLight?: any;
@@ -161,48 +161,15 @@ export function ContentProvider({ children }: { children: ReactNode }) {
   const loadAllContent = async () => {
     try {
       setError(null);
+      console.log('🔄 Iniciando carga de contenido desde Sanity...');
 
-      console.log('🔄 Iniciando carga de contenido...');
-
-      // Timeout de seguridad de 15 segundos (aumentado desde 10)
+      // Timeout de seguridad
       const timeoutPromise = new Promise((_, reject) => {
         setTimeout(() => reject(new Error('Timeout loading content')), 15000);
       });
 
-      // Cargar todo en paralelo para máxima velocidad
+      // Cargar todo en paralelo usando solo Sanity
       const loadPromise = Promise.all([
-        contentAPI.getAllItems().catch((err) => {
-          console.warn('⚠️ Error loading content items:', err);
-          return { items: [] };
-        }),
-        blogAPI.getPosts(true).catch((err) => {
-          console.warn('⚠️ Error loading blog posts:', err);
-          return { posts: [] };
-        }),
-        menuAPI.getMenu().catch((err) => {
-          console.warn('⚠️ Error loading menu:', err);
-          return { menu: { items: [] } };
-        }),
-        settingsAPI.getSettings().catch((err) => {
-          console.warn('⚠️ Error loading settings:', err);
-          return {
-            settings: {
-              siteName: 'Casa Rosier',
-              siteDescription: 'Taller de cerámica en Barcelona',
-              seoTitle: 'Casa Rosier - Taller de Cerámica en Barcelona',
-              seoDescription: 'Descubre la cerámica en Casa Rosier. Clases, workshops y espacios para eventos en Barcelona.',
-              seoKeywords: 'cerámica, Barcelona, taller, clases, workshops, torno',
-              ogImage: '',
-              contactEmail: 'info@casarosierceramica.com',
-              contactPhone: '+34 633788860',
-            }
-          };
-        }),
-        pagesAPI.getAllPages().catch((err) => {
-          console.warn('⚠️ Error loading pages:', err);
-          return { pages: [] };
-        }),
-        // Sanity Data
         sanityFetchers.getSettings().catch(() => null),
         sanityFetchers.getMenu().catch(() => null),
         sanityFetchers.getPosts(true).catch(() => []),
@@ -212,11 +179,6 @@ export function ContentProvider({ children }: { children: ReactNode }) {
       ]);
 
       const [
-        contentResponse,
-        blogResponse,
-        menuResponse,
-        settingsResponse,
-        pagesResponse,
         sanitySettings,
         sanityMenu,
         sanityPosts,
@@ -225,89 +187,60 @@ export function ContentProvider({ children }: { children: ReactNode }) {
         sanityGiftCards
       ] = await Promise.race([loadPromise, timeoutPromise]) as any;
 
-      // Unificar Items de Contenido (Clases, Workshops, Privados, GiftCards)
-      // Priorizar Sanity pero mantener Supabase si no hay datos en Sanity para un tipo específico
-      let allItems = [...(contentResponse.items || [])];
+      // Procesar Cursos y Workshops
+      const allItems: ContentItem[] = [];
 
       if (sanityCourses && sanityCourses.length > 0) {
-        // Reemplazar o añadir items de Sanity
-        sanityCourses.forEach((sc: any) => {
-          const index = allItems.findIndex(i => i.slug === sc.slug);
-          if (index !== -1) {
-            allItems[index] = { ...allItems[index], ...sc };
-          } else {
-            allItems.push(sc);
-          }
-        });
+        allItems.push(...sanityCourses);
       }
 
       if (sanityGiftCards && sanityGiftCards.length > 0) {
-        sanityGiftCards.forEach((sgc: any) => {
-          const index = allItems.findIndex(i => i.slug === sgc.slug);
-          if (index !== -1) {
-            allItems[index] = { ...allItems[index], ...sgc, type: 'gift-card' };
-          } else {
-            allItems.push({ ...sgc, type: 'gift-card' });
-          }
-        });
+        // Asegurar tipo gift-card
+        const formattedGiftCards = sanityGiftCards.map((gc: any) => ({ ...gc, type: 'gift-card' }));
+        allItems.push(...formattedGiftCards);
       }
 
-      const visibleClasses = allItems.filter((item: ContentItem) => item.type === 'class' && item.visible);
-      const visibleWorkshops = allItems.filter((item: ContentItem) => item.type === 'workshop' && item.visible);
-      const visiblePrivates = allItems.filter((item: ContentItem) => item.type === 'private' && item.visible);
-      const visibleGiftCards = allItems.filter((item: ContentItem) => item.type === 'gift-card' && item.visible);
+      // Filtrar por visibilidad y tipo
+      const visibleClasses = allItems.filter(item => item.type === 'class' && item.visible);
+      const visibleWorkshops = allItems.filter(item => item.type === 'workshop' && item.visible);
+      const visiblePrivates = allItems.filter(item => item.type === 'private' && item.visible);
+      const visibleGiftCards = allItems.filter(item => item.type === 'gift-card' && item.visible);
 
       setClasses(visibleClasses);
       setWorkshops(visibleWorkshops);
       setPrivates(visiblePrivates);
       setGiftCards(visibleGiftCards);
 
-      // Guardar el resto del contenido - Priorizar Sanity si existe
-      setBlogPosts(sanityPosts && sanityPosts.length > 0 ? sanityPosts : (blogResponse.posts || []));
-      setMenuItems(sanityMenu?.items || menuResponse.menu?.items || []);
+      // Blog y Menú
+      setBlogPosts(sanityPosts || []);
+      setMenuItems(sanityMenu?.items || []);
 
-      const allPages = [...(pagesResponse.pages || []).filter((page: Page) => page.visible)];
-      // Mezclar landing pages de Sanity (evitando duplicados por slug si es necesario)
-      if (sanityLps && sanityLps.length > 0) {
-        sanityLps.forEach((slp: any) => {
-          if (!allPages.find(p => p.slug === slp.slug)) {
-            allPages.push(slp);
-          }
-        });
-      }
-      setPages(allPages);
+      // Páginas
+      setPages(sanityLps || []);
 
-      setSettings(sanitySettings || settingsResponse.settings || {});
+      // Settings
+      setSettings(sanitySettings || {});
 
-      console.log('✅ Contenido cargado en memoria:', {
+      console.log('✅ Contenido Sanity cargado:', {
         clases: visibleClasses.length,
         workshops: visibleWorkshops.length,
         privados: visiblePrivates.length,
         giftCards: visibleGiftCards.length,
-        posts: (blogResponse.posts || []).length,
-        páginas: (pagesResponse.pages || []).filter((page: Page) => page.visible).length,
-        menuItems: (menuResponse.menu?.items || []).length
+        posts: (sanityPosts || []).length,
+        páginas: (sanityLps || []).length,
+        menuItems: (sanityMenu?.items || []).length
       });
+
     } catch (err) {
-      console.error('❌ Error cargando contenido:', err);
+      console.error('❌ Error cargando contenido Sanity:', err);
 
-      // Proporcionar datos por defecto para que la app no falle
-      setMenuItems([
-        { name: 'Inicio', path: '/', order: 0 },
-        { name: 'Clases', path: '/clases', order: 1 },
-        { name: 'Workshops', path: '/workshops', order: 2 },
-        { name: 'Blog', path: '/blog', order: 3 }
-      ]);
-
+      // Datos mínimos en caso de error crítico
       setSettings({
         siteName: 'Casa Rosier',
-        siteDescription: 'Taller de cerámica en Barcelona',
         contactEmail: 'info@casarosierceramica.com',
-        contactPhone: '+34 633788860',
       });
-
-      // No mostrar error al usuario - el contenido público debería funcionar sin auth
-      // setError('Error al cargar el contenido');
+      // No seteamos menuItems por defecto para no ocultar el error visualmente, 
+      // o podríamos dejar un menú básico si se prefiere.
     } finally {
       setLoading(false);
     }

@@ -1,15 +1,13 @@
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { Toaster } from 'sonner@2.0.3';
 import { AnimatePresence } from 'motion/react';
 import { lazy, Suspense } from 'react';
-import { AuthProvider } from './contexts/AuthContext';
 import { ContentProvider, useContent } from './contexts/ContentContext';
 import { WhatsAppProvider, useWhatsApp } from './contexts/WhatsAppContext';
 import { ScrollHeader } from './components/ScrollHeader';
 import { Footer } from './components/Footer';
 import { ScrollToTop } from './components/ScrollToTop';
-import { AuthErrorHandler } from './components/AuthErrorHandler';
 import { WhatsAppButton } from './components/WhatsAppButton';
 import { GoogleAnalytics } from './components/GoogleAnalytics';
 import { RedirectManager } from './components/RedirectManager';
@@ -24,59 +22,48 @@ const ClasesListing = lazy(() => import('./pages/ClasesListing').then(module => 
 const WorkshopsListing = lazy(() => import('./pages/WorkshopsListing').then(module => ({ default: module.WorkshopsListing })));
 const Blog = lazy(() => import('./pages/Blog').then(module => ({ default: module.Blog })));
 const BlogPost = lazy(() => import('./pages/BlogPost').then(module => ({ default: module.BlogPost })));
-const ComingSoon = lazy(() => import('./pages/ComingSoon').then(module => ({ default: module.ComingSoon })));
 const DynamicContentPage = lazy(() => import('./pages/DynamicContentPage').then(module => ({ default: module.DynamicContentPage })));
 const DynamicPage = lazy(() => import('./pages/DynamicPage').then(module => ({ default: module.DynamicPage })));
 const NotFound = lazy(() => import('./pages/NotFound').then(module => ({ default: module.NotFound })));
-
-// Admin pages (lazy loaded)
-const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'));
-const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
 
 function AppContent() {
   const location = useLocation();
   const { settings } = useContent();
   const { phoneNumber } = useWhatsApp();
-  const isAdminRoute = location.pathname.startsWith('/admin');
 
   // Usar el número específico de la página actual, o el global, o el fallback
   const whatsappNumber = phoneNumber || settings.whatsappNumber;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <AuthErrorHandler />
       <ScrollToTop />
       {settings.googleAnalyticsId && <GoogleAnalytics trackingId={settings.googleAnalyticsId} />}
       {settings.redirects && <RedirectManager redirects={settings.redirects} />}
-      {!isAdminRoute && <ScrollHeader />}
-      {!isAdminRoute && <WhatsAppButton phoneNumber={whatsappNumber} />}
+      <ScrollHeader />
+      <WhatsAppButton phoneNumber={whatsappNumber} />
       <main className="flex-1">
         <AnimatePresence mode="wait">
           <Suspense fallback={<LoadingScreen />}>
             <Routes location={location} key={location.pathname}>
               <Route path="/" element={<PageTransition><Home /></PageTransition>} />
-              
+
               {/* Páginas de listado */}
               <Route path="/clases" element={<PageTransition><ClasesListing /></PageTransition>} />
               <Route path="/workshops" element={<PageTransition><WorkshopsListing /></PageTransition>} />
               <Route path="/blog" element={<PageTransition><Blog /></PageTransition>} />
               <Route path="/blog/:slug" element={<PageTransition><BlogPost /></PageTransition>} />
-              
+
               {/* Rutas dinámicas de contenido */}
               <Route path="/clases/:slug" element={<PageTransition><DynamicContentPage /></PageTransition>} />
               <Route path="/workshops/:slug" element={<PageTransition><DynamicContentPage /></PageTransition>} />
               <Route path="/privada/:slug" element={<PageTransition><DynamicContentPage /></PageTransition>} />
-              
+
               {/* Página de Tarjeta de Regalo */}
               <Route path="/tarjeta-regalo/:slug" element={<PageTransition><DynamicContentPage /></PageTransition>} />
-              
-              {/* Admin Routes */}
-              <Route path="/admin/login" element={<AdminLogin />} />
-              <Route path="/admin/dashboard/*" element={<AdminDashboard />} /> 
-              
+
               {/* Dynamic custom pages - antes del 404 */}
               <Route path="/:slug" element={<PageTransition><DynamicPage /></PageTransition>} />
-              
+
               {/* 404 Not Found - al final */}
               <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
             </Routes>
@@ -92,20 +79,18 @@ function App() {
   return (
     <HelmetProvider>
       <Router>
-        <AuthProvider>
-          <ContentProvider>
-            <WhatsAppProvider>
-              <NetworkStatus />
-              <Toaster 
-                position="top-right" 
-                expand={false}
-                richColors
-                closeButton
-              />
-              <AppContent />
-            </WhatsAppProvider>
-          </ContentProvider>
-        </AuthProvider>
+        <ContentProvider>
+          <WhatsAppProvider>
+            <NetworkStatus />
+            <Toaster
+              position="top-right"
+              expand={false}
+              richColors
+              closeButton
+            />
+            <AppContent />
+          </WhatsAppProvider>
+        </ContentProvider>
       </Router>
     </HelmetProvider>
   );
